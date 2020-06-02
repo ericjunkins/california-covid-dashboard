@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <title>Coronavirus</title>
+
+        <!--
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        
+        <!-- jQuery UI CSS -->
+        <link rel="stylesheet" href="css/jquery-ui.min.css">
+        <link rel="stylesheet" href="css/jquery-ui.structure.min.css">
+        <link rel="stylesheet" href="css/jquery-ui.theme.min.css">
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="css/style.css">   
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+
+</head>
+
+<body>
+
+    <!-- Bootstrap grid setup -->
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="index.html">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link active" href="index.html">Home <span class="sr-only">(current)</span></a>
+                <a class="nav-item nav-link" href="index.html#about">About</a>
+                <a class="nav-item nav-link" href="dashboard.html">Dashboard</a>
+                <a class="nav-item nav-link" href="index.html#resources">Resources</a>
+            </div>
+        </div>
+    </nav>
+    <!--
+    <section id="title">
+        <div class="container-fluid">
+            <h1 style="margin-bottom: 15px; margin-top: 5px" class="title_text"> Covid-19 Dashboard</h1>
+        </div>
+    </section>
+    -->
+    <section>
+    <div class="container-fluid" id="main-container">
+        <div class="row">
+            <div class = "col-sm-3"> 
+                <div class="row rows">
+                    <div class="col-sm-12">
+                        <div class="bounding">
+                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                <div class="col-sm-4">
+                                    <h2 class="section-title"> Map </h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="map-chart"> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class = "col-sm-6"> 
+                <div class="row rows">
+                    <div class="col-sm-12">
+                        <div class="bounding">
+                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                <div class="col-sm-4">
+                                    <h2 class="section-title"> Covid Trajectory </h2>
+                                </div>
+
+                                <div class="col-sm-3 offset-sm-4 cn">
+                                    <div class="inner">
+                                        <select class="select-css" id="county-select">
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="lolipop-chart"> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class = "col-sm-3"> 
+                <div class="row rows">
+                    <div class="col-sm-12">
+                        <div class="bounding">
+                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                <div class="col-sm-4">
+                                    <h2 class="section-title"> Ranking </h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                    <div class="col-sm-12">
+                                        <div id="outer1">
+                                            <div id="ranking"> </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    </section>
+
+    <!-- External JS libraries -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+    <script src="https://d3js.org/d3-voronoi.v1.min.js"></script>
+    
+    <script src="https://d3js.org/topojson.v2.min.js"></script>
+
+
+    <!-- Custom JS -->
+
+
+    <script src="https://unpkg.com/d3fc"></script>
+    <script src="js/cali_map.js"></script>
+    <script src="js/lolipopChart.js"></script>
+    <script src="js/ranking.js"></script>
+    <script src="js/main.js"></script>
+    
+</body>
+</html>
