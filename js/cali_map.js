@@ -299,11 +299,14 @@ function cali_map(config){
             .append("path")
             .attr("d", path)
             .attr("id", d=> "county-" + d.properties.NAME)
+
+            .attr("stroke", "#1e2025")
+            .attr("stroke-width", 1)
+            .attr("fill", "#f2f2f2")
+            .transition().duration(dur)
             .attr("fill", function(d){
                 return (mode == "Bubbles" ? "#badee8" : getColor(data[d.properties.GEOID]) )
             })
-            .attr("stroke", "#1e2025")
-            .attr("stroke-width", 1)
 
 
         circData = (mode == "Bubbles" ? cal.features : [])

@@ -9,13 +9,17 @@ var doubleCap = 60
 let windowSize = 2;
 let doublingWindow = 3;
 
+const unavailableBedtypes = ['ACUTE PSYCHIATRIC CARE', 'INTENSIVE CARE NEWBORN NURSERY', 'LABOR AND DELIVERY', 'PEDIATRIC', 'PEDIATRIC INTENSIVE CARE UNIT', 'PERINATAL', 'REHABILITATION', 'RENAL TRANSPLANT']
+
 
 var promises = [
     d3.csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"),
     d3.json("https://d3js.org/us-10m.v1.json"),
     d3.json("data/cb_2014_us_county_5m.json"),
     //d3.json("https://public.opendatasoft.com/api/records/1.0/search/?dataset=us-county-boundaries&q=CA&rows=100&facet=stusab")
-    d3.json("data/us-county-boundaries.json")
+    d3.json("data/us-county-boundaries.json"),
+    d3.csv("data/covid19data.csv"),
+    d3.csv("data/ca_county_beds.csv")
 ]
 
 
@@ -32,10 +36,47 @@ function dropdownChange(){
     var sel = d3.select(this).property('value')
     if (id == "county-select"){
         lolipopVis.selection(sel)
+        hospitalVis.selection(sel)
     } 
 }
 
-function ready([covidData, us, caliCounty, coords]){
+function ready([covidData, us, caliCounty, coords, hosp, beds]){
+    bedKeys = d3.keys(beds[0])
+    beds.forEach(function(d){
+        bedKeys.forEach(function(v){
+            tmp = + d[v]
+            if (!isNaN(tmp)) d[v] = tmp
+        })
+        d.covidAvailableBeds = d.BED_CAPACITY
+        unavailableBedtypes.forEach(function(j){
+            d.covidAvailableBeds -= d[j]
+        })
+    })
+    hosp.forEach(function(d){
+        d.date = d3.timeParse("%m/%d/%Y")(d['Most Recent Date'])
+        d.county    =  d["County Name"]
+        d.icuPos    = +d["ICU COVID-19 Positive Patients"]
+        d.icuSus    = +d["ICU COVID-19 Suspected Patients"]
+        d.patients  = +d["COVID-19 Positive Patients"]
+        d.suspected = +d["Suspected COVID-19 Positive Patients"]
+        d.confirmed = +d["Total Count Confirmed"]
+        d.death     = +d["Total Count Deaths"]
+
+        delete d["County Name"]
+        delete d['Most Recent Date']
+        delete d["ICU COVID-19 Positive Patients"]
+        delete d["ICU COVID-19 Suspected Patients"]
+        delete d["COVID-19 Positive Patients"]
+        delete d["Suspected COVID-19 Positive Patients"]
+        delete d["Total Count Confirmed"]
+        delete d["Total Count Deaths"]
+    })
+
+
+    hospByCounty = d3.nest()
+        .key(d => d.county)
+        .object(hosp)
+
 
     coords.forEach(function(d){
         calCoordinates[d.fields.geoid] = {
@@ -70,6 +111,7 @@ function ready([covidData, us, caliCounty, coords]){
     counties.forEach(function(d){
         if (d!= "Unknown") $("#county-select").append(new Option(d, d))
     })
+
     $(function(){
         $("#county-select").val("Los Angeles")
     })
@@ -78,7 +120,6 @@ function ready([covidData, us, caliCounty, coords]){
     criteriaData = []
 
     countyData.forEach(function(d, i){
-        
         movingWindow = []
         d.values.forEach(function(v, j){
             movingWindow.push(v)
@@ -102,9 +143,6 @@ function ready([covidData, us, caliCounty, coords]){
                 state: d.values[0].state
             })
         }
-
-        
-        //parseTime(d.values[0].date))
     })
 
     criteriaData.sort(function(a,b){
@@ -206,14 +244,29 @@ function ready([covidData, us, caliCounty, coords]){
     }
 
 
+    hospitalConfig = {
+        'selection': "#hospital-chart",
+        'height': windowHeight * 0.42,
+        'width': parseInt(d3.select("#hospital-chart").style("width"), 10),
+        'duration': 750,
+        'hospitalData': hospByCounty,
+        'bedData': beds,
+        'defaultColor' : default_color
+    }
+
+
 
     caliMapVis = cali_map(mapConfig)
     lolipopVis = lolipop_chart(lolipopConfig)
     rankingVis = ranking_chart(rankingConfig)
+    hospitalVis = hospital_chart(hospitalConfig)
+
 
     caliMapVis();
     lolipopVis();
     rankingVis();
+    hospitalVis();
+
 }
 
 

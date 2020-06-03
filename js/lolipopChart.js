@@ -35,8 +35,7 @@ function lolipop_chart(config){
 
 
     //selection = config.criteria.filter(d=> d.county == "Los Angeles" )[0]
-    var trendData,
-        data
+
 
     //console.log(selection)
 
@@ -412,9 +411,6 @@ function lolipop_chart(config){
     }
 
     function draw_chart(){
-
-        console.log(data)
-
 
         var trendline = svg.selectAll(".trendline")
             .data(trendData)
