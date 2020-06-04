@@ -24,8 +24,8 @@ function cali_map(config){
 
     var projection = d3.geoMercator()
         .center([ -120, 37 ])
-        .translate([ width/2, height/2 ])
-        .scale([ width*5 ]);
+        .translate([ width/2, height*0.7 ])
+        .scale([ width*4 ]);
 
     //Define path generator
     var path = d3.geoPath()
@@ -82,7 +82,7 @@ function cali_map(config){
 
     var legend = svg.append('g')
         .attr("class", "legend")
-        .attr("transform", "translate(" + width * 0.1 + "," + height*0.05 + ")")
+        .attr("transform", "translate(" + width * 0.1 + "," + height*0.15 + ")")
 
     // legendData = []
     // legBoxSize = 20;
@@ -119,7 +119,7 @@ function cali_map(config){
 
 
     var selectionGroup = svg.append('g')
-        .attr("transform", "translate(0," + height * 0.9 + ")")
+        .attr("transform", "translate(0," + height * 0 + ")")
         .attr("class", "selection-tool")
 
 

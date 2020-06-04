@@ -260,13 +260,13 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting]){
     var windowHeight = window.innerHeight;
 
     twoWeekData = dateData.slice(dateData.length - 15, dateData.length -1)
-    var row1 = windowHeight * 0.38
+    var row1 = windowHeight * 0.4
     var row2 = windowHeight * 0.38
 
 
     mapConfig = {
         'selection': "#map-chart",
-        'height': windowHeight * 0.85,
+        'height': windowHeight * 0.5,
         'width': parseInt(d3.select("#map-chart").style("width"), 10),
         'duration': 750,
         'countyData': dateData[dateData.length -1].values,
@@ -288,7 +288,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting]){
 
     rankingConfig = {
         'selection': "#ranking",
-        'height': row1,
+        'height': windowHeight * 0.5,
         'width': parseInt(d3.select("#ranking").style("width"), 10),
         'duration': 750,
         'countyData': dateData[dateData.length -1].values,
@@ -301,7 +301,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting]){
 
     hospitalConfig = {
         'selection': "#hospital-chart",
-        'height': row2,
+        'height': row1,
         'width': parseInt(d3.select("#hospital-chart").style("width"), 10),
         'duration': 750,
         'hospitalData': hospByCounty,
@@ -311,7 +311,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting]){
 
     testingConfig = {
         'selection': "#testing-chart",
-        'height': row2,
+        'height': windowHeight * 0.3,
         'width': parseInt(d3.select("#testing-chart").style("width"), 10),
         'duration': 750,
         'testingData': testingData,

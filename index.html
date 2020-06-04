@@ -49,9 +49,9 @@
     <section>
     <div class="container-fluid" id="main-container">
         <div class="row">
-            <div class = "col-sm-3"> 
+            <div class = "col-sm-6"> 
                 <div class="row rows">
-                    <div class="col-sm-12">
+                    <div class="col-sm-6">
                         <div class="bounding">
                             <div class="row row-headers" style="width: 100%; margin-left: 0px;">
                                 <div class="col-sm-4">
@@ -65,12 +65,55 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-sm-6">
+                        <div class="bounding">
+                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                <div class="col-sm-4">
+                                    <h2 class="section-title"> Ranking </h2>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="outer1">
+                                        <div id="ranking"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row rows">
+                    <div class="col-sm-12">
+                        <div class="bounding">
+                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                <div class="col-sm-4">
+                                    <h2 class="section-title"> Testing Rate </h2>
+                                </div>
+
+                                <div class="col-sm-3 offset-sm-4 cn">
+                                    <div class="inner">
+                                        <select class="select-css" id="testing-select">
+                                            <option value="Cumulative">Cumulative</option>
+                                            <option value="Daily">Daily</option>
+                                            <option value="Weekly">Weekly</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="testing-chart"> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class = "col-sm-9"> 
+            <div class = "col-sm-6"> 
                 <div class="row rows">
-                    <div class="col-sm-8">
+                    <div class="col-sm-12">
                         <div class="bounding">
                             <div class="row row-headers" style="width: 100%; margin-left: 0px;">
                                 <div class="col-sm-4">
@@ -92,27 +135,10 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-sm-4">
-                        <div class="bounding">
-                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                                <div class="col-sm-4">
-                                    <h2 class="section-title"> Ranking </h2>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div id="outer1">
-                                        <div id="ranking"> </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="row rows">
-                    <div class="col-sm-6">
+                    <div class="col-sm-12">
                         <div class="bounding">
                             <div class="row row-headers" style="width: 100%; margin-left: 0px;">
                                 <div class="col-sm-4">
@@ -123,32 +149,6 @@
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div id="hospital-chart"> </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-6">
-                        <div class="bounding">
-                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                                <div class="col-sm-4">
-                                    <h2 class="section-title"> Testing Rate </h2>
-                                </div>
-
-                                <div class="col-sm-3 offset-sm-4 cn">
-                                    <div class="inner">
-                                        <select class="select-css" id="testing-select">
-                                            <option value="Cumulative">Cumulative</option>
-                                            <option value="Daily">Daily</option>
-                                            <option value="Weekly">Weekly</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div id="testing-chart"> </div>
                                 </div>
                             </div>
                         </div>
