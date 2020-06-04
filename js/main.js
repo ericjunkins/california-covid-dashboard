@@ -6,10 +6,11 @@ var calCoordinates = {}
 var default_color = '#42d5c6'
 var doubleCap = 60
 
+let testingWindow = 7;
 let windowSize = 2;
 let doublingWindow = 3;
 
-const unavailableBedtypes = ['ACUTE PSYCHIATRIC CARE', 'INTENSIVE CARE NEWBORN NURSERY', 'LABOR AND DELIVERY', 'PEDIATRIC', 'PEDIATRIC INTENSIVE CARE UNIT', 'PERINATAL', 'REHABILITATION', 'RENAL TRANSPLANT']
+const unavailableBedtypes = ['ACUTE PSYCHIATRIC CARE', 'INTENSIVE CARE NEWBORN NURSERY', 'LABOR AND DELIVERY', 'PEDIATRIC', 'PEDIATRIC INTENSIVE CARE UNIT', 'PERINATAL', 'REHABILITATION', 'RENAL TRANSPLANT', 'INTENSIVE CARE']
 
 
 var promises = [
@@ -19,7 +20,8 @@ var promises = [
     //d3.json("https://public.opendatasoft.com/api/records/1.0/search/?dataset=us-county-boundaries&q=CA&rows=100&facet=stusab")
     d3.json("data/us-county-boundaries.json"),
     d3.csv("data/covid19data.csv"),
-    d3.csv("data/ca_county_beds.csv")
+    d3.csv("data/ca_county_beds.csv"),
+    d3.csv("data/la_testing.csv")
 ]
 
 
@@ -30,6 +32,9 @@ Promise.all(promises).then(ready)
 d3.select("#county-select")
     .on("change", dropdownChange)
 
+d3.select("#testing-select")
+    .on("change", dropdownChange)
+
 
 function dropdownChange(){
     var id = d3.select(this).property("id");
@@ -37,10 +42,12 @@ function dropdownChange(){
     if (id == "county-select"){
         lolipopVis.selection(sel)
         hospitalVis.selection(sel)
-    } 
+    } else if (id == "testing-select"){
+        testingVis.selection(sel)
+    }
 }
 
-function ready([covidData, us, caliCounty, coords, hosp, beds]){
+function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting]){
     bedKeys = d3.keys(beds[0])
     beds.forEach(function(d){
         bedKeys.forEach(function(v){
@@ -54,6 +61,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds]){
     })
     hosp.forEach(function(d){
         d.date = d3.timeParse("%m/%d/%Y")(d['Most Recent Date'])
+        d.formattedDate = d3.timeFormat("%m/%d")(d.date)
         d.county    =  d["County Name"]
         d.icuPos    = +d["ICU COVID-19 Positive Patients"]
         d.icuSus    = +d["ICU COVID-19 Suspected Patients"]
@@ -78,6 +86,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds]){
         .object(hosp)
 
 
+        
     coords.forEach(function(d){
         calCoordinates[d.fields.geoid] = {
             county: d.fields.name,
@@ -88,6 +97,49 @@ function ready([covidData, us, caliCounty, coords, hosp, beds]){
             coords: [d.fields.geo_point_2d[1], d.fields.geo_point_2d[0]]
         }
     })
+
+
+
+    laTesting.sort(function(a,b){
+        return d3.descending(+a[""], +b[""])
+    })
+
+    var testingData = { 'Cumulative': [], 'Daily': [], 'Weekly': []}
+    laTesting.forEach(function(d, i){
+        //console.log(d['total_cases'])
+        
+        if (!(i % testingWindow)) {
+            tmpArr = []
+            tmpDate = d3.timeParse("%Y-%m-%d")(d['date_dt'])
+            tmpArr.push(d)
+        } else if ((i % testingWindow) == testingWindow - 1) {
+            tmpArr.push(d)
+            testingData.Weekly.push({
+                date: tmpDate,
+                formattedDate: d3.timeFormat("%m/%d")(tmpDate),
+                cases: d3.sum(tmpArr, d=> d['new_case']),
+                deaths: d3.sum(tmpArr, d=> d['new_deaths']),
+                tests: d3.sum(tmpArr, d=> d['new_persons_tested'])
+            })
+        } else  tmpArr.push(d)
+        var date = d3.timeParse("%Y-%m-%d")(d['date_dt'])
+
+        testingData.Cumulative.push({
+            date: date,
+            formattedDate: d3.timeFormat("%m/%d")(date),
+            cases: +d['total_cases'],
+            deaths: +d['total_deaths'], 
+            tests: +d['total_persons_tested']
+        })
+
+        testingData.Daily.push({
+            date: date,
+            formattedDate: d3.timeFormat("%m/%d")(date),
+            cases: +d['new_case'],
+            deaths: +d['new_deaths'], 
+            tests: +d['new_persons_tested']
+        })
+    }) 
 
 
     caliData = covidData.filter(d=> d.state == "California")
@@ -208,6 +260,9 @@ function ready([covidData, us, caliCounty, coords, hosp, beds]){
     var windowHeight = window.innerHeight;
 
     twoWeekData = dateData.slice(dateData.length - 15, dateData.length -1)
+    var row1 = windowHeight * 0.38
+    var row2 = windowHeight * 0.38
+
 
     mapConfig = {
         'selection': "#map-chart",
@@ -223,7 +278,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds]){
 
     lolipopConfig = {
         'selection': "#lolipop-chart",
-        'height': windowHeight * 0.35,
+        'height': row1,
         'width': parseInt(d3.select("#lolipop-chart").style("width"), 10),
         'duration': 750,
         'criteria': criteriaData,
@@ -233,7 +288,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds]){
 
     rankingConfig = {
         'selection': "#ranking",
-        'height': windowHeight * 0.85,
+        'height': row1,
         'width': parseInt(d3.select("#ranking").style("width"), 10),
         'duration': 750,
         'countyData': dateData[dateData.length -1].values,
@@ -246,11 +301,20 @@ function ready([covidData, us, caliCounty, coords, hosp, beds]){
 
     hospitalConfig = {
         'selection': "#hospital-chart",
-        'height': windowHeight * 0.42,
+        'height': row2,
         'width': parseInt(d3.select("#hospital-chart").style("width"), 10),
         'duration': 750,
         'hospitalData': hospByCounty,
         'bedData': beds,
+        'defaultColor' : default_color
+    }
+
+    testingConfig = {
+        'selection': "#testing-chart",
+        'height': row2,
+        'width': parseInt(d3.select("#testing-chart").style("width"), 10),
+        'duration': 750,
+        'testingData': testingData,
         'defaultColor' : default_color
     }
 
@@ -260,12 +324,13 @@ function ready([covidData, us, caliCounty, coords, hosp, beds]){
     lolipopVis = lolipop_chart(lolipopConfig)
     rankingVis = ranking_chart(rankingConfig)
     hospitalVis = hospital_chart(hospitalConfig)
-
+    testingVis = testing_chart(testingConfig)
 
     caliMapVis();
     lolipopVis();
     rankingVis();
     hospitalVis();
+    testingVis();
 
 }
 

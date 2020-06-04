@@ -7,7 +7,8 @@ function hospital_chart(config){
     var dur = config.duration
     var hospSelection = "Los Angeles"
     var hospData;
-    var stackedData;
+    var icuStack,
+        genStack
 
     var height = config.height - margin.top - margin.bottom, 
         width = config.width - margin.left - margin.right;
@@ -27,6 +28,17 @@ function hospital_chart(config){
     //console.log(config.hospitalData)
 
     myGroups = ["ICU Covid-19 Patients", "Covid-19 Patients"]
+    icuGroup = ['ICU Covid-19 Patients', 'ICU Average Occupancy']
+    genGroup = ['General Covid Patients', 'General Average Occupancy']
+
+
+    chartSpacing = 0.15 * height
+    height1 = height * 0.5 - chartSpacing/2
+    height2 = height * 0.5 + chartSpacing/2
+
+    var averageIcuOccupancy = 58
+    var averageGenOccupacty = 54
+
 
     var area = d3.area()
         .x(function(d, i){
@@ -35,45 +47,90 @@ function hospital_chart(config){
         .y1(function(d){ return y(d[1]); })
 
     var color = d3.scaleOrdinal()
-        .domain(myGroups)
+        .domain(['0', '1'])
         .range(["#adc6e9", "#ffbc72"])
     
-    var x = d3.scaleTime()
+    var x = d3.scaleBand()
         .range([0, width])
+        .padding(0.1)
         
     var y = d3.scaleLinear()
-        .range([height, 0])
+        .domain([0,100])
+        .range([height1, 0])
 
-    
-    var x_axis = d3.axisBottom().ticks(5)
-    var y_axis = d3.axisLeft().ticks(6)
+    var y2 = d3.scaleLinear()
+        .domain([100, 0])
+        .range([height2, height])
 
-    var y_axis_grid = d3.axisLeft().tickSize(-width).tickFormat('').ticks(6)
+    var x_axis = d3.axisBottom().ticks(5).tickPadding(10)
+    var y_axis = d3.axisLeft(y).ticks(6)
+    var y2_axis = d3.axisLeft(y2).ticks(6)
 
-    var hospLabels = svg.append('g')
+    var y_axis_grid = d3.axisLeft(y).tickSize(-width).tickFormat('').ticks(6)
+    var y2_axis_grid = d3.axisLeft(y2).tickSize(-width).tickFormat('').ticks(6)
+
+
+    var upperChart = svg.append('g')
+
+    var lowerChart = svg.append('g')
+        .attr("transform", "translate(0," + height2 + ")")
+
+    var upperLabels = svg.append('g')
         .attr("class", "axis")
     
+    var xAxisCall = upperLabels.append("g")
+        .attr("transform", "translate(" + 0 + "," + height1 + ")")
+        .attr("class", "axisWhite axis--x")
 
-    var xAxisCall = hospLabels.append("g")
+    var yAxisCall = upperLabels.append("g")
+        .attr("class", "axisWhite axis--y")
+        .call(y_axis)
+
+    var yGridCall = upperLabels.append('g')
+        .attr("class", "axisGrid axis--y")
+        .call(y_axis_grid)
+
+
+    var lowerLabels = svg.append('g')
+            .attr("class", "axis")
+
+    var x2AxisCall = lowerLabels.append("g")
         .attr("transform", "translate(" + 0 + "," + height + ")")
         .attr("class", "axisWhite axis--x")
 
-    var yAxisCall = hospLabels.append("g")
+
+    var y2AxisCall = lowerLabels.append("g")
         .attr("class", "axisWhite axis--y")
+        .call(y2_axis)
 
 
-    var yGridCall = hospLabels.append('g')
+    var y2GridCall = lowerLabels.append('g')
         .attr("class", "axisGrid axis--y")
+        .call(y2_axis_grid)
 
-
-    hospLabels.append('text')
+    upperLabels.append('text')
         .attr("transform", "rotate(-90)")
-        .attr("x", -height/2)
+        .attr("x", -height1/2)
         .attr("y", -margin.left/2)
         .attr("class", "axis-label")
-        .text("Percent of Hospital beds")
+        .text("ICU")
 
-    hospLabels.append('text')
+    upperLabels.append('text')
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height*0.75)
+        .attr("y", -margin.left/2)
+        .attr("class", "axis-label")
+        .text("General")
+    
+
+    // upperLabels.append('text')
+    //     .attr("transform", "rotate(-90)")
+    //     .attr("x", -height1/2)
+    //     .attr("y", -margin.left/2)
+    //     .attr("class", "axis-label")
+    //     .text("ICU")
+
+    svg.append('text')
         .attr("x", width/2)
         .attr("y", -margin.top*0.5)
         .attr("font-size", "1.8rem")
@@ -82,7 +139,7 @@ function hospital_chart(config){
         .text("Percent of Hospital Beds Occupied by COVID-19 Patients")
 
 
-    drawLegend();
+    //drawLegend();
 
     function drawLegend(){
         var hospLegend = svg.append('g')
@@ -123,6 +180,29 @@ function hospital_chart(config){
             .text("ICU Hospital Care")
     }
 
+    drawAverageLines()
+
+    function drawAverageLines(){
+        upperChart.append("line")
+            .attr("class", "hosp-thresh")
+            .attr("x1", 0)
+            .attr("x2", width)
+            .attr("y1", y(100 -averageIcuOccupancy))
+            .attr("y2", y(100 - averageIcuOccupancy))
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 2)
+            .style("stroke-dasharray", ("10, 5"))
+
+        svg.append("line")
+            .attr("class", "hosp-thresh")
+            .attr("x1", 0)
+            .attr("x2", width)
+            .attr("y1", y2(100 -averageGenOccupacty))
+            .attr("y2", y2(100 - averageGenOccupacty))
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 2)
+            .style("stroke-dasharray", ("10, 5"))
+    }
     
 
     function hospital(){
@@ -133,77 +213,141 @@ function hospital_chart(config){
 
     function updateScales(){
         hospData = config.hospitalData[hospSelection]
-        dates = d3.extent(hospData, d=> d.date)
-        x.domain(dates)
-
+        //dates = d3.extent(hospData, d=> d.date)
+        dates = hospData.map(function(d){ return d.formattedDate; })
         b = config.bedData.filter(function(d){
             return d["COUNTY_NAME"] == hospSelection.toUpperCase()
         })[0]
 
-        y.domain([0, 100])
-
-        hospData.forEach(function(d){
-           tmp = (d.icuPos + d.icuSus)/b.covidAvailableBeds * 100
-
-            d.values = [
+        hospData.forEach(function(d){            
+            averageIcuOccupancy = 58
+            covidIcuPatients = d.icuPos + d.icuSus
+            averageGenOccupacty = 68
+            covidGenPatients = d.patients + d.suspected
+            d.covidIcuPatients = (d.icuPos + d.icuSus)/b['INTENSIVE CARE'] * 100
+            d.covidGenPatients = (d.patients + d.suspected)/b.covidAvailableBeds * 100
+            d.icu = [
                 {
-                    name: 'ICU Covid-19 Patients', val: (d.icuPos + d.icuSus + d.patients + d.suspected)/b.covidAvailableBeds * 100
+                    name: 'ICU Covid Patients', 
+                    val: covidIcuPatients/b['INTENSIVE CARE'] * 100
+                    
                 },
                 {
-                    name: 'Covid-19 Patients', val: (d.patients + d.suspected)/b.covidAvailableBeds * 100
+                    name: 'ICU Average Occupancy', 
+                    val: averageIcuOccupancy
                 }
             ]
+
+            d.general = [
+                {
+                    name: 'General Covid Patients', 
+                    val: covidGenPatients/b.covidAvailableBeds * 100
+                },
+                {
+                    name: 'General Average Occupancy', 
+                    val: averageGenOccupacty
+                }
+            ]
+
+        })
+        
+        x.domain(dates)
+
+        var ticks = x.domain().filter(function(d, i){ return !( i % 7 ); });
+
+        x_axis.scale(x).tickValues( ticks );
+        
+        xAxisCall.transition().duration(dur).call(x_axis)
+        x2AxisCall.transition().duration(dur).call(x_axis)
+
+        icuStack = d3.stack()
+            .keys([0,1])
+            .value(function(d, i){ return d.icu[i].val })
+            (hospData)
+        
+        genStack = d3.stack()
+            .keys([0,1])
+            .value(function(d, i){ return d.general[i].val })
+            (hospData)
+
+        icuStack.forEach(function(d, i){
+            d.key = icuGroup[i]
+            d.index = i
         })
 
-        y_axis.scale(y)
-        x_axis.scale(x)
-        y_axis_grid.scale(y)
-        
-        xAxisCall.call(x_axis)
-        yAxisCall.call(y_axis)
-        yGridCall.transition().duration(dur).call(y_axis_grid)
-
-
-        stackedData = d3.stack()
-            .keys([0,1])
-            .value(function(d, key){
-                if (key < 2) return d.values[key].val
-            })
-            (hospData)
+        genStack.forEach(function(d, i){
+            d.key = genGroup[i]
+            d.index = i
+        })
     }
 
     function draw_chart(){
-        stacks = svg.selectAll(".layers")
-            .data(stackedData)
-        
-        stacks
-            .transition().duration(dur)
-            .attr("d", d3.area()
-                .x(function(d, i) { return x(d.data.date); })
-                .y0(function(d) { return y(d[0]); })
-                .y1(function(d) { return y(d[1]); })
-            )
-
-        stacks.enter()
-            .append("path")
-            .attr("class", "layers")
-            .style("fill", function(d){
-                return color(myGroups[d.key]);
-            })
-
-            .attr("d", d3.area()
-                .x(function(d, i) { return x(d.data.date); })
-                .y0(y(0))
-                .y1(y(0))
-            )   
-            .transition().duration(dur)
-
-            .attr("d", d3.area()
-                .x(function(d, i) { return x(d.data.date); })
-                .y0(function(d) { return y(d[0]); })
-                .y1(function(d) { return y(d[1]); })
-            )
+        drawUpperChart();
+        drawLowerChart();
     }
+
+    function drawUpperChart(){
+        icuMax = d3.max(hospData, d=> d.covidIcuPatients )
+        if (!icuMax) data = []
+        else data = hospData
+
+        icuRect = upperChart.selectAll(".icu-rect")
+            .data(data, d=> d.formattedDate)
+
+        icuRect.exit().remove()
+
+        icuRect
+            .transition().duration(dur)
+            .attr("x", d=> x(d.formattedDate))
+            .attr("width", x.bandwidth())
+            .attr("y", d=> y(d.covidIcuPatients))
+            .attr("height", d=> y(0) - y(d.covidIcuPatients))
+
+        icuRect.enter()
+            .append("rect")
+            .attr("class", "icu-rect")
+            .attr("x", d=> x(d.formattedDate))
+            .attr("y", y(0))
+            .attr("width", x.bandwidth())
+            .attr("height", 0)
+            .attr("opacity", 0.5)
+            .attr("fill", color(0))
+            .transition().duration(dur)
+                .attr("y", d=> y(d.covidIcuPatients))
+                .attr("height", d=> y(0) - y(d.covidIcuPatients))
+        
+    }
+
+    function drawLowerChart(){
+        genMax = d3.max(hospData, d=> d.covidGenPatients )
+        if (!genMax) data = []
+        else data = hospData
+
+        genRect = upperChart.selectAll(".gen-rect")
+            .data(data, d=> d.formattedDate)
+
+        genRect.exit().remove()
+
+        genRect
+            .transition().duration(dur)
+            .attr("x", d=> x(d.formattedDate))
+            .attr("width", x.bandwidth())
+            .attr("y", d=> y2(d.covidGenPatients))
+            .attr("height", d=> y2(0) - y2(d.covidGenPatients))
+
+        genRect.enter()
+            .append("rect")
+            .attr("class", "gen-rect")
+            .attr("x", d=> x(d.formattedDate))
+            .attr("y", y2(0))
+            .attr("width", x.bandwidth())
+            .attr("height", 0)
+            .attr("fill", color(1))
+            .transition().duration(dur)
+                .attr("y", d=> y2(d.covidGenPatients))
+                .attr("height", d=> y2(0) - y2(d.covidGenPatients))
+    }
+
 
     hospital.width = function(value){
         if (!arguments.length) return width;

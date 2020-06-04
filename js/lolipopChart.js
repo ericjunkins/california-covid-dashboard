@@ -471,6 +471,8 @@ function lolipop_chart(config){
         //     .transition().duration(dur)
         //         .attr("y2", d=> y( Math.min(d[field]), y.domain()[1]))
 
+        //console.log(data.chartData)
+
         var doubleDayLine = svg.selectAll(".double-day-line")
             .data([data.chartData], d=>d.timestamp)
 
@@ -499,8 +501,7 @@ function lolipop_chart(config){
                 .attr("d", d3.line()
                     .x(function(d){ return x(d.dateFormatted) + x.bandwidth()/2; })
                     .y(function(d){ return y(d[field]); })
-                    .curve(d3.curveMonotoneX)
-                    )
+                    .curve(d3.curveMonotoneX))
 
 
 
@@ -525,10 +526,6 @@ function lolipop_chart(config){
             .attr("fill", "steelblue")
             .transition().duration(dur)
                 .attr("cy", d=> y( Math.min(d[field]), y.domain()[1]))
-
-
-        
-
 
     }
     

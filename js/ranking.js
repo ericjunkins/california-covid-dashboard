@@ -28,7 +28,7 @@ function ranking_chart(config){
     const outerSvg = d3.select("#outer1").append('svg')
         .attr("width", width + margin.left + margin.right)
 
-    var barHeight = height/28
+    var barHeight = height/14
     var width1 = config.width* 0.35,
         width2 = width - width1
 
@@ -64,7 +64,7 @@ function ranking_chart(config){
     var barsGroup = svg.append("g")
         .attr("transform", "translate(" + ( margin.left + width1 ) + ",10)")
 
-       
+    
     var axes = barsGroup.append("g")
 
 
