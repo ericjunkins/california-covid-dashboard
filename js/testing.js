@@ -2,8 +2,9 @@ function testing_chart(config){
     var margin = { 
         left:config.width * 0.1,
         right:config.width * 0.1, 
-        top: config.height * 0.15, 
-        bottom:config.height * 0.15 }
+        top: config.height * 0.35, 
+        bottom:config.height * 0.1 }
+
     var dur = config.duration
     var testSelection = "Cumulative"
     var barData = [],
@@ -24,8 +25,48 @@ function testing_chart(config){
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
 
+    dropdownX = (margin.left + width * 0.1)
+    dropdownY = (margin.top*0.65)
+
+
+
+    svg.append('text')
+        .attr("transform", "translate(" + (-margin.left + dropdownX) + "," + (dropdownY-margin.top) + ")")
+        .attr('x', 3)
+        .attr("y", -8)
+        .attr("fill", "#fff")
+        .attr("font-size", "0.8rem")
+        .text("Select Cumulative or Daily:")
+
+    var dropdown = d3.select(config.selection)
+        .append("select")
+            .attr("class", "select-css")
+            .style("position", "absolute")
+            .style("top", dropdownY + "px")
+            .style("left", dropdownX + "px")
+            .style("width", (width/4 + "px"))
+                .on("change", dropdownChange)
+
+
+    
+
+
+    function dropdownChange(d){
+        testSelection =this.value
+        updateLabels();
+        updateScales();
+        draw_chart();
+    }
+
     var testingGroups = ['Tests', 'Positive', 'Percent Positive']
 
+    dropdown.selectAll("option")
+        .data(["Cumulative","Daily", "Weekly"])
+        .enter()
+            .append("option")
+            .attr("value", d=> d)
+            .text(d=> d)
+    
     var color = d3.scaleOrdinal()
         .domain(testingGroups)
         .range(["#adc6e9", "#ffbc72", "#ff112b"])
@@ -52,7 +93,6 @@ function testing_chart(config){
     var y_axis_grid = d3.axisLeft().tickSize(-width).tickFormat('').ticks(6)
 
     var testingLabels = svg.append('g')
-        .attr("class", "labels")
 
     var xAxisCall = testingLabels.append("g")
         .attr("transform", "translate(" + 0 + "," + height + ")")
@@ -67,12 +107,90 @@ function testing_chart(config){
         .attr("class", "axisGrid axis--y")
 
     var y2AxisCcall = testingLabels.append('g')
-        .attr("class", "axisWhite axis--y")
+        .attr("class", "axisYellow axis--y")
         .attr("transform", "translate(" + width + ",0)")
+    
+
+    svg.append("text")
+        .attr("x", width/2)
+        .attr("y", -margin.top * 0.8)
+        .attr("class", "title")
+        .text("Testing in Los Angeles County")
+
+    var yLabel = testingLabels.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height/2)
+        .attr("y", -margin.left/2)
+        .attr("class", "axis-label")
+
+    // testingLabels.append("g")
+    //     .attr("transform", "translate(" + width + ",0)")
+    //     .append('text')
+    //     .attr("transform", "rotate(-90)")
+    //     .attr("x", -height/2)
+    //     .attr("y", margin.right/2)
+    //     .attr("class", "axis-label labelYellow")
+    //     .text("Percentage Positive")
 
     drawLegend();
 
     function drawLegend(){
+        rectSize = 25
+        rect2Start = width*0.2
+        lineStart = width * 0.4
+        spacing = 10
+        legendGroup = svg.append("g")
+            .attr("transform", "translate(" + (width *0.42) + "," + (-margin.top * 0.25) + ")")
+
+        legendGroup.append("rect")
+            .attr("x", 0)
+            .attr("y", -rectSize/2)
+            .attr("width", rectSize)
+            .attr("height", rectSize)
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 0.5)
+            .attr("class", "bar-color-2")
+
+
+        legendGroup.append("text")
+            .attr("x", rectSize + spacing)
+            .attr("y", 0)
+            .attr("class", "legend-text")
+            .attr("dominant-baseline", "middle")
+            .text("Tests Conducted")
+
+        legendGroup.append("rect")
+            .attr("x", rect2Start)
+            .attr("y", -rectSize/2)
+            .attr("width", rectSize)
+            .attr("height", rectSize)
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 0.5)
+            .attr("class", "bar-color-1")
+
+
+        legendGroup.append("text")
+            .attr("x", rect2Start + rectSize + spacing)
+            .attr("y", 0)
+            .attr("class", "legend-text")
+            .attr("dominant-baseline", "middle")
+            .text("Positive Results")
+
+        legendGroup.append("line")
+            .attr("x1", lineStart)
+            .attr("x2", lineStart + rectSize)
+            .attr("y1", 0)
+            .attr("y2", 0)
+            .attr("class", "percent-line")
+
+
+        legendGroup.append("text")
+            .attr("x", lineStart + rectSize + spacing)
+            .attr("y", 0)
+            .attr("class", "legend-text")
+            .attr("dominant-baseline", "middle")
+            .text("Percent Positive")
+
 
     }
 
@@ -80,9 +198,23 @@ function testing_chart(config){
 
     function testing(){
         updateScales()
+        updateLabels();
         draw_chart();
     }
 
+
+    function updateLabels(){
+        if (testSelection == "Cumulative") t = "Total tests to date"
+        else if (testSelection == "Weekly") t = "Total tests each week"
+        else if (testSelection == "Daily") t = "Tests each day"
+        yLabel
+            .transition().duration(dur/2)
+            .attr("opacity", 0)
+            .text("")
+            .transition().duration(dur/2)
+            .attr("opacity", 1)
+            .text(t)
+    }
 
     function updateScales(){
         barData = config.testingData[testSelection]
@@ -136,10 +268,13 @@ function testing_chart(config){
             d.index = i
         })
 
+
+
+
     }
 
     function draw_chart(){
-        dotRadius = (testSelection == "Weekly" ? 4 : 1)
+        dotRadius = (testSelection == "Weekly" ? 5 : 3)
 
         var group = svg.selectAll("g.layer")
             .data(stackedData, d=> d.key)
@@ -147,8 +282,10 @@ function testing_chart(config){
         group.exit().remove()
 
         group.enter().append('g')
+            .attr("class", function(d){ return (d.key == "Positive" ? "bar-color-2" : "bar-color-1"); })
             .classed("layer", true)
-            .attr("fill", d=> color(d.key))
+            .attr("opacity", 1)
+            //.attr("fill", d=> color(d.key))
 
 
         var bars = svg.selectAll("g.layer").selectAll("rect")
@@ -172,7 +309,7 @@ function testing_chart(config){
                 .attr("y", function(d){ return y(d[1]) })
                 .attr("height", function(d){ return y(d[0]) - y(d[1]) })
 
-        var lines = svg.selectAll(".percent-line")
+        var lines = svg.selectAll("#percent-line")
             .data([lineData], d=> d.date )
 
         lines.exit().remove()
@@ -188,9 +325,7 @@ function testing_chart(config){
             .append("path")
             //.attr("id", function(d){ console.log(d) })
             .attr("class", "percent-line")
-            .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-width", 3.5)
+            .attr("id", "percent-line")
 
             .attr("d", d3.line()
                 .x(d=> xBand(d.date)  + xBand.bandwidth()/2)
@@ -223,8 +358,6 @@ function testing_chart(config){
             .attr("class", "percent-marker")
             .attr("cx", d=> xBand(d.date) + xBand.bandwidth()/2)
             .attr("cy", y2(0))
-            .attr("fill", "steelblue")
-            .attr("stroke", "#fff")
             .attr("r", 0)
             .transition().duration(dur)
                 .attr("r", dotRadius)
@@ -248,6 +381,7 @@ function testing_chart(config){
         if (!arguments.length) return testSelection;
         testSelection = value;
         updateScales();
+        updateLabels();
         draw_chart();
         return testing;
     }

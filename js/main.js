@@ -32,8 +32,8 @@ Promise.all(promises).then(ready)
 d3.select("#county-select")
     .on("change", dropdownChange)
 
-d3.select("#testing-select")
-    .on("change", dropdownChange)
+// d3.select("#testing-select")
+//     .on("change", dropdownChange)
 
 
 function dropdownChange(){
@@ -311,7 +311,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting]){
 
     testingConfig = {
         'selection': "#testing-chart",
-        'height': windowHeight * 0.3,
+        'height': windowHeight * 0.35,
         'width': parseInt(d3.select("#testing-chart").style("width"), 10),
         'duration': 750,
         'testingData': testingData,

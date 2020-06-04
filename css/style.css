@@ -48,10 +48,20 @@ h5 {
 /* Vis section Styles */
 /* ---------------------------------------------------- */
 
+.rounded-10 {
+	border-radius: 5px;
+	border: 0.5px solid;
+	border-color: #2E2E2E;
+}
+
 .bounding {
 	background-color: #1e2025;
 	border: 1px solid #413b3b;
 	border-radius: 5px;
+	text-align: center;
+	width: 100%;
+	height: 100%;
+	padding: 0px;
 }
 
 .section-title {
@@ -59,18 +69,14 @@ h5 {
 	padding-left: 30px;
 	padding-top: 10px;
 	margin-bottom: 0px;
-	font-size: 1.5rem;
+	font-size: 2rem;
 	color: #f3f3d0;
 }
 
-.row-headers{
-	background-color: #14161b;
-	border-top-left-radius: 6px;
-	border-top-right-radius: 6px;
-	border-bottom: 1px solid #424242;
-	height: 70px;
-	text-align: left;
+.outer-container{
+	padding: 15px;
 }
+
 
 .inline-buttons {
 	vertical-align: middle;
@@ -88,8 +94,28 @@ h5 {
 	padding-right: 2%;
 }
 
+.row-headers{
+	background-color: #14161b;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	border-bottom: 1px solid #424242;
+	height: 70px;
+	text-align: left;
+}
+
 .rows{
-	margin-top: 25px;
+	padding: 15px;
+}
+
+.charts {
+	/* background-color: #16181b;
+	border: 1px solid #2b2727;
+	border-radius: 5px; */
+	text-align: center;
+}
+
+.svg-container {
+	padding: 0
 }
 
 
@@ -143,6 +169,21 @@ h5 {
 	stroke: #fff;
 }
 
+
+.axisYellow text{
+	fill: #f2c80f;
+	font-size: 1rem;
+}
+  
+.axisYellow line{
+	stroke: #f2c80f;
+}
+  
+.axisYellow path{
+	stroke: #f2c80f;
+}
+
+
 .axisGrid line {
 	stroke:rgb(170, 170, 170);
 	opacity: 0.5;
@@ -163,6 +204,19 @@ h5 {
 	font-size: 1rem;
 }
 
+.title {
+	text-anchor: middle;
+	font-size: 2rem;
+	fill: #fff;
+
+}
+
+
+.legend-text {
+	fill: #fff;
+	font-size: 1.1rem;
+}
+
 /* ---------------------------------------------------- */
 
 /* Button Styles */
@@ -181,8 +235,7 @@ h5 {
 	color: #444;
 	line-height: 1.1;
 	padding: .6em 1.4em .5em .8em;
-	width: 90%;
-	max-width: 90%;
+
 	box-sizing: border-box;
 	margin: 5px;
 	border: 1px solid #aaa;
@@ -197,6 +250,11 @@ h5 {
 	background-repeat: no-repeat, repeat;
 	background-position: right .7em top 50%, 0 0;
 	background-size: .65em auto, 100%;
+}
+
+.select-lg {
+	width: 70%;
+	max-width: 90%;
 }
 
 .select-css::-ms-expand {
@@ -299,85 +357,6 @@ circle-packs {
 /* ---------------------------------------------------- */
 
 
-/* Modal Styles */
-/* ---------------------------------------------------- */
-
-.modal-body {
-	/* background-color: #3b3b3b; */
-}
-
-.modal-title {
-	font-size: 3rem;
-	color: #fff;
-}
-
-.modal-content {
-	background-color: #3b3b3b ;
-	border: 1px solid rgb(155, 155, 155)
-}
-
-.modal-text {
-	font-size: 1.3rem;
-	color: #fff;
-}
-
-.em-red em{
-	color: #ff1f1f ;
-}
-
-.em-green em{
-	color: #52fa52 ;
-}
-
-.em-blue em{
-	color: #0d73e7 ;
-}
-
-.em-light-blue em{
-	color: #0fe6ee ;
-}
-
-.em-yellow em{
-	color: #e9f72c ;
-}
-
-.em-orange em{
-	color: #f7872c ;
-}
-
-.modal-header {
-	padding: 10px 20px 0px;
-
-	background-color: #2c2c2c;
-	border-radius: 6px 6px 0 0;
-}
-
-.modal-footer {
-	padding: 10px 20px 0px;
-	background-color: #2c2c2c;
-	border-radius: 0 0 6px 6px;
-	display: inline;
-}
-
-.fade.in {
-	opacity: 1;
-  }
-  .modal.in .modal-dialog {
-	-webkit-transform: translate(0, 0);
-	-o-transform: translate(0, 0);
-	transform: translate(0, 0);
-  }
-  
-  .modal-backdrop .fade .in {
-	opacity: 0.5 !important;
-  }
-  
-  
-  .modal-backdrop.fade {
-	  opacity: 0.5 !important;
-  }
-
-
 /* ---------------------------------------------------- */
 
 .nav-tabs {
@@ -424,16 +403,23 @@ circle-packs {
 	stroke: blue;
 }
 
-.cn {
-	position: relative;
-	height: 100%;
+select.form-control{display:inline-block}
+
+.form-group{
+	padding-left: 15px;
+	padding-top: 15px;
 }
-  
+
 .inner {
 	position: absolute;
 	width: 100%;
 	top: 50%;
 	transform: translate(0,-50%);
+}
+
+.select-label {
+	font-size: 1.5rem;
+	color: #fff;
 }
 
 #zero-day-line{
@@ -486,3 +472,97 @@ circle-packs {
 	fill: #73eb4b;
 	text-anchor: middle;
 }
+
+
+/* Testing Styles */
+/* ---------------------------------------------------- */
+
+.testing-bars-pos{
+	fill: #a66999;
+}
+
+.testing-bars-total {
+	fill: #01b8aa;
+}
+
+.percent-line {
+	stroke: #f2c80f;
+	fill: none;
+	stroke-width: 3.5;
+}
+
+.percent-marker {
+	fill: #f2c80f;
+}
+
+.labelYellow {
+	fill: #f2c80f;
+}
+
+/* ---------------------------------------------------- */
+
+
+/* ---------------------------------------------------- */
+/* Testing Styles */
+/* ---------------------------------------------------- */
+
+.bar-color-1{
+	fill: #0b298f;
+}
+
+.bar-color-2 {
+	fill: #4fb6d3;
+}
+
+.percent-line {
+	stroke: #f2c80f;
+	fill: none;
+	stroke-width: 3.5;
+}
+
+.percent-marker {
+	fill: #f2c80f;
+}
+
+.labelYellow {
+	fill: #f2c80f;
+}
+
+/* ---------------------------------------------------- */
+
+
+/* ---------------------------------------------------- */
+/* Double-days Styles */
+/* ---------------------------------------------------- */
+
+.double-day-line{
+	stroke: #4fb6d3;
+	stroke-width: 3.5;
+	fill: none;
+}
+
+.lolicircle{
+	fill: #01b8aa;
+}
+
+.trendline {
+	stroke-width: 2;
+	stroke-dasharray: 5;
+}
+
+/* ---------------------------------------------------- */
+
+
+/* ---------------------------------------------------- */
+/* Hospital Styles */
+/* ---------------------------------------------------- */
+
+
+.hosp-thresh-line {
+	stroke: #f2c80f;
+	stroke-width: 2;
+	stroke-dasharray: 5;
+}
+
+
+/* ---------------------------------------------------- */

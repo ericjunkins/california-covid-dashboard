@@ -2,7 +2,7 @@ function ranking_chart(config){
     var margin = { 
         left:config.width * 0.05,
         right:config.width * 0.05, 
-        top: config.height * 0.05, 
+        top: config.height * 0.1, 
         bottom:config.height * 0.1}
 
 
@@ -27,6 +27,12 @@ function ranking_chart(config){
     
     const outerSvg = d3.select("#outer1").append('svg')
         .attr("width", width + margin.left + margin.right)
+
+    outerSvg.append('text')
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("class", "title")
+        .text("Cases by County")
 
     var barHeight = height/14
     var width1 = config.width* 0.35,
@@ -59,10 +65,10 @@ function ranking_chart(config){
         .attr("height", barHeight * rankingData.length + barHeight*0.5)
         
     var chart = svg.append("g")
-        .attr("transform", "translate(" + (margin.left) + ",10)")
+        .attr("transform", "translate(" + (margin.left) + "," + margin.top + ")")
 
     var barsGroup = svg.append("g")
-        .attr("transform", "translate(" + ( margin.left + width1 ) + ",10)")
+        .attr("transform", "translate(" + ( margin.left + width1 )  + "," + margin.top + ")")
 
     
     var axes = barsGroup.append("g")
@@ -100,7 +106,7 @@ function ranking_chart(config){
         outerSvg.append("g")
             .attr("class", "axis axis--y axisWhite")
             .attr("transform", "translate(" + (margin.left + width1) + ",0)")
-            .call(x_axis)
+            //.call(x_axis)
         
         outerSvg.append("text")
             .attr("class", "axis-label")
@@ -110,7 +116,8 @@ function ranking_chart(config){
             .attr("dy", "1em")
             .style("text-anchor", "middle")
             .attr("font-size", "2rem")
-            .text("Cases")
+
+
 
         yAxis = axes.append("g")
             .attr("class", "axis axis--y axisWhite")
@@ -127,13 +134,12 @@ function ranking_chart(config){
 
         rects.enter()
             .append("rect")
-            .attr("class", "ranking-rect")
+            .attr("class", "bar-color-2")
             .attr("id", function(d){ return "rank-rect-" + d.county; })
             .attr("x", 2)
 
             .attr("y", function(d){ return y(d.county); })
             .attr("height", y.bandwidth())
-            .attr("fill", "steelblue")
             .attr("opacity", 1)
             .attr("width", 0)
             .transition().duration(dur)

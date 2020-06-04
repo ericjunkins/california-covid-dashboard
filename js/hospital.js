@@ -2,8 +2,8 @@ function hospital_chart(config){
     var margin = { 
         left:config.width * 0.1,
         right:config.width * 0.08, 
-        top: config.height * 0.15, 
-        bottom:config.height * 0.15 }
+        top: config.height * 0.25, 
+        bottom:config.height * 0.1 }
     var dur = config.duration
     var hospSelection = "Los Angeles"
     var hospData;
@@ -32,7 +32,7 @@ function hospital_chart(config){
     genGroup = ['General Covid Patients', 'General Average Occupancy']
 
 
-    chartSpacing = 0.15 * height
+    chartSpacing = 0.2 * height
     height1 = height * 0.5 - chartSpacing/2
     height2 = height * 0.5 + chartSpacing/2
 
@@ -63,8 +63,8 @@ function hospital_chart(config){
         .range([height2, height])
 
     var x_axis = d3.axisBottom().ticks(5).tickPadding(10)
-    var y_axis = d3.axisLeft(y).ticks(6)
-    var y2_axis = d3.axisLeft(y2).ticks(6)
+    var y_axis = d3.axisLeft(y).ticks(4)
+    var y2_axis = d3.axisLeft(y2).ticks(4)
 
     var y_axis_grid = d3.axisLeft(y).tickSize(-width).tickFormat('').ticks(6)
     var y2_axis_grid = d3.axisLeft(y2).tickSize(-width).tickFormat('').ticks(6)
@@ -132,76 +132,75 @@ function hospital_chart(config){
 
     svg.append('text')
         .attr("x", width/2)
-        .attr("y", -margin.top*0.5)
-        .attr("font-size", "1.8rem")
-        .attr("fill", "#fff")
-        .attr("text-anchor", "middle")
-        .text("Percent of Hospital Beds Occupied by COVID-19 Patients")
+        .attr("y", -margin.top*0.65)
+        .attr("class", "title")
+        // .attr("font-size", "1.8rem")
+        // .attr("fill", "#fff")
+        // .attr("text-anchor", "middle")
+        .text("Percent Occupancy by COVID-19 Patients")
 
 
-    //drawLegend();
+    drawLegend();
 
     function drawLegend(){
-        var hospLegend = svg.append('g')
-        .attr("transform", "translate(" + width*0.05 + "," + height*0.03 + ")")
 
-        hospLegend.append('rect')
+        rectSize = 25
+        lineStart = width*0.18
+        spacing = 10
+        legendGroup = svg.append("g")
+            .attr("transform", "translate(" + (width *0.31) + "," + (-margin.top * 0.25) + ")")
+
+        legendGroup.append("rect")
             .attr("x", 0)
+            .attr("y", -rectSize/2)
+            .attr("width", rectSize)
+            .attr("height", rectSize)
+            .attr("class", "bar-color-2")
+
+
+        legendGroup.append("text")
+            .attr("x", rectSize + spacing)
             .attr("y", 0)
-            .attr("width", 20)
-            .attr("height", 20)
-            .attr("fill", color(myGroups[1]))
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 1)
-
-        hospLegend.append('rect')
-            .attr("x", 0)
-            .attr("y", 30)
-            .attr("width", 20)
-            .attr("height", 20)
-            .attr("fill", color(myGroups[0]))
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 1)
-
-        hospLegend.append("text")
-            .attr("x", 30)
-            .attr("y", 10)
+            .attr("class", "legend-text")
             .attr("dominant-baseline", "middle")
-            .attr("font-size", "1rem")
-            .attr("fill", "#fff")
-            .text("Standard Hospital Care")
+            .text("Occupied Beds")
 
-        hospLegend.append("text")
-            .attr("x", 30)
-            .attr("y", 40)
+
+
+        legendGroup.append("line")
+            .attr("x1", lineStart)
+            .attr("x2", lineStart + rectSize)
+            .attr("y1", 0)
+            .attr("y2", 0)
+            .attr("class", "hosp-thresh-line")
+
+        legendGroup.append("text")
+            .attr("x", lineStart + rectSize + spacing)
+            .attr("y", 0)
+            .attr("class", "legend-text")
             .attr("dominant-baseline", "middle")
-            .attr("font-size", "1rem")
-            .attr("fill", "#fff")
-            .text("ICU Hospital Care")
+            .text("Average Open Hospital Beds")
+
+
     }
 
     drawAverageLines()
 
-    function drawAverageLines(){
+    function drawAverageLines(){        
+
         upperChart.append("line")
-            .attr("class", "hosp-thresh")
+            .attr("class", "hosp-thresh-line")
             .attr("x1", 0)
             .attr("x2", width)
             .attr("y1", y(100 -averageIcuOccupancy))
             .attr("y2", y(100 - averageIcuOccupancy))
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 2)
-            .style("stroke-dasharray", ("10, 5"))
 
         svg.append("line")
-            .attr("class", "hosp-thresh")
+            .attr("class", "hosp-thresh-line")
             .attr("x1", 0)
             .attr("x2", width)
             .attr("y1", y2(100 -averageGenOccupacty))
             .attr("y2", y2(100 - averageGenOccupacty))
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 2)
-            .style("stroke-dasharray", ("10, 5"))
     }
     
 
@@ -248,7 +247,6 @@ function hospital_chart(config){
                     val: averageGenOccupacty
                 }
             ]
-
         })
         
         x.domain(dates)
@@ -305,13 +303,11 @@ function hospital_chart(config){
 
         icuRect.enter()
             .append("rect")
-            .attr("class", "icu-rect")
+            .attr("class", "icu-rect bar-color-2")
             .attr("x", d=> x(d.formattedDate))
             .attr("y", y(0))
             .attr("width", x.bandwidth())
             .attr("height", 0)
-            .attr("opacity", 0.5)
-            .attr("fill", color(0))
             .transition().duration(dur)
                 .attr("y", d=> y(d.covidIcuPatients))
                 .attr("height", d=> y(0) - y(d.covidIcuPatients))
@@ -337,12 +333,11 @@ function hospital_chart(config){
 
         genRect.enter()
             .append("rect")
-            .attr("class", "gen-rect")
+            .attr("class", "gen-rect bar-color-2")
             .attr("x", d=> x(d.formattedDate))
             .attr("y", y2(0))
             .attr("width", x.bandwidth())
             .attr("height", 0)
-            .attr("fill", color(1))
             .transition().duration(dur)
                 .attr("y", d=> y2(d.covidGenPatients))
                 .attr("height", d=> y2(0) - y2(d.covidGenPatients))

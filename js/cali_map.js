@@ -34,7 +34,6 @@ function cali_map(config){
     var radius_max = width/15
 
 
-
     config.criteria.forEach(function(d){
         //console.log(d)
         data[0 + String(d.fips)] =  d.newCaseSlope
@@ -48,7 +47,7 @@ function cali_map(config){
 
     function getColor(val){
         if (val == -999) return "#f2f2f2"
-        else if (val <= - 1) return "#badee8"
+        else if (val <= - 1) return "#4fb6d3"
         else if (-1 < val && val <= 1) return "#f2df91"
         else return colors(Math.min(val, colors.domain()[2]))
     }
@@ -140,7 +139,7 @@ function cali_map(config){
             {
                 x: 0,
                 y: 0,
-                fill: "#badee8",
+                fill: "#4fb6d3",
                 text: "Falling"
             },
             {

@@ -49,48 +49,29 @@
     <section>
     <div class="container-fluid" id="main-container">
         <div class="row">
-            <div class = "col-sm-6"> 
-                <div class="row rows">
-                    <div class="col-sm-6">
-                        <div class="bounding">
-                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                                <div class="col-sm-4">
-                                    <h2 class="section-title"> Map </h2>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div id="map-chart"> </div>
-                                </div>
-                            </div>
+            <div class="col-sm-6 outer-container">
+                <div class = "bounding rounded-10"> 
+                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                        <div class="col-sm-4">
+                            <h2 class="section-title"> Calfornia Data </h2>
                         </div>
                     </div>
 
-                    <div class="col-sm-6">
-                        <div class="bounding">
-                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                                <div class="col-sm-4">
-                                    <h2 class="section-title"> Ranking </h2>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div id="outer1">
-                                        <div id="ranking"> </div>
-                                    </div>
-                                </div>
+                    <div class="row rows">
+                        <div class="col-sm-6">
+                            <div class="charts" id="map-chart"> </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="charts" id="outer1">
+                                <div id="ranking"> </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row rows">
-                    <div class="col-sm-12">
-                        <div class="bounding">
-                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                                <div class="col-sm-4">
-                                    <h2 class="section-title"> Testing Rate </h2>
-                                </div>
-
+                    <div class="row rows">
+                        <div class="col-sm-12">
+                            <!--
+                            <div class="row" style="width: 100%; margin-left: 0px;">
                                 <div class="col-sm-3 offset-sm-4 cn">
                                     <div class="inner">
                                         <select class="select-css" id="testing-select">
@@ -101,9 +82,11 @@
                                     </div>
                                 </div>
                             </div>
+                            -->
+
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <div id="testing-chart"> </div>
+                                    <div class="charts" id="testing-chart"> </div>
                                 </div>
                             </div>
                         </div>
@@ -111,46 +94,43 @@
                 </div>
             </div>
 
-            <div class = "col-sm-6"> 
-                <div class="row rows">
-                    <div class="col-sm-12">
-                        <div class="bounding">
-                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                                <div class="col-sm-4">
-                                    <h2 class="section-title"> Covid Trajectory </h2>
-                                </div>
-
-                                <div class="col-sm-3 offset-sm-4 cn">
-                                    <div class="inner">
-                                        <select class="select-css" id="county-select">
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div id="lolipop-chart"> </div>
-                                </div>
-                            </div>
+            <div class = "col-sm-6 outer-container"> 
+                <div class = "bounding rounded-10"> 
+                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                        <div class="col-sm-4">
+                            <h2 class="section-title"> County Specific Data </h2>
                         </div>
                     </div>
-                </div>
 
-                <div class="row rows">
-                    <div class="col-sm-12">
-                        <div class="bounding">
-                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                                <div class="col-sm-4">
-                                    <h2 class="section-title"> Hospitalization </h2>
-                                </div>
-                            </div>
+                    <div class="row" style="width: 100%; margin-left: 0px;">
 
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <div id="hospital-chart"> </div>
-                                </div>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                    <label class="select-label" for="county-select">County</label>
+                                    <select class="select-css select-lg" id="county-select" style="margin-left: 20px">
+                                </select>
                             </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                    <label class="select-label" for="county-select">Time Window</label>
+                                    <select class="select-css select-lg" id="time-window-select" style="margin-left: 20px">
+                                </select>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row rows">
+                        <div class="col-sm-12">
+                            <div class="charts" id="lolipop-chart"> </div>
+                        </div>
+                    </div>
+
+                    <div class="row rows">
+                        <div class="col-sm-12">
+                            <div class="charts" id="hospital-chart"> </div>
                         </div>
                     </div>
                 </div>

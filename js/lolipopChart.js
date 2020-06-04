@@ -431,16 +431,12 @@ function lolipop_chart(config){
         trendline.enter()
             .append('line')
                 .attr("class", "trendline")
-                // .attr("x1", d=> x(d[0]))
-                // .attr("x2", d=> x(d[2]))
                 .attr("x1", 0)
                 .attr("x2", width)
                 .attr("stroke", function(){ 
                     if (noNewCases) return colors(colors.domain()[2])
                     return colors(data.newCaseSlopeDouble)
                 })
-                .attr("stroke-width", 1.5)
-                .style("stroke-dasharray", ("10, 5"))
                 .attr("y1", d=> y(0))
                 .attr("y2", d=> y(0))
                 .transition().duration(dur)
@@ -448,50 +444,21 @@ function lolipop_chart(config){
                     .attr("y2", d=> y(d[3]))
 
 
-        // var lines = svg.selectAll(".loliline")
-        //     .data(data.chartData, d=> d.id)
-
-        // lines.exit().remove()
-        
-        // lines
-        //     .transition().duration(dur)
-        //     .attr("y2", d=> y( Math.min(d[field]), y.domain()[1]))
-
-        // lines.enter()
-        //     .append("line")
-        //     .attr("class", "loliline")
-        //     .attr("x1", d=> x(d.date) + x.bandwidth()/2)
-        //     .attr("x2", function(d){
-        //         return x(d.date)  + x.bandwidth()/2
-        //     })
-        //     .attr("y1", y(0))
-        //     .attr("y2", y(0))
-        //     .attr("stroke", "steelblue")
-        //     .attr("stroke-width", 5)
-        //     .transition().duration(dur)
-        //         .attr("y2", d=> y( Math.min(d[field]), y.domain()[1]))
-
-        //console.log(data.chartData)
 
         var doubleDayLine = svg.selectAll(".double-day-line")
             .data([data.chartData], d=>d.timestamp)
 
-
-
         doubleDayLine
-        .transition().duration(dur)
-        .attr("d", d3.line()
-            .x(function(d){ return x(d.dateFormatted) + x.bandwidth()/2; })
-            .y(function(d){ return y(d[field]); })
-            .curve(d3.curveMonotoneX) )
+            .transition().duration(dur)
+            .attr("d", d3.line()
+                .x(function(d){ return x(d.dateFormatted) + x.bandwidth()/2; })
+                .y(function(d){ return y(d[field]); })
+                .curve(d3.curveMonotoneX) )
 
         doubleDayLine
             .enter()
             .append("path")
             .attr("class", "double-day-line")
-            .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-width", 3.5)
             .attr("d", d3.line()
                 .x(function(d){ return x(d.dateFormatted); })
                 .y(y(0))
@@ -502,8 +469,6 @@ function lolipop_chart(config){
                     .x(function(d){ return x(d.dateFormatted) + x.bandwidth()/2; })
                     .y(function(d){ return y(d[field]); })
                     .curve(d3.curveMonotoneX))
-
-
 
 
         var circles = svg.selectAll(".lolicircle")
@@ -521,27 +486,20 @@ function lolipop_chart(config){
             .attr("class", "lolicircle")
             .attr("cx", d=> x(d.dateFormatted)  + x.bandwidth()/2)
             .attr("cy", y(0))
-            .attr("r", 3)
-            .attr("stroke", "#fff")
-            .attr("fill", "steelblue")
+            .attr("r", 5)
             .transition().duration(dur)
                 .attr("cy", d=> y( Math.min(d[field]), y.domain()[1]))
 
     }
     
     function wiperPosition(val){
-        
         val = Math.max(Math.min(val, pos.domain()[1]), pos.domain()[0])
         ang = pos(val)
         x2 = Math.sin(ang) * wiperRad    
         y2 = -Math.cos(ang) * wiperRad
-        //if (val < 0) x2 *= -1
-
         wiper.transition().duration(dur)
             .attr("x2", x2)
             .attr("y2", y2)
-
-    
     }
 
 
