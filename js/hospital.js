@@ -134,7 +134,7 @@ function hospital_chart(config){
         .attr("x", width/2)
         .attr("y", -margin.top*0.65)
         .attr("class", "title")
-        // .attr("font-size", "1.8rem")
+        // .attr("font-size", "1.8em")
         // .attr("fill", "#fff")
         // .attr("text-anchor", "middle")
         .text("Percent Occupancy by COVID-19 Patients")
@@ -186,7 +186,7 @@ function hospital_chart(config){
             .append('text')
             .attr("x", width * 0.05)
             .attr("y", 0)
-            .attr("font-size", "1rem")
+            .attr("font-size", "1em")
             .attr("fill", "#fff")
             .text("*Average values based on average hospital utilization accross all of CA. Later I hope to replace with data for each county on a day-by-day basis")
 

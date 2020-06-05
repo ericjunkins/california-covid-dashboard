@@ -29,7 +29,7 @@ function title_chart(config){
         .attr('x', 3)
         .attr("y", -8)
         .attr("fill", "#fff")
-        .attr("font-size", "0.8rem")
+        .attr("font-size", "0.8em")
         .text("Select ranking criteria:")
 
     svg.append('text')
@@ -37,7 +37,7 @@ function title_chart(config){
         .attr('x', 3)
         .attr("y", -8)
         .attr("fill", "#fff")
-        .attr("font-size", "0.8rem")
+        .attr("font-size", "0.8em")
         .text("Select sorting:")
 
     var dropdownSel = d3.select(config.selection)

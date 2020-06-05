@@ -35,7 +35,7 @@ function testing_chart(config){
         .attr('x', 3)
         .attr("y", -8)
         .attr("fill", "#fff")
-        .attr("font-size", "0.8rem")
+        .attr("font-size", "0.8em")
         .text("Select Cumulative or Daily:")
 
     var dropdown = d3.select(config.selection)

@@ -163,7 +163,7 @@ function cali_map(config){
                 .attr("x", d=> d.x + rectLegendSize/2)
                 .attr("y", -rectHeight)
                 .attr("fill", "#fff")
-                .attr("font-size", "0.7rem")
+                .attr("font-size", "0.7em")
                 .attr("text-anchor", "middle")
                 .text(d=> d.text)
     }
@@ -335,7 +335,7 @@ function cali_map(config){
             .append('text')
             .attr("class", "title-text")
             .attr("x", legBoxSize + 10)
-            .attr('font-size', "0.5rem")
+            .attr('font-size', "0.5em")
             .attr("y", d=> d.y + legBoxSize/2)
             .attr("dominant-baseline", "middle")
             .attr("fill" , "#fff")
