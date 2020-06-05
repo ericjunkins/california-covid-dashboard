@@ -1,5 +1,11 @@
 function cali_map(config){
-    var margin = { left:20, right:60, top:20, bottom:80 }
+    var margin = { 
+        left:config.width  * 0,
+        right:config.width * 0, 
+        top: config.height * 0.05, 
+        bottom:config.height * 0.00
+    }
+
     var mapData = config.countyData,
         dur = config.duration
     var cal = config.cal
@@ -8,8 +14,6 @@ function cali_map(config){
 
     var height = config.height - margin.top - margin.bottom, 
         width = config.width - margin.left - margin.right;
-    
-
 
     var mode = "Choropleth"
 
@@ -21,11 +25,10 @@ function cali_map(config){
             .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
     var projection = d3.geoMercator()
         .center([ -120, 37 ])
-        .translate([ width/2, height*0.7 ])
-        .scale([ width*4 ]);
+        .translate([ width * 0.5, height*0.6 ])
+        .scale([ Math.min(height, width) *4 ]);
 
     //Define path generator
     var path = d3.geoPath()
@@ -35,11 +38,8 @@ function cali_map(config){
 
 
     config.criteria.forEach(function(d){
-        //console.log(d)
         data[0 + String(d.fips)] =  d.newCaseSlope
     })
-
-
 
     var vals = config.criteria.map(function(d){ return d.newCaseSlope}).sort(function(a,b){ return d3.descending(a, b)})
     var maxVal = d3.max(config.criteria, function(d){ return d.newCaseSlope })
@@ -79,62 +79,34 @@ function cali_map(config){
     var circlesGroup = svg.append('g')
         .attr("class", "circles-group")
 
+    var rectLegendSize = width * 0.08
+    var rectHeight = rectLegendSize *0.15
+    var spacing = rectLegendSize * 0.2
+    offset = (width - (rectLegendSize * 6 + spacing*3))/2 
+
     var legend = svg.append('g')
         .attr("class", "legend")
-        .attr("transform", "translate(" + width * 0.1 + "," + height*0.15 + ")")
-
-    // legendData = []
-    // legBoxSize = 20;
-
-    // for (var i=0; i < 6; i++){
-    //     if (i==0){
-    //         text = "Greater than 5"
-    //         fill = colors(colors.domain()[colors.domain().length - 1])
-    //     }
-    //     else if (i == 5){
-    //         text = "No New Cases"
-    //         fill =  colors(colors.domain()[0])
-    //     }
-    //     else {
-    //         dif = colors.domain()[2] - colors.domain()[1]/3
-    //         text = String(5 - i)
-    //         fill = colors(colors.domain()[2] - ((i) * dif))
-    //     }
-    //     legendData.push({
-    //         x: 0,
-    //         y: (legBoxSize * i),
-    //         text: text,
-    //         fill: fill
-    //     })
-    // }
-    
-    // svg.append('text')
-    //     .attr("x", width/2)
-    //     .attr("y", margin.top/2)
-    //     .attr("font-size", "1.3rem")
-    //     .attr("fill", "#fff")
-    //     .attr("text-anchor", "middle")
-    //     .text("Average Increase of new Cases per day ")
-
+        .attr("transform", "translate(" + (offset - width*0.0) + "," + height*0.05 + ")")
 
     var selectionGroup = svg.append('g')
-        .attr("transform", "translate(0," + height * 0 + ")")
+        .attr("transform", "translate(0," + height * 0.09 + ")")
         .attr("class", "selection-tool")
-
 
     var xSel = d3.scaleBand()
         .domain(["Choropleth", "Bubbles"])
-        .range([0, width])
+        .range([width*0.25, width*0.75])
         .padding(0.1)
+
+    svg.append('text')
+        .attr("x", width/2)
+        .attr("y", -margin.top * 0.1)
+        .attr("class", "title")
+        .text("California County Map")
 
 
     drawLegend()
 
-    function drawLegend(w){
-        rectWidth = 60
-        rectHeight = 10
-        spacing = 10
-
+    function drawLegend(){
         legendData = [
             {
                 x: 0,
@@ -143,69 +115,68 @@ function cali_map(config){
                 text: "Falling"
             },
             {
-                x: 70,
+                x: rectLegendSize + spacing,
                 y: 0,
                 fill: "#f2df91",
                 text: "About the same"
             },
             {
-                x: 140,
+                x: rectLegendSize * 2 + spacing*2,
                 y: 0,
                 fill: "#ffae43",
                 text: ""
             },
             {
-                x: 200,
+                x: rectLegendSize * 3 + spacing*2,
                 y: 0,
                 fill: "#ff6e0b",
                 text: "Rising"
             },
             {
-                x: 260,
+                x: rectLegendSize * 4 + spacing*2,
                 y: 0,
                 fill: "#ce0a05",
                 text: ""
             },
             {
-                x: 330,
+                x: rectLegendSize * 5 + spacing*3,
                 y: 0,
                 fill: "#f2f2f2",
                 text: "Few or No cases"
             }
         ]
-        
+   
         var legendRects = legend.selectAll('rect')
             .data(legendData)
             .enter()
-            .append("rect")
-            .attr("x", d=> d.x)
-            .attr("y", d=> d.y)
-            .attr("width", rectWidth)
-            .attr("height", rectHeight)
-            .attr("fill", d=> d.fill)
+                .append("rect")
+                .attr("x", d=> d.x)
+                .attr("y", d=> d.y)
+                .attr("width", rectLegendSize)
+                .attr("height", rectHeight)
+                .attr("fill", d=> d.fill)
 
         var legendTexts = legend.selectAll('text')
             .data(legendData)
             .enter()
-            .append("text")
-            .attr("x", d=> d.x + rectWidth/2)
-            .attr("y", 25)
-            .attr("fill", "#fff")
-            .attr("font-size", "0.8rem")
-            .attr("text-anchor", "middle")
-            .text(d=> d.text)
+                .append("text")
+                .attr("x", d=> d.x + rectLegendSize/2)
+                .attr("y", -rectHeight)
+                .attr("fill", "#fff")
+                .attr("font-size", "0.7rem")
+                .attr("text-anchor", "middle")
+                .text(d=> d.text)
     }
 
 
     function stateMap(){
         updateSelections();
-        
         drawMap();
-        //draw_chart();
     }
 
 
     function updateSelections(){
+        buttonHeight = 25
         selRects = selectionGroup.selectAll("rect")
             .data(xSel.domain())
     
@@ -225,7 +196,7 @@ function cali_map(config){
             .attr("x", d=> xSel(d))
             .attr("y", 0)
             .attr("rx", 5)
-            .attr("height", 40)
+            .attr("height", buttonHeight)
             .attr("width", xSel.bandwidth())
             .attr("fill", config.defaultColor)
             .attr("stroke", "#fff")
@@ -250,7 +221,7 @@ function cali_map(config){
                 .on("mouseout", mouseout)
                 .on("click", clicked)
             .attr("x", d=> xSel(d) + xSel.bandwidth()/2)
-            .attr("y", 20)
+            .attr("y", buttonHeight/2)
             .attr("fill", "#fff")
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "middle")
@@ -364,6 +335,7 @@ function cali_map(config){
             .append('text')
             .attr("class", "title-text")
             .attr("x", legBoxSize + 10)
+            .attr('font-size', "0.5rem")
             .attr("y", d=> d.y + legBoxSize/2)
             .attr("dominant-baseline", "middle")
             .attr("fill" , "#fff")
@@ -373,8 +345,6 @@ function cali_map(config){
        
 
     }
-    
-
 
 
     stateMap.width = function(value){

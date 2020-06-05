@@ -3,7 +3,7 @@ function hospital_chart(config){
         left:config.width * 0.1,
         right:config.width * 0.08, 
         top: config.height * 0.25, 
-        bottom:config.height * 0.1 }
+        bottom:config.height * 0.2 }
     var dur = config.duration
     var hospSelection = "Los Angeles"
     var hospData;
@@ -179,8 +179,16 @@ function hospital_chart(config){
             .attr("y", 0)
             .attr("class", "legend-text")
             .attr("dominant-baseline", "middle")
-            .text("Average Open Hospital Beds")
-
+            .text("Average Open Hospital Beds*")
+    
+        svg.append('g')
+            .attr("transform", "translate(" + (0) + "," + (height + margin.bottom*0.8) + ")")
+            .append('text')
+            .attr("x", width * 0.05)
+            .attr("y", 0)
+            .attr("font-size", "1rem")
+            .attr("fill", "#fff")
+            .text("*Average values based on average hospital utilization accross all of CA. Later I hope to replace with data for each county on a day-by-day basis")
 
     }
 

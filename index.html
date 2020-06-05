@@ -63,9 +63,20 @@
                         </div>
 
                         <div class="col-sm-6">
-                            <div class="charts" id="outer1">
-                                <div id="ranking"> </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="charts" id="title-chart"> </div>
+                                </div>
                             </div>
+                            
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="charts" id="outer1">
+                                        <div id="ranking"> </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                         </div>
                     </div>
                     <div class="row rows">
@@ -97,7 +108,7 @@
             <div class = "col-sm-6 outer-container"> 
                 <div class = "bounding rounded-10"> 
                     <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                        <div class="col-sm-4">
+                        <div class="col-sm-6">
                             <h2 class="section-title"> County Specific Data </h2>
                         </div>
                     </div>
@@ -114,8 +125,11 @@
 
                         <div class="col-sm-6">
                             <div class="form-group">
-                                    <label class="select-label" for="county-select">Time Window</label>
-                                    <select class="select-css select-lg" id="time-window-select" style="margin-left: 20px">
+                                <label class="select-label" for="county-select">Time Window</label>
+                                <select class="select-css select-lg" id="time-window-select" style="margin-left: 20px">
+                                    <option value="two-week"> Last Two Weeks </option>
+                                    <option value="two-month"> Last Month </option>
+                                    <option value="start"> Since beginning </option>
                                 </select>
                             </div>
                         </div>
@@ -161,6 +175,7 @@
     <script src="js/lolipopChart.js"></script>
     <script src="js/ranking.js"></script>
     <script src="js/hospital.js"></script>
+    <script src="js/title.js"></script>
     <script src="js/testing.js"></script>
     <script src="js/main.js"></script>
     

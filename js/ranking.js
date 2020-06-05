@@ -2,8 +2,8 @@ function ranking_chart(config){
     var margin = { 
         left:config.width * 0.05,
         right:config.width * 0.05, 
-        top: config.height * 0.1, 
-        bottom:config.height * 0.1}
+        top: config.height * 0, 
+        bottom:config.height * 0.05}
 
 
     var height = config.height - margin.top - margin.bottom, 
@@ -15,6 +15,7 @@ function ranking_chart(config){
     // append the svg object to the body of the page
 
     var rankingSel = "cases"
+    var rankingSort = "Descending"
     var yLabels = []
     var rankingData = []
     var yLabel
@@ -30,12 +31,12 @@ function ranking_chart(config){
 
     outerSvg.append('text')
         .attr("x", 0)
-        .attr("y", 0)
+        .attr("y", -100)
         .attr("class", "title")
         .text("Cases by County")
 
     var barHeight = height/14
-    var width1 = config.width* 0.35,
+    var width1 = config.width* 0.4,
         width2 = width - width1
 
     config.criteria.forEach(function(d){
@@ -50,14 +51,15 @@ function ranking_chart(config){
         })
         yLabels.push({
             cases: cases,
+            deaths: deaths,
+            caseAvg: d.caseAvg,
+            deathAvg: d.deathAvg,
             county: d.county,
             idName: d.county.replace(/\s/g, '')
         })
 
     })
 
-    rankingData = rankingData.sort((a,b) => d3.ascending(a[rankingSel], b[rankingSel]))
-    var maxX = d3.max(rankingData, d=> d[rankingSel])
 
 
     const svg = d3.select(config.selection).append('svg')
@@ -75,12 +77,10 @@ function ranking_chart(config){
 
 
     var x = d3.scaleLinear()
-        .domain([0, maxX])
         .range([0, width2])
     
     var y = d3.scaleBand()
-        .domain(rankingData.map(d=> d.county ))
-        .range([barHeight*rankingData.length, 0])
+        .range([0, barHeight*rankingData.length])
         .padding(0.5)
 
     var y2 = d3.scaleBand()
@@ -93,44 +93,69 @@ function ranking_chart(config){
         .range([0, width1 - 15])
         .padding(0)
 
+    var yAxisCall = axes.append("g")
+        .attr("class", "axis axis--y axisWhite")
+        .attr("id", "yAxis")
 
-    xCounty = width1 * 0.1
-    xValue = width1 * 0.7
+    outerSvg.append("g")
+        .attr("class", "axis axis--y axisWhite")
+        .attr("transform", "translate(" + (margin.left + width1) + ",0)")
+        //.call(x_axis)
+    
+    outerSvg.append("text")
+        .attr("class", "axis-label")
+        .attr("transform", "translate(" + (width1 + margin.left) + ",0)")
+        .attr("y", 40)
+        .attr("x",(width2/2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .attr("font-size", "2rem")
 
-    //console.log(yLabels)
 
-    var x_axis = d3.axisBottom(x).ticks(6)
-    var y_axis = d3.axisLeft(y).tickValues([])
+    var x_axis = d3.axisBottom().ticks(6)
+    var y_axis = d3.axisLeft().tickValues([])
 
     function rankChart(){
-        outerSvg.append("g")
-            .attr("class", "axis axis--y axisWhite")
-            .attr("transform", "translate(" + (margin.left + width1) + ",0)")
-            //.call(x_axis)
-        
-        outerSvg.append("text")
-            .attr("class", "axis-label")
-            .attr("transform", "translate(" + (width1 + margin.left) + ",0)")
-            .attr("y", 40)
-            .attr("x",(width2/2))
-            .attr("dy", "1em")
-            .style("text-anchor", "middle")
-            .attr("font-size", "2rem")
-
-
-
-        yAxis = axes.append("g")
-            .attr("class", "axis axis--y axisWhite")
-            .attr("id", "yAxis")
-            .call(y_axis)
-
-
+        updateScales();
         draw_chart();
     }
 
+    function updateScales(){
+        if (rankingSort == "Ascending"){
+            rankingData = rankingData.sort((a,b) => d3.ascending(a[rankingSel], b[rankingSel]))
+        } else {
+            rankingData = rankingData.sort(function(a, b){
+                return d3.descending(a[rankingSel], b[rankingSel])
+            })
+        }
+
+        var maxX = d3.max(rankingData, d=> d[rankingSel])
+        var minX = d3.min(rankingData, d=> d[rankingSel])
+        x.domain([Math.min(0, minX), maxX])
+        y.domain(rankingData.map(d=> d.county ))
+
+        x_axis.scale(x)
+        y_axis.scale(y)
+
+        yAxisCall.transition().duration(dur).call(y_axis)
+
+    }
+
     function draw_chart(){
+
+        xCounty = width1 * 0.1
+        xValue = width1 * 0.7
+
         var rects = barsGroup.selectAll("rect")
             .data(rankingData, d=> d.county)
+
+        rects.exit().remove()
+
+        rects
+            .transition().duration(dur)
+            .attr("y", function(d){ return y(d.county); })
+            .attr("width", function(d){ return x(d[rankingSel]); })
+
 
         rects.enter()
             .append("rect")
@@ -146,49 +171,78 @@ function ranking_chart(config){
             .attr("width", function(d){ return x(d[rankingSel]); })
 
         
-        chart.selectAll('.y-text-county')
+        var countyTexts = chart.selectAll('.y-text-county')
             .data(yLabels)
-            .enter()
-                .append("text")
-                .attr("class", "y-text-county")
-                    .on("mouseover", mouseover)
-                    .on("mouseout", mouseout)
-                    .on("click", clicked)
-                .attr("x", xCounty)
-                .attr("y", d=> y(d.county) + y.bandwidth()/2)
-                .attr("fill", "#fff")
-                .attr("dominant-baseline", "middle")
-                .text(d=> d.county)
 
-        chart.selectAll('.y-text-value')
-            .data(yLabels)
-            .enter()
-                .append("text")
-                .attr("class", "y-text-value")
-                    .on("mouseover", mouseover)
-                    .on("mouseout", mouseout)
-                    .on("click", clicked)
-                .attr("x", xValue)
-                .attr("y", d=> y(d.county) + y.bandwidth()/2)
-                .attr("fill", "#fff")
-                .attr("dominant-baseline", "middle")
-                .text(d=> numberWithCommas(d[rankingSel]))
+        countyTexts.exit().remove()
 
-        bgRects = chart.selectAll(".bg-rects")
+        countyTexts
+            .transition().duration(dur)
+            .attr("y", d=> y(d.county) + y.bandwidth()/2)
+
+        countyTexts.enter()
+            .append("text")
+            .attr("class", "y-text-county")
+                .on("mouseover", mouseover)
+                .on("mouseout", mouseout)
+                .on("click", clicked)
+            .attr("x", xCounty)
+            .attr("y", d=> y(d.county) + y.bandwidth()/2)
+            .attr("fill", "#fff")
+            .attr("dominant-baseline", "middle")
+            .text(d=> d.county)
+            .attr("opacity", 0)
+            .transition().duration(dur)
+                .attr("opacity", 1)
+
+        var valueTexts = chart.selectAll('.y-text-value')
             .data(yLabels)
-            .enter()
-                .append("rect")
-                .attr("class", "bg-rects")
-                .attr("id", d=> "bg-rect-" + d.idName)
-                    .on("mouseover", mouseover)
-                    .on("mouseout", mouseout)
-                    .on("click", clicked)
-                .attr("x", 0)
-                .attr("y", d=> y(d.county) - y.bandwidth()/2)
-                .attr("height", y.bandwidth()*2)
-                .attr("width", width1)
-                .attr("fill", "#fff")
-                .attr("fill-opacity", 0)
+
+        valueTexts.exit().remove()
+
+        valueTexts
+            .transition().duration(dur)
+            .attr("y", d=> y(d.county) + y.bandwidth()/2)
+            .text(d=> numberWithCommas(d[rankingSel]))
+
+        valueTexts.enter()
+            .append("text")
+            .attr("class", "y-text-value")
+                .on("mouseover", mouseover)
+                .on("mouseout", mouseout)
+                .on("click", clicked)
+            .attr("x", xValue)
+            .attr("y", d=> y(d.county) + y.bandwidth()/2)
+            .attr("fill", "#fff")
+            .attr("dominant-baseline", "middle")
+            .text(d=> numberWithCommas(d[rankingSel]))
+            .attr("opacity", 0)
+            .transition().duration(dur)
+                .attr("opacity", 1)
+
+
+        
+        var bgRects = chart.selectAll(".bg-rects")
+            .data(yLabels)
+
+        bgRects.exit().remove()
+
+        bgRects
+            .attr("y", d=> y(d.county) - y.bandwidth()/2)
+
+        bgRects.enter()
+            .append("rect")
+            .attr("class", "bg-rects")
+            .attr("id", d=> "bg-rect-" + d.idName)
+                .on("mouseover", mouseover)
+                .on("mouseout", mouseout)
+                .on("click", clicked)
+            .attr("x", 0)
+            .attr("y", d=> y(d.county) - y.bandwidth()/2)
+            .attr("height", y.bandwidth()*2)
+            .attr("width", width1)
+            .attr("fill", "#fff")
+            .attr("fill-opacity", 0)
     }
 
 
@@ -211,7 +265,8 @@ function ranking_chart(config){
     }
 
     function numberWithCommas(num) {
-        //Retuns number seperated by commas
+        if (String(num).split(".").length == 2) return num.toFixed(2)
+        if (num == 0) return "0.0"
         if (typeof(num) == "string") return num
         if (num >= 1) return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
@@ -228,6 +283,24 @@ function ranking_chart(config){
         height = value;
         return rankChart;
     }
+
+    rankChart.sorting = function(value){
+        if (!arguments.length) return sorting;
+        rankingSort = value;
+        updateScales();
+        draw_chart();
+        return rankChart;
+    }
+
+    rankChart.selection = function(value){
+        if (!arguments.length) return selection;
+        rankingSel = value;
+        updateScales();
+        draw_chart();
+        return rankChart;
+    }
+
+
 
 
     return rankChart;

@@ -288,7 +288,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting]){
 
     rankingConfig = {
         'selection': "#ranking",
-        'height': windowHeight * 0.5,
+        'height': windowHeight * 0.4,
         'width': parseInt(d3.select("#ranking").style("width"), 10),
         'duration': 750,
         'countyData': dateData[dateData.length -1].values,
@@ -319,12 +319,20 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting]){
     }
 
 
+    titleConfig = {
+        'selection': "#title-chart",
+        'height': windowHeight * 0.1,
+        'width': parseInt(d3.select("#title-chart").style("width"), 10),
+    }
+    
+
 
     caliMapVis = cali_map(mapConfig)
     lolipopVis = lolipop_chart(lolipopConfig)
     rankingVis = ranking_chart(rankingConfig)
     hospitalVis = hospital_chart(hospitalConfig)
     testingVis = testing_chart(testingConfig)
+    titleVis = title_chart(titleConfig)
 
     caliMapVis();
     lolipopVis();
@@ -334,7 +342,13 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting]){
 
 }
 
+function updateRanking(selection, value){
+    if (selection == "ranking-sel") rankingVis.selection(value)
+    else if (selection == "sorting-sel"){
+        rankingVis.sorting(value);
+    }
 
+}
 // var xSeries = d3.range(0, selection.chartData.map(d=> d.date).length)
 // var ySeries = selection.chartData.map(d=> d.caseIncrease)
 

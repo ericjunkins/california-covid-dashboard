@@ -473,6 +473,11 @@ select.form-control{display:inline-block}
 	text-anchor: middle;
 }
 
+.warning-flag {
+	fill: #b90b0b;
+	text-anchor: middle;
+}
+
 
 /* Testing Styles */
 /* ---------------------------------------------------- */
