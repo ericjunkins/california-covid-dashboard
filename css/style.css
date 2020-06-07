@@ -546,6 +546,20 @@ select.form-control{display:inline-block}
 	fill: none;
 }
 
+.case-line{
+	stroke: #4fb6d3;
+	stroke-width: 3.5;
+	fill: none;
+}
+
+.line-yellow {
+	stroke: #f2c80f;
+	stroke-width: 2;
+	stroke-dasharray: 5;
+	fill:none;
+}
+
+
 .lolicircle{
 	fill: #01b8aa;
 }
@@ -554,6 +568,31 @@ select.form-control{display:inline-block}
 	stroke-width: 2;
 	stroke-dasharray: 5;
 }
+
+.threshold-line {
+	stroke: #f2c80f;
+	stroke-width: 2;
+	stroke-dasharray: 5;
+	fill:none;
+}
+
+.zero-line {
+	stroke: #fff;
+	stroke-width: 0.5px;
+	fill:none;
+}
+
+.percent-hosp-line {
+	stroke: #4fb6d3;
+	stroke-width: 3.5px;
+	fill:none;
+}
+
+.dot-marker {
+	fill: #4fb6d3;
+}
+
+
 
 /* ---------------------------------------------------- */
 
@@ -571,3 +610,98 @@ select.form-control{display:inline-block}
 
 
 /* ---------------------------------------------------- */
+
+.description {
+	color: #fff;
+	font-size: 1.3em;
+}
+
+.item {
+	color: #fff;
+	font-size: 1.2em;
+}
+
+.slider-text {
+	font-size: 1.3em;
+	text-anchor: middle;
+	fill: #fff;
+}
+
+.dial-bg-cases {
+	stroke: #1e2025;
+	stroke-width: 2px;
+}
+
+.dial-bg-hosp {
+	stroke: #1e2025;
+	stroke-width: 8px;
+}
+
+/* .dial-arrow {
+	stroke: #fff
+}
+
+.dial-circle {
+	stroke: #fff
+} */
+
+.center-box {
+	height:100%;
+	display: table;
+}
+
+.hosp-stb-center-box{
+	height: 100%;
+	display: table;
+}
+
+.center-cell {
+	display: table-cell;
+	vertical-align: middle;
+}
+
+#max-daily-hosp {
+	font-size: 3em;
+	margin-bottom: 3px;
+}
+
+.small-labels {
+	color: rgb(160, 160, 160);	
+	fill: rgb(160, 160, 160);
+	font-size: 0.9em;
+}
+
+#county-intro-row{
+	height: 15vh;
+}
+
+#county-select-row{
+	height: 5vh;
+}
+
+#cases-row{
+	height: 30vh;
+}
+
+#hosp-row{
+	height: 30vh;
+}
+
+#criteria-row{
+	height: 20vh;
+}
+
+.big-labels{
+	font-size: 1.5em;
+	color: rgb(160, 160, 160);	
+}
+
+.test-labels {
+	font-size: 1.2em;
+	color: rgb(238, 238, 238);	
+}
+
+.my-table {
+	background: #1e2025 !important;
+	color: #fff !important;
+}
