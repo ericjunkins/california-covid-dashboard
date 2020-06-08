@@ -1,9 +1,17 @@
 function testing_chart(config){
-    var margin = { 
-        left:config.width * 0.1,
-        right:config.width * 0.1, 
-        top: config.height * 0.35, 
-        bottom:config.height * 0.1 }
+    // var margin = { 
+    //     left:config.width * 0.1,
+    //     right:config.width * 0.1, 
+    //     top: config.height * 0.35, 
+    //     bottom:config.height * 0.1 }
+
+
+    var margin = {
+        bottom: 46,
+        left: 120,
+        right: 40,
+        top: 50
+    }
 
     var dur = config.duration
     var testSelection = "Cumulative"
@@ -16,56 +24,64 @@ function testing_chart(config){
     var parseTime = d3.timeParse("%Y-%m-%d")
     var formatTime = d3.timeFormat("%m/%d/%y")
 
+
+    defaultWidth = 1218
+    defaultHeight = 400
+
+
     // append the svg object to the body of the page
     var svg = d3.select(config.selection)
         .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            .attr("preserveAspectRatio", "xMidYMid meet")
+            .attr('viewBox', 0 + " " + 0 + " " + defaultWidth + ' ' + defaultHeight)
+            .classed("svg-content", true)
             .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
+    width = defaultWidth - margin.left - margin.right
+    height = defaultHeight  - margin.top - margin.bottom
+    
+    // dropdownX = (margin.left + width * 0.1)
+    // dropdownY = (margin.top*0.65)
 
-    dropdownX = (margin.left + width * 0.1)
-    dropdownY = (margin.top*0.65)
 
 
+    // svg.append('text')
+    //     .attr("transform", "translate(" + (-margin.left + dropdownX) + "," + (dropdownY-margin.top) + ")")
+    //     .attr('x', 3)
+    //     .attr("y", -8)
+    //     .attr("fill", "#fff")
+    //     .attr("font-size", "0.8em")
+    //     .text("Select Cumulative or Daily:")
 
-    svg.append('text')
-        .attr("transform", "translate(" + (-margin.left + dropdownX) + "," + (dropdownY-margin.top) + ")")
-        .attr('x', 3)
-        .attr("y", -8)
-        .attr("fill", "#fff")
-        .attr("font-size", "0.8em")
-        .text("Select Cumulative or Daily:")
-
-    var dropdown = d3.select(config.selection)
-        .append("select")
-            .attr("class", "select-css")
-            .style("position", "absolute")
-            .style("top", dropdownY + "px")
-            .style("left", dropdownX + "px")
-            .style("width", (width/4 + "px"))
-                .on("change", dropdownChange)
+    // var dropdown = d3.select(config.selection)
+    //     .append("select")
+    //         .attr("class", "select-css")
+    //         .style("position", "absolute")
+    //         .style("top", dropdownY + "px")
+    //         .style("left", dropdownX + "px")
+    //         .style("width", (width/4 + "px"))
+    //             .on("change", dropdownChange)
 
 
     
 
 
-    function dropdownChange(d){
-        testSelection =this.value
-        updateLabels();
-        updateScales();
-        draw_chart();
-    }
+    // function dropdownChange(d){
+    //     testSelection =this.value
+    //     updateLabels();
+    //     updateScales();
+    //     draw_chart();
+    // }
 
     var testingGroups = ['Tests', 'Positive', 'Percent Positive']
 
-    dropdown.selectAll("option")
-        .data(["Cumulative","Daily", "Weekly"])
-        .enter()
-            .append("option")
-            .attr("value", d=> d)
-            .text(d=> d)
+    // dropdown.selectAll("option")
+    //     .data(["Cumulative","Daily", "Weekly"])
+    //     .enter()
+    //         .append("option")
+    //         .attr("value", d=> d)
+    //         .text(d=> d)
     
     var color = d3.scaleOrdinal()
         .domain(testingGroups)
@@ -111,11 +127,11 @@ function testing_chart(config){
         .attr("transform", "translate(" + width + ",0)")
     
 
-    svg.append("text")
-        .attr("x", width/2)
-        .attr("y", -margin.top * 0.8)
-        .attr("class", "title")
-        .text("Testing in Los Angeles County")
+    // svg.append("text")
+    //     .attr("x", width/2)
+    //     .attr("y", -margin.top * 0.8)
+    //     .attr("class", "title")
+    //     .text("Testing in Los Angeles County")
 
     var yLabel = testingLabels.append("text")
         .attr("transform", "rotate(-90)")
@@ -140,7 +156,7 @@ function testing_chart(config){
         lineStart = width * 0.4
         spacing = 10
         legendGroup = svg.append("g")
-            .attr("transform", "translate(" + (width *0.42) + "," + (-margin.top * 0.25) + ")")
+            .attr("transform", "translate(" + (width *0.22) + "," + (-margin.top * 0.25) + ")")
 
         legendGroup.append("rect")
             .attr("x", 0)

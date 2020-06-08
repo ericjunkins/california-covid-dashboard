@@ -34,8 +34,14 @@ Promise.all(promises).then(ready)
 d3.select("#county-select")
     .on("change", dropdownChange)
 
-// d3.select("#testing-select")
-//     .on("change", dropdownChange)
+d3.select("#testing-select")
+    .on("change", dropdownChange)
+
+d3.select("#sorting-select")
+    .on("change", dropdownChange)
+
+d3.select("#ranking-select")
+    .on("change", dropdownChange)
 
 
 function dropdownChange(){
@@ -51,6 +57,10 @@ function dropdownChange(){
 
     } else if (id == "testing-select"){
         testingVis.selection(sel)
+    } else if (id == "sorting-select"){
+        rankingVis.sorting(sel) 
+    } else if (id == "ranking-select"){
+        rankingVis.selection(sel)
     }
 }
 
@@ -261,7 +271,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         d.deathAvg = d3.sum(d.data, d=> d.deathIncrease)/14
         d.derivAvg = d3.sum(d.data, d=> d.deriv)/14
         d.chartData = d.data.slice(1, d.data.length)
-
+        d.totalNormalizedCases = Math.ceil(d3.sum(d.chartData, e=> e.normalizedCases))
 
         if (d.chartData.length <= 1){
             d.newCaseSlope = 0
@@ -303,8 +313,8 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
 
     twoWeekData = dateData.slice(dateData.length - 15, dateData.length -1)
     //var row0 = windowHeight * 0.25
-    var casesRow = parseInt(d3.select("#cases-row").style("height"), 10)
-    var hospRow = parseInt(d3.select("#hosp-row").style("height"), 10)
+    var casesRow = 2000
+    var hospRow = 2000
     var row1 = windowHeight * 0.2
     var row2 = windowHeight * 0.3
 
@@ -355,7 +365,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
 
     casesSliderConfig = {
         'selection': "#cases-slider",
-        'height': casesRow,
+        'height':  casesRow*0.6,
         'width': parseInt(d3.select("#cases-slider").style("width"), 10),
         'duration': 750,
         'criteria': criteriaData,
@@ -444,11 +454,11 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
     }
 
 
-    titleConfig = {
-        'selection': "#title-chart",
-        'height': windowHeight * 0.1,
-        'width': parseInt(d3.select("#title-chart").style("width"), 10),
-    }
+    // titleConfig = {
+    //     'selection': "#title-chart",
+    //     'height': windowHeight * 0.1,
+    //     'width': parseInt(d3.select("#title-chart").style("width"), 10),
+    // }
     
 
 
@@ -457,7 +467,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
     rankingVis = ranking_chart(rankingConfig)
     // hospitalVis = hospital_chart(hospitalConfig)
     testingVis = testing_chart(testingConfig)
-    titleVis = title_chart(titleConfig)
+    //titleVis = title_chart(titleConfig)
     //roadmapVis = roadmap_chart(roadmapConfig)
     casesSliderVis = slider_chart(casesSliderConfig)
     casesChartVis = cases_line_chart(casesChartConfig)

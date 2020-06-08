@@ -1,9 +1,17 @@
 function cases_line_chart(config){
-    var margin = { 
-        left:config.width * 0.1,
-        right:config.width * 0.02, 
-        top: config.height * 0.25, 
-        bottom:config.height * 0.1 }
+    // var margin = { 
+    //     left:config.width * 0.1,
+    //     right:config.width * 0.02, 
+    //     top: config.height * 0.25, 
+    //     bottom:config.height * 0.1 }
+
+    var margin = {
+        bottom: 26.5,
+        left: 89.9,
+        right: 18,
+        top: 66.25
+    }
+    
 
     var dur = config.duration
     
@@ -16,18 +24,21 @@ function cases_line_chart(config){
     var lineChartSelection = "Los Angeles",
         cas = []
 
+    defaultWidth = 899  
+    defaultHeight = 265 
+    
     // append the svg object to the body of the page
     var svg = d3.select(config.selection)
         .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            .attr("preserveAspectRatio", "xMidYMid meet")
+            .attr('viewBox', 0 + " " + 0 + " " + defaultWidth + ' ' + defaultHeight)
+            .classed("svg-content", true)
             .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
 
-
-    // console.log(config.hospitalData)
-
+    width = defaultWidth - margin.left - margin.right
+    height = defaultHeight  - margin.top - margin.bottom
 
     var x1 = d3.scaleBand()
         .range([0, width])

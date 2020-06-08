@@ -2,8 +2,15 @@ function cali_map(config){
     var margin = { 
         left:config.width  * 0,
         right:config.width * 0, 
-        top: config.height * 0.05, 
+        top: config.height * 0.2, 
         bottom:config.height * 0.00
+    }
+
+    var margin = {
+        bottom: 0,
+        left: 0,
+        right: 0,
+        top: 132
     }
 
     var mapData = config.countyData,
@@ -15,62 +22,79 @@ function cali_map(config){
     var height = config.height - margin.top - margin.bottom, 
         width = config.width - margin.left - margin.right;
 
+    defaultWidth = 564
+    defaultHeight = 605
+
+    
     var mode = "Choropleth"
 
     // append the svg object to the body of the page
     var svg = d3.select(config.selection)
         .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            .attr("preserveAspectRatio", "xMidYMid meet")
+            .attr('viewBox', 0 + " " + 0 + " " + defaultWidth + ' ' + defaultHeight)
+            .classed("svg-content", true)
             .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    width = defaultWidth - margin.left - margin.right
+    height = defaultHeight  - margin.top - margin.bottom
+
     var projection = d3.geoMercator()
         .center([ -120, 37 ])
-        .translate([ width * 0.5, height*0.6 ])
-        .scale([ Math.min(height, width) *4 ]);
+        .translate([ width * 0.5, height*0.45 ])
+        .scale([ Math.min(height, width) *4.5 ]);
 
     //Define path generator
     var path = d3.geoPath()
         .projection(projection);
 
-    var radius_max = width/15
+    var radius_max = 16
 
+    cal.features.forEach(function(d){
+        vals = config.criteria.filter(v=> v.county == d.properties.NAME)[0]
+        d.totalNormalizedCases = vals.totalNormalizedCases
+
+    })
+
+    cal.features = cal.features.sort(function(a,b){
+        return d3.descending(a.totalNormalizedCases, b.totalNormalizedCases)
+    })
 
     config.criteria.forEach(function(d){
-        data[0 + String(d.fips)] =  d.newCaseSlope
+        data[0 + String(d.fips)] =  d.totalNormalizedCases
     })
+
 
     var vals = config.criteria.map(function(d){ return d.newCaseSlope}).sort(function(a,b){ return d3.descending(a, b)})
     var maxVal = d3.max(config.criteria, function(d){ return d.newCaseSlope })
     var uniqueVals = d3.set(vals).values()
 
     function getColor(val){
-        if (val == -999) return "#f2f2f2"
-        else if (val <= - 1) return "#4fb6d3"
-        else if (-1 < val && val <= 1) return "#f2df91"
-        else return colors(Math.min(val, colors.domain()[2]))
+        val = Math.min(colorAbove.domain()[0], val)
+        if (val < 5) return "#badee8"
+        else if (5 <= val && val <= 25) return "#f2df91"
+        else if (25 < val) return colorAbove(val)
+
+        
     }
 
+    var colorRange = ['#f72c11', '#ab994f', '#2a9905']
+    var c1 = ['#8c0804', '#ff6e0b', '#ffae43']
+
+    var colorAbove = d3.scaleLinear()
+        .domain([150, 75/2, 25])
+        .range(c1)
+        .interpolate(d3.interpolateRgb)
+
     var colors = d3.scaleLinear()
-        .domain([
-            1,
-            5,
-            10 
-        ])
-        .range([
-            '#ffae43',
-            '#ff6e0b',
-            '#ce0a05'
-        ])
+        .domain([100, 50, 25])
+        .range(colorRange)
         .interpolate(d3.interpolateRgb)
 
     var a = d3.scaleLinear()
-        .range([0, radius_max])
-        .domain([
-            area2radius(+uniqueVals[uniqueVals.length - 2]), 
-            area2radius(+uniqueVals[0])
-        ])
+        .range([radius_max, 0])
+        .domain([area2radius(150),area2radius(25)])
 
 
     var paths =svg.append('g')
@@ -89,22 +113,72 @@ function cali_map(config){
         .attr("transform", "translate(" + (offset - width*0.0) + "," + height*0.05 + ")")
 
     var selectionGroup = svg.append('g')
-        .attr("transform", "translate(0," + height * 0.09 + ")")
+        .attr("transform", "translate(0," + (- margin.top * 0.8) + ")")
         .attr("class", "selection-tool")
 
     var xSel = d3.scaleBand()
         .domain(["Choropleth", "Bubbles"])
-        .range([width*0.25, width*0.75])
-        .padding(0.1)
+        .range([width*0.15, width*0.85])
+        .padding(0)
 
-    svg.append('text')
+    buttonHeight = 27
+
+
+    leftRect = selectionGroup.append('path')
+        .attr("d", leftRoundedRect(xSel("Choropleth"), 0, xSel.bandwidth(), buttonHeight, 6))
+        .attr("class", "sel-rects")
+        .attr("id", "selection-rects-Choropleth")
+        .attr("fill", "#fff")
+        .attr("stroke", "#666666")
+        .attr("stroke-width", 2)
+            .on("mousemove", mousemove)
+            .on("mouseenter", mouseover)
+            .on("mouseout", mouseout)
+            .on("click", clicked)
+
+    rightRect = selectionGroup.append('path')
+        .attr("d", rightRoundedRect(xSel("Bubbles"), 0, xSel.bandwidth(), buttonHeight, 6))
+        .attr("class", "sel-rects")
+        .attr("id", "selection-rects-Bubbles")
+        .attr("fill", "#fff")
+        .attr("stroke", "#666666")
+        .attr("stroke-width", 2)
+            .on("mousemove", mousemove)
+            .on("mouseenter", mouseover)
+            .on("mouseout", mouseout)
+            .on("click", clicked)
+
+    // svg.append('text')
+    //     .attr("x", width/2)
+    //     .attr("y", -margin.top * 0.1)
+    //     .attr("class", "title")
+    //     .text("California County Map")
+
+
+    selTexts = selectionGroup.selectAll("text")
+        .data(xSel.domain())
+            .enter()
+            .append("text")
+            .attr("class", "selection-texts")
+            .attr("id", d=> "selection-text-" + d)
+                .on("mousemove", mousemove)
+                .on("mouseenter", mouseover)
+                .on("mouseout", mouseout)
+                .on("click", clicked)
+            .attr("x", d=> xSel(d) + xSel.bandwidth()/2)
+            .attr("y", buttonHeight/2)
+            .attr("fill", "#000")
+            .attr("text-anchor", "middle")
+            .attr("dominant-baseline", "middle")
+            .text(d=> d)
+
+    selectionGroup.append('text')
+        .attr("y", -7)
         .attr("x", width/2)
-        .attr("y", -margin.top * 0.1)
-        .attr("class", "title")
-        .text("California County Map")
-
-
-    drawLegend()
+        .attr("class", "small-labels")
+        .text("Select map display:")
+        .attr("text-anchor", "middle")
+    //drawLegend()
 
     function drawLegend(){
         legendData = [
@@ -171,62 +245,60 @@ function cali_map(config){
 
     function stateMap(){
         updateSelections();
+        updateScales();
+
         drawMap();
     }
 
 
+    function updateScales(){
+        mapSelection = 'normalizedCases'
+
+    }
+
     function updateSelections(){
-        buttonHeight = 25
-        selRects = selectionGroup.selectAll("rect")
-            .data(xSel.domain())
-    
-        selRects
-            .attr("stroke-width", d=> (mode == d ? 0.5 : 0.2))
-            .attr("fill-opacity", d=> (mode == d ? 0.35 : 0.1))
+        if (mode == "Choropleth"){
+            leftRect
+                .transition().duration(dur)
+                .attr("fill", "#fff")
 
-        selRects
-            .enter()
-            .append("rect")
-            .attr("class", "selection-rects")
-            .attr("id", d=> "selection-rect-" + d)
-                .on("mousemove", mousemove)
-                .on("mouseenter", mouseover)
-                .on("mouseout", mouseout)
-                .on("click", clicked)
-            .attr("x", d=> xSel(d))
-            .attr("y", 0)
-            .attr("rx", 5)
-            .attr("height", buttonHeight)
-            .attr("width", xSel.bandwidth())
-            .attr("fill", config.defaultColor)
-            .attr("stroke", "#fff")
-            .attr("stroke-width", d=> (mode == d ? 0.5 : 0.2))
-            .attr("fill-opacity", d=> (mode == d ? 0.35 : 0.1))
+            rightRect
+                .transition().duration(dur)
+                .attr("fill", "#ababab")
+        } else {
+            leftRect
+                .transition().duration(dur)
+                .attr("fill", "#ababab")
+
+            rightRect
+                .transition().duration(dur)
+                .attr("fill", "#fff")
+        }
+            
+    }
 
 
+    function rightRoundedRect(x, y, width, height, radius){
+        return "M" + x + "," + y
+            + "h" + (width - radius)
+            + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius
+            + "v" + (height - 2 * radius)
+            + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius
+            + "h" + (radius - width)
+            + "z";
 
-        selTexts = selectionGroup.selectAll("text")
-            .data(xSel.domain())
-    
-        selTexts
-            .attr("opacity", d=> (mode == d ? 1 : 0.5))
+    }
 
-        selTexts
-            .enter()
-            .append("text")
-            .attr("class", "selection-texts")
-            .attr("id", d=> "selection-text-" + d)
-                .on("mousemove", mousemove)
-                .on("mouseenter", mouseover)
-                .on("mouseout", mouseout)
-                .on("click", clicked)
-            .attr("x", d=> xSel(d) + xSel.bandwidth()/2)
-            .attr("y", buttonHeight/2)
-            .attr("fill", "#fff")
-            .attr("text-anchor", "middle")
-            .attr("dominant-baseline", "middle")
-            .attr("opacity", d=> (mode == d ? 1 : 0.5))
-            .text(d=> d)
+    function leftRoundedRect(x, y, width, height, radius){
+        return "M" + (x + radius) + "," + y
+            + "h" + (width)
+            + "v" + (height)
+            + "h" + (radius - width)
+            + "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + -radius
+            + "v" + -(height - 2 * radius)
+            + "a" + radius + "," + radius + " 0 0 1 " + radius + "," + -radius
+            + "z";
+
     }
 
     function area2radius(area){
@@ -240,34 +312,45 @@ function cali_map(config){
 
     }
 
-    function mouseover(d){
+    function mouseover(){
         document.body.style.cursor = "pointer"
+        tmp = this.id.split('-')
+        id = "#selection-rects-" + tmp[tmp.length-1]
+        d3.select(id)
+            .attr("stroke", "#4fb6d3")
+        
     }
 
     function mouseout(d){
         document.body.style.cursor = "default"
+        tmp = this.id.split('-')
+        id = "#selection-rects-" + tmp[tmp.length-1]
+        d3.select(id)
+            .attr("stroke", "#666666")
     }
 
     function clicked(d){
-        mode = d
+        tmp = this.id.split("-")
+        mode = tmp[tmp.length -1]
         updateSelections();
         drawMap();
         
     }
     
     function drawMap(){
-        var counties = paths.selectAll("path")
+        var counties = paths.selectAll(".county-path")
             .data(cal.features)
 
         counties
             .transition().duration(dur)
             .attr("fill", function(d){
-                return (mode == "Bubbles" ? "#badee8" : getColor(data[d.properties.GEOID]) )
+                return (mode == "Bubbles" ? "#c5dbe0" : getColor(d.totalNormalizedCases) )
             })
 
         counties.enter()
             .append("path")
             .attr("d", path)
+            .attr("class", "county-path")
             .attr("id", d=> "county-" + d.properties.NAME)
 
             .attr("stroke", "#1e2025")
@@ -275,7 +358,7 @@ function cali_map(config){
             .attr("fill", "#f2f2f2")
             .transition().duration(dur)
             .attr("fill", function(d){
-                return (mode == "Bubbles" ? "#badee8" : getColor(data[d.properties.GEOID]) )
+                return (mode == "Bubbles" ? "#c5dbe0" : getColor(d.totalNormalizedCases) )
             })
 
 
@@ -300,13 +383,13 @@ function cali_map(config){
             })
 
             .attr("fill", "red")
-            .attr("fill-opacity", 0.5)
+            .attr("fill-opacity", 0.3)
             .attr("stroke", "black")
             .attr("r", 0)
             .transition().duration(dur)
             .attr("r", function(d){
-                val = area2radius(data[d.properties.GEOID])
-                if (data[d.properties.GEOID] === -999){
+                val = area2radius(d.totalNormalizedCases)
+                if (d.totalNormalizedCases <25){
                     return 0
                 } 
                 else return a(val)

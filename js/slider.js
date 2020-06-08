@@ -1,24 +1,40 @@
 function slider_chart(config){
-    var margin = { 
-        left:config.width * 0.1,
-        right:config.width *  0.1, 
-        top: config.height * 0.05, 
-        bottom:config.height * 0.2 }
+    // var margin = { 
+    //     left:config.width * 0.1,
+    //     right:config.width *  0.1, 
+    //     top: config.height * 0.05, 
+    //     bottom:config.height * 0.2 }
 
+
+    var margin = {
+        bottom: 32,
+        left: 28,
+        right: 28,
+        top: 8
+    }
 
     var height = config.height - margin.top - margin.bottom, 
         width = config.width - margin.left - margin.right;
     
     var dur = config.duration
 
+
+    defaultWidth = 282
+    defaultHeight = 177
+
+
     // append the svg object to the body of the page
     var svg = d3.select(config.selection)
         .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr('viewBox', 0 + " " + 0 + " " + defaultWidth + ' ' + defaultHeight)
+        .classed("svg-content", true)
             .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
+
+    width = defaultWidth - margin.left - margin.right
+    height = defaultHeight  - margin.top - margin.bottom
 
     sliderSelection = "Los Angeles"
     thresholds = config.thresholds
@@ -179,7 +195,7 @@ function slider_chart(config){
 
         dialText = dial.append("text")
             .attr("x", 0)
-            .attr("y", function(){ return (config.type=="cases" ? -5 : 0)})
+            .attr("y", function(){ return (config.type=="cases" ? 0 : 0)})
             .attr("class", "slider-text")
             .attr("dominant-baseline", "middle")
         
@@ -188,7 +204,7 @@ function slider_chart(config){
             .attr("y", 18)
             .attr("dominant-baseline", "middle")
             .attr("text-anchor", "middle")
-            .text((config.type == "cases" ? "Cases/100k" : ""))
+            .text((config.type == "cases" ? "" : ""))
             .attr("font-size", "0.8em")
             .attr("fill", "#fff")
 
@@ -197,7 +213,7 @@ function slider_chart(config){
             .attr("y", radius * 0.75)
             .attr("class", "small-labels")
             .attr("text-anchor", "middle")
-            .text(config.type == "Cases" ? "Cases Per 100,000 Residents" : "Hospital Occupation Trend")
+            .text(config.type == "cases" ? "Cases Per 100,000 Residents" : "Hospital Occupation Trend")
 
     }
 

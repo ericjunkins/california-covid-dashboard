@@ -1,26 +1,41 @@
 function criteria_chart(config){
-    var margin = { 
-        left:config.width * 0,
-        right:config.width * 0, 
-        top: config.height * 0.15, 
-        bottom:config.height * 0.15 }
+    // var margin = { 
+    //     left:config.width * 0,
+    //     right:config.width * 0, 
+    //     top: config.height * 0.15, 
+    //     bottom:config.height * 0.15 }
     
+
+    var margin = {
+        bottom: 39.75,
+        left: 0,
+        right: 0,
+        top: 39.75
+    }
+    
+
     var dur= config.dur
 
     var height = config.height - margin.top - margin.bottom, 
         width = config.width - margin.left - margin.right;
 
 
+    defaultWidth = 1248
+    defaultHeight = 265
+
+
+
     // append the svg object to the body of the page
     var svg = d3.select(config.selection)
         .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
+            .attr("preserveAspectRatio", "xMidYMid meet")
+            .attr('viewBox', 0 + " " + 0 + " " + defaultWidth + ' ' + defaultHeight)
+            .classed("svg-content", true)
             .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-
+    width = defaultWidth - margin.left - margin.right
+    height = defaultHeight  - margin.top - margin.bottom
 
     var casesGroup = svg.append('g')
         .attr("transform", "translate(" + 0 + "," + 0 + ")");
@@ -45,8 +60,15 @@ function criteria_chart(config){
         .text("Hospitals Criteria")
 
     svg.append("line")
-        .attr("x1", width*0)
-        .attr("x2", width*1)
+        .attr("x1", width*0.05)
+        .attr("x2", width*0.45)
+        .attr("y1", height*0.2)
+        .attr("y2", height*0.2)
+        .attr("stroke", "grey")
+
+    svg.append("line")
+        .attr("x1", width*0.55)
+        .attr("x2", width*0.95)
         .attr("y1", height*0.2)
         .attr("y2", height*0.2)
         .attr("stroke", "grey")

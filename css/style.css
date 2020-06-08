@@ -58,7 +58,6 @@ h5 {
 	background-color: #1e2025;
 	border: 1px solid #413b3b;
 	border-radius: 5px;
-	text-align: center;
 	width: 100%;
 	height: 100%;
 	padding: 0px;
@@ -208,6 +207,7 @@ h5 {
 	text-anchor: middle;
 	font-size: 2em;
 	fill: #fff;
+	color: #fff;
 
 }
 
@@ -255,6 +255,11 @@ h5 {
 .select-lg {
 	width: 50%;
 	max-width: 60%;
+}
+
+.select-xl {
+	width: 95%;
+	max-width: 95%;
 }
 
 .select-css::-ms-expand {
@@ -622,7 +627,7 @@ select.form-control{display:inline-block}
 }
 
 .slider-text {
-	font-size: 1.3em;
+	font-size: 1.1em;
 	text-anchor: middle;
 	fill: #fff;
 }
@@ -634,7 +639,7 @@ select.form-control{display:inline-block}
 
 .dial-bg-hosp {
 	stroke: #1e2025;
-	stroke-width: 8px;
+	stroke-width: 4px;
 }
 
 /* .dial-arrow {
@@ -648,6 +653,7 @@ select.form-control{display:inline-block}
 .center-box {
 	height:100%;
 	display: table;
+	text-align: center;
 }
 
 .hosp-stb-center-box{
@@ -661,7 +667,7 @@ select.form-control{display:inline-block}
 }
 
 #max-daily-hosp {
-	font-size: 3em;
+	font-size: calc(100% + 1vw + 1vh);
 	margin-bottom: 3px;
 }
 
@@ -669,10 +675,15 @@ select.form-control{display:inline-block}
 	color: rgb(160, 160, 160);	
 	fill: rgb(160, 160, 160);
 	font-size: 0.9em;
+	margin-bottom: 0px !important;
+}
+
+.responsive-text-sm {
+	font-size: calc(100% + 0.01vw + 0.01vh) !important;
 }
 
 #county-intro-row{
-	height: 15vh;
+	height: 12vh;
 }
 
 #county-select-row{
@@ -680,11 +691,11 @@ select.form-control{display:inline-block}
 }
 
 #cases-row{
-	height: 30vh;
+	height: 20vh;
 }
 
 #hosp-row{
-	height: 30vh;
+	height: 20vh;
 }
 
 #criteria-row{
@@ -704,4 +715,25 @@ select.form-control{display:inline-block}
 .my-table {
 	background: #1e2025 !important;
 	color: #fff !important;
+}
+
+
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    vertical-align: top;
+    overflow: hidden;
+}
+/* .svg-content {
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    left: 0;
+} */
+
+
+.selection-rects{
+	border-radius: 0 0 15px 15px;
 }

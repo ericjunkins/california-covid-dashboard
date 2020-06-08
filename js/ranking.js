@@ -1,10 +1,17 @@
 function ranking_chart(config){
-    var margin = { 
-        left:config.width * 0.05,
-        right:config.width * 0.05, 
-        top: config.height * 0, 
-        bottom:config.height * 0.05}
+    // var margin = { 
+    //     left:config.width * 0.05,
+    //     right:config.width * 0.05, 
+    //     top: config.height * 0, 
+    //     bottom:config.height * 0.05}
 
+
+    var margin = {
+        bottom: 25,
+        left: 0,
+        right: 30,
+        top: 0
+    }
 
     var height = config.height - margin.top - margin.bottom, 
         width = config.width - margin.left - margin.right,
@@ -13,6 +20,14 @@ function ranking_chart(config){
     // var cur_color = 0;
 
     // append the svg object to the body of the page
+
+
+
+    defaultWidth = 531
+    defaultHeight = 594
+    defaultX = defaultWidth - config.width
+    defaultY = defaultHeight - config.height
+
 
     var rankingSel = "cases"
     var rankingSort = "Descending"
@@ -27,17 +42,23 @@ function ranking_chart(config){
     document.getElementById("ranking").setAttribute("style", "height:" + (height + margin.top) + "px");
     
     const outerSvg = d3.select("#outer1").append('svg')
-        .attr("width", width + margin.left + margin.right)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr('viewBox', -defaultX/2 + " " + -defaultY/2 + " " + defaultWidth + ' ' + defaultHeight)
 
-    outerSvg.append('text')
-        .attr("x", 0)
-        .attr("y", -100)
-        .attr("class", "title")
-        .text("Cases by County")
+    // outerSvg.append('text')
+    //     .attr("x", 0)
+    //     .attr("y", -100)
+    //     .attr("class", "title")
+    //     .text("Cases by County")
+
+    width = defaultWidth - margin.left - margin.right
+    height = defaultHeight  - margin.top - margin.bottom
 
     var barHeight = height/14
     var width1 = config.width* 0.4,
         width2 = width - width1
+
+    
 
     config.criteria.forEach(function(d){
         cases = d.data[d.data.length -1].cases
@@ -60,11 +81,12 @@ function ranking_chart(config){
 
     })
 
-
+    h = 2050
 
     const svg = d3.select(config.selection).append('svg')
-        .attr("width", width)
-        .attr("height", barHeight * rankingData.length + barHeight*0.5)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr('viewBox', 0 + " " + 0 + " " + defaultWidth + ' ' + h)
+        .classed("svg-content", true)
         
     var chart = svg.append("g")
         .attr("transform", "translate(" + (margin.left) + "," + margin.top + ")")
