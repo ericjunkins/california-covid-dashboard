@@ -49,7 +49,7 @@
     <section>
     <div class="container-fluid" id="main-container">
         <div class="row">
-            <div class="col-sm-6 outer-container">
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-7 outer-container">
                 <div class = "bounding rounded-10"> 
                     <div class="row row-headers" style="width: 100%; margin-left: 0px;">
 
@@ -72,12 +72,12 @@
 
                         <div class="col-sm-6">
                             <div class="row">
-                                <div class="col-sm-12" style="text-align: center; margin-bottom: 15px;">
+                                <div class="col-sm-12 chart-title">
                                     <p class="title"> County Ranking</p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-6">
+                                <div class="col-sm-4 offset-sm-1">
                                     <label class="small-labels" for="ranking-select" style="padding-left: 5%">Select ranking criteria:</label>
                                     <div class="form-group" style="padding: 0">
                                         <select class="select-css select-xl" id="ranking-select">
@@ -88,7 +88,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-4">
                                     <label class="small-labels" for="sorting-select" style="padding-left: 5%">Select ranking sorting:</label>
                                     <div class="form-group" style="padding: 0">
                                         <select class="select-css select-xl" id="sorting-select">
@@ -106,7 +106,29 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
+                            <div class="row">
+                                <div class="col-sm-12 chart-title">
+                                    <p class="title"> Testing </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4 offset-sm-1">
+                                    <label class="small-labels" for="testing-select" style="padding-left: 5%">Select testing sorting:</label>
+                                    <div class="form-group" style="padding: 0">
+                                        <select class="select-css select-xl" id="testing-select">
+                                            <option value="Cumulative"> Cumulative </option>
+                                            <option value="Daily"> Daily </option>
+                                            <option value="Weekly"> Weekly </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="charts" id="testing-chart"> </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row rows">
@@ -124,40 +146,12 @@
                                 </div>
                             </div>
                             -->
-
-                            <div class="row">
-                                <div class="col-sm-10 offset-sm-1">
-                                    <div class="row">
-                                        <div class="col-sm-12" style="text-align: center; margin-bottom: 15px;">
-                                            <p class="title"> Testing </p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-4 offset-sm-1">
-                                            <label class="small-labels" for="testing-select" style="padding-left: 5%">Select testing sorting:</label>
-                                            <div class="form-group" style="padding: 0">
-                                                <select class="select-css select-xl" id="testing-select">
-                                                    <option value="Cumulative"> Cumulative </option>
-                                                    <option value="Daily"> Daily </option>
-                                                    <option value="Weekly"> Weekly </option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-sm-12">
-                                            <div class="charts" id="testing-chart"> </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class = "col-sm-6 outer-container"> 
+            <div class = "col-sm-12 col-md-12 col-lg-12 col-xl-5 outer-container"> 
                 <div class = "bounding rounded-10"> 
                     <div class="row row-headers" style="width: 100%; margin-left: 0px;">
 
@@ -189,7 +183,11 @@
                         </div> 
                     </div>
 
-
+                    <div class="row">
+                        <div class="col-sm-12 chart-title">
+                            <p class="title"> Covid Cases per Capita </p>
+                        </div>
+                    </div>
 
                     <div class="row" style="width: 100%; margin-left: 0px;">
                         <div class="col-sm-9">
@@ -201,6 +199,11 @@
                         </div>
                     </div>
 
+                    <div class="row" style="margin-top: 30px;">
+                        <div class="col-sm-12 chart-title">
+                            <p class="title"> Hospitlizations Rate</p>
+                        </div>
+                    </div>
 
                     <div class="row" style="width: 100%; margin-left: 0px;">
                         <div class="col-sm-9">

@@ -7,7 +7,7 @@ function cali_map(config){
     }
 
     var margin = {
-        bottom: 0,
+        bottom: 100,
         left: 0,
         right: 0,
         top: 132
@@ -23,11 +23,11 @@ function cali_map(config){
         width = config.width - margin.left - margin.right;
 
     defaultWidth = 564
-    defaultHeight = 605
+    defaultHeight = 805
 
     
     var mode = "Choropleth"
-
+    // var mode = "Bubbles"
     // append the svg object to the body of the page
     var svg = d3.select(config.selection)
         .append("svg")
@@ -49,7 +49,7 @@ function cali_map(config){
     var path = d3.geoPath()
         .projection(projection);
 
-    var radius_max = 16
+    
 
     cal.features.forEach(function(d){
         vals = config.criteria.filter(v=> v.county == d.properties.NAME)[0]
@@ -71,30 +71,29 @@ function cali_map(config){
     var uniqueVals = d3.set(vals).values()
 
     function getColor(val){
-        val = Math.min(colorAbove.domain()[0], val)
-        if (val < 5) return "#badee8"
-        else if (5 <= val && val <= 25) return "#f2df91"
+        val = Math.min(colorAbove.domain()[2], val)
+        if (val < 5) return colorRange[0]
+        else if (5 <= val && val <= 25) return colorRange[1]
         else if (25 < val) return colorAbove(val)
 
         
     }
 
-    var colorRange = ['#f72c11', '#ab994f', '#2a9905']
-    var c1 = ['#8c0804', '#ff6e0b', '#ffae43']
-
+    normalizedMax = 125
+    normalizedMin = 25
+    normalizedMid = (normalizedMax + normalizedMin)/2
+    var colorRange = ["#badee8", "#f2df91",  '#ffae43', '#ff6e0b', '#8c0804']
+    var legTexts = ["None", "Less than 25", "25" , String(Math.round(normalizedMid)) ,'Over ' + normalizedMax]
     var colorAbove = d3.scaleLinear()
-        .domain([150, 75/2, 25])
-        .range(c1)
+        .domain([normalizedMin, normalizedMid, normalizedMax])
+        .range(colorRange.slice(2, 5))
         .interpolate(d3.interpolateRgb)
 
-    var colors = d3.scaleLinear()
-        .domain([100, 50, 25])
-        .range(colorRange)
-        .interpolate(d3.interpolateRgb)
 
+    var radius_max = 15
     var a = d3.scaleLinear()
-        .range([radius_max, 0])
-        .domain([area2radius(150),area2radius(25)])
+        .range([0, radius_max])
+        .domain([area2radius(0),area2radius(150)])
 
 
     var paths =svg.append('g')
@@ -103,14 +102,9 @@ function cali_map(config){
     var circlesGroup = svg.append('g')
         .attr("class", "circles-group")
 
-    var rectLegendSize = width * 0.08
-    var rectHeight = rectLegendSize *0.15
-    var spacing = rectLegendSize * 0.2
-    offset = (width - (rectLegendSize * 6 + spacing*3))/2 
 
-    var legend = svg.append('g')
-        .attr("class", "legend")
-        .attr("transform", "translate(" + (offset - width*0.0) + "," + height*0.05 + ")")
+
+    
 
     var selectionGroup = svg.append('g')
         .attr("transform", "translate(0," + (- margin.top * 0.8) + ")")
@@ -178,68 +172,187 @@ function cali_map(config){
         .attr("class", "small-labels")
         .text("Select map display:")
         .attr("text-anchor", "middle")
-    //drawLegend()
+    
+    drawLegend()
 
     function drawLegend(){
-        legendData = [
-            {
-                x: 0,
-                y: 0,
-                fill: "#4fb6d3",
-                text: "Falling"
-            },
-            {
-                x: rectLegendSize + spacing,
-                y: 0,
-                fill: "#f2df91",
-                text: "About the same"
-            },
-            {
-                x: rectLegendSize * 2 + spacing*2,
-                y: 0,
-                fill: "#ffae43",
-                text: ""
-            },
-            {
-                x: rectLegendSize * 3 + spacing*2,
-                y: 0,
-                fill: "#ff6e0b",
-                text: "Rising"
-            },
-            {
-                x: rectLegendSize * 4 + spacing*2,
-                y: 0,
-                fill: "#ce0a05",
-                text: ""
-            },
-            {
-                x: rectLegendSize * 5 + spacing*3,
-                y: 0,
-                fill: "#f2f2f2",
-                text: "Few or No cases"
-            }
-        ]
-   
-        var legendRects = legend.selectAll('rect')
-            .data(legendData)
-            .enter()
-                .append("rect")
-                .attr("x", d=> d.x)
-                .attr("y", d=> d.y)
-                .attr("width", rectLegendSize)
-                .attr("height", rectHeight)
-                .attr("fill", d=> d.fill)
 
-        var legendTexts = legend.selectAll('text')
-            .data(legendData)
-            .enter()
-                .append("text")
-                .attr("x", d=> d.x + rectLegendSize/2)
-                .attr("y", -rectHeight)
-                .attr("fill", "#fff")
-                .attr("font-size", "0.7em")
-                .attr("text-anchor", "middle")
-                .text(d=> d.text)
+        var legend = svg.append('g')
+            .attr("class", "legend")
+            .attr("transform", "translate(" + (width * 0.1) + "," + (height + margin.bottom*0.3) + ")")
+
+        colorLegend = legend.append("g")
+            .attr("opacity", 0)
+
+
+        bubblesLegend = legend.append('g')
+            .attr("transform", "translate(" + (width * 0.35) + "," + (30) + ")")
+            .attr("opacity", 0)
+        
+
+        legend.append('text')
+            .attr("x", width*0.45)
+            .attr("y", -25)
+            .attr("text-anchor", "middle")
+            .attr("fill", "#fff")
+            .attr("font-size", "1.3em")
+            .text("Cases per 100,000 Residents in past 2 weeks")
+
+        legendData = []
+        legendBoxes = []
+        legendHeight = 14
+        legendWidth = 80
+        spacing = 25
+        numSpacings = 0
+        offset = legendWidth*2 + spacing * 3
+        positions = [
+            legendWidth*0.5, 
+            legendWidth*1.5 + spacing, 
+            offset, 
+            offset + legendWidth*3/2, 
+            offset + legendWidth*3
+        ]
+
+        for (var i=0; i < 5; i++){
+            legendData.push({
+                x: positions[i],
+                y: 0,
+                text: legTexts[i],
+                fill: colorRange[i]
+            })
+        }
+
+        sections = 50
+        fillSection = (normalizedMax - normalizedMin)/sections
+
+        for (var i=0; i< sections; i++){
+            legendBoxes.push({
+                x: i * (3*legendWidth/sections) + offset,
+                y: 0,
+                width: 3*legendWidth/sections +1,
+                height: legendHeight,
+                fill: colorAbove(normalizedMin + fillSection * i)
+            })
+        }
+
+        
+
+        legendBoxes.push({x: 0, y: 0, width: legendWidth, height: legendHeight, fill: colorRange[0]})
+
+        legendBoxes.push({x: legendWidth + spacing, y: 0, width: legendWidth, height: legendHeight, fill: colorRange[1]})
+
+        var legendRects = colorLegend.selectAll('rect')
+            .data(legendBoxes, d=> d.y)
+
+        legendRects.enter()
+            .append('rect')
+            .attr("class", "legend-rect")
+            .attr("x", d=> d.x)
+            .attr("y", d=> d.y)
+            .attr("width", d=> d.width)
+            .attr("height", d=> d.height)
+            .attr("fill", "#fff")
+            .transition().duration(dur)
+            .attr("fill", d=> d.fill)
+
+        var texts = colorLegend.selectAll(".legend-labels")
+            .data(legendData, d=> d.x)
+
+        texts.enter()
+            .append('text')
+            // .attr("class", "legend-text")
+            .attr("fill", "#fff")
+            .attr("class", "legend-labels")
+            .attr("text-anchor", "middle")
+            .attr("x", d=> d.x)
+            .attr("y", legendHeight + 30)
+            .attr("dominant-baseline", "middle")
+            .text(d=> d.text)
+
+
+
+
+        colorLegend.append('line')
+            .attr('x1', offset)
+            .attr('x2', offset + legendWidth*3)
+            .attr('y1', legendHeight+1)
+            .attr('y2', legendHeight+1)
+            .attr("stroke", '#fff')
+            .attr("stroke-width",2)
+
+        innerTick = legendHeight - 5
+        outerTick = legendHeight + 8
+
+        colorLegend.append('line')
+            .attr('x1', positions[2])
+            .attr('x2', positions[2])
+            .attr('y1', innerTick)
+            .attr('y2', outerTick)
+            .attr("stroke", '#fff')
+            .attr("stroke-width",2)
+
+        colorLegend.append('line')
+            .attr('x1', positions[3])
+            .attr('x2', positions[3])
+            .attr('y1', innerTick)
+            .attr('y2', outerTick)
+            .attr("stroke", '#fff')
+            .attr("stroke-width",2)
+
+        colorLegend.append('line')
+            .attr('x1', positions[4])
+            .attr('x2', positions[4])
+            .attr('y1', innerTick)
+            .attr('y2', outerTick)
+            .attr("stroke", '#fff')
+            .attr("stroke-width",2)
+
+
+        bubblesLegend.append('circle')
+            .attr("cx", 0)
+            .attr("cy", 0)
+            .attr("r", a(area2radius(25)))
+            .attr("fill", "red")
+            .attr("opactiy", 0.3)
+            .attr("fill-opacity", 0.3)
+            .attr("stroke", "#000")
+
+        bubblesLegend.append('circle')
+            .attr("cx", 30)
+            .attr("cy", 0)
+            .attr("r", a(area2radius(75)))
+            .attr("fill", "red")
+            .attr("opactiy", 0.3)
+            .attr("fill-opacity", 0.3)
+            .attr("stroke", "#000")
+
+        bubblesLegend.append('circle')
+            .attr("cx", 70)
+            .attr("cy", 0)
+            .attr("r", a(area2radius(250)))
+            .attr("fill", "red")
+            .attr("opactiy", 0.3)
+            .attr("fill-opacity", 0.3)
+            .attr("stroke", "#000")
+
+        bubblesLegend.append("text")
+            .attr("x", - 20)
+            .attr("y", 0)
+            .attr("fill", "#ababab")
+            .attr("text-anchor", "end")
+            .attr("font-size", "1em")
+            .attr("dominant-baseline", "middle")
+            .text("25")
+
+        bubblesLegend.append("text")
+            .attr("x", 110)
+            .attr("y", 0)
+            .attr("fill", "#ababab")
+            .attr("text-anchor", "start")
+            .attr("font-size", "1em")
+            .attr("dominant-baseline", "middle")
+            .text("250")
+
     }
 
 
@@ -265,6 +378,15 @@ function cali_map(config){
             rightRect
                 .transition().duration(dur)
                 .attr("fill", "#ababab")
+
+            colorLegend
+                .transition().duration(dur)
+                .attr("opacity", 1)
+
+            bubblesLegend
+                .transition().duration(dur)
+                .attr("opacity", 0)
+
         } else {
             leftRect
                 .transition().duration(dur)
@@ -273,7 +395,17 @@ function cali_map(config){
             rightRect
                 .transition().duration(dur)
                 .attr("fill", "#fff")
+
+            colorLegend
+                .transition().duration(dur)
+                .attr("opacity", 0)
+
+            bubblesLegend
+                .transition().duration(dur)
+                .attr("opacity", 1)
         }
+        
+
             
     }
 
@@ -388,44 +520,13 @@ function cali_map(config){
             .attr("r", 0)
             .transition().duration(dur)
             .attr("r", function(d){
-                val = area2radius(d.totalNormalizedCases)
-                if (d.totalNormalizedCases <25){
-                    return 0
-                } 
-                else return a(val)
+                tmp = d.totalNormalizedCases
+                val = area2radius(tmp)
+                return a(val)
             })
     }
 
     function draw_chart(){
-        
-
-        legRect = legend.selectAll("rect")
-            .data(legendData, d=> d.y)
-
-        legRect.enter()
-            .append("rect")
-            .attr('x', d=> d.x)
-            .attr('y', d=> d.y)
-            .attr('width', legBoxSize  * 0.85)
-            .attr('height', legBoxSize * 0.85)
-            .attr('fill', d=> d.fill)
-        
-
-        legText = legend.selectAll(".title-text")
-            .data(legendData, d=> d.y)
-
-        legText.enter()
-            .append('text')
-            .attr("class", "title-text")
-            .attr("x", legBoxSize + 10)
-            .attr('font-size', "0.5em")
-            .attr("y", d=> d.y + legBoxSize/2)
-            .attr("dominant-baseline", "middle")
-            .attr("fill" , "#fff")
-            .text(d=> d.text)
-
-
-       
 
     }
 

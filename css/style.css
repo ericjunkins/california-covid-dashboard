@@ -211,6 +211,12 @@ h5 {
 
 }
 
+.chart-title {
+	text-align: left;
+	margin-bottom: 15px;
+	padding-left: 10%;
+}
+
 
 .legend-text {
 	fill: #fff;

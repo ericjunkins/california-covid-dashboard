@@ -54,7 +54,7 @@ function ranking_chart(config){
     width = defaultWidth - margin.left - margin.right
     height = defaultHeight  - margin.top - margin.bottom
 
-    var barHeight = height/14
+    var barHeight = height/25
     var width1 = config.width* 0.4,
         width2 = width - width1
 
