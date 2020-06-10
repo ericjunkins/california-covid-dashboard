@@ -151,9 +151,9 @@ function testing_chart(config){
     drawLegend();
 
     function drawLegend(){
-        rectSize = 25
+        rectSize = 15
         rect2Start = width*0.3
-        lineStart = width * 0.6
+        lineStart = width * 0.55
         spacing = 10
         legendGroup = svg.append("g")
             .attr("transform", "translate(" + (width *0.1) + "," + (-margin.top * 0.65) + ")")
@@ -190,7 +190,7 @@ function testing_chart(config){
             .attr("y", 0)
             .attr("class", "legend-text")
             .attr("dominant-baseline", "middle")
-            .text("Positive Results")
+            .text("Positive Tests")
 
         legendGroup.append("line")
             .attr("x1", lineStart)
@@ -240,7 +240,7 @@ function testing_chart(config){
         })
 
         xBand.domain(barData.map(d=> d.formattedDate))
-        y.domain([0, Math.round(d3.max(barData, d=> d.tests))])
+        y.domain([0, Math.round(d3.max(barData, d=> d.tests))*1.2])
         lineData = []
 
         barData.forEach(function(d){

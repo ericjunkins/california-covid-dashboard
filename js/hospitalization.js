@@ -153,7 +153,7 @@ function hospital_line_chart(config){
             .attr("y", 0)
             .attr("class", "legend-text")
             .attr("dominant-baseline", "middle")
-            .text("Daily threshold")
+            .text("Daily Threshold")
 
     }
 

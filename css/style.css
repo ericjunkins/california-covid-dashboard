@@ -178,16 +178,16 @@ hr {
 
 
 .axisYellow text{
-	fill: #f2c80f;
+	fill: #f2df91;
 	font-size: 1.5em;
 }
   
 .axisYellow line{
-	stroke: #f2c80f;
+	stroke: #f2df91;
 }
   
 .axisYellow path{
-	stroke: #f2c80f;
+	stroke: #f2df91;
 }
 
 
@@ -509,17 +509,17 @@ select.form-control{display:inline-block}
 }
 
 .percent-line {
-	stroke: #f2c80f;
+	stroke: #f2df91;
 	fill: none;
 	stroke-width: 3.5;
 }
 
 .percent-marker {
-	fill: #f2c80f;
+	fill: #f2df91;
 }
 
 .labelYellow {
-	fill: #f2c80f;
+	fill: #f2df91;
 }
 
 /* ---------------------------------------------------- */
@@ -530,25 +530,25 @@ select.form-control{display:inline-block}
 /* ---------------------------------------------------- */
 
 .bar-color-1{
-	fill: #0b298f;
-}
-
-.bar-color-2 {
 	fill: #4fb6d3;
 }
 
+.bar-color-2 {
+	fill: #7a7a7a;
+}
+
 .percent-line {
-	stroke: #f2c80f;
+	stroke: #f2df91;
 	fill: none;
 	stroke-width: 3.5;
 }
 
 .percent-marker {
-	fill: #f2c80f;
+	fill: #f2df91;
 }
 
 .labelYellow {
-	fill: #f2c80f;
+	fill: #f2df91;
 }
 
 /* ---------------------------------------------------- */
@@ -571,7 +571,7 @@ select.form-control{display:inline-block}
 }
 
 .line-yellow {
-	stroke: #f2c80f;
+	stroke: #f2df91;
 	stroke-width: 2;
 	stroke-dasharray: 5;
 	fill:none;
@@ -588,7 +588,7 @@ select.form-control{display:inline-block}
 }
 
 .threshold-line {
-	stroke: #f2c80f;
+	stroke: #f2df91;
 	stroke-width: 2;
 	stroke-dasharray: 5;
 	fill:none;
