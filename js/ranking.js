@@ -8,9 +8,9 @@ function ranking_chart(config){
 
     var margin = {
         bottom: 25,
-        left: 0,
+        left: 30,
         right: 30,
-        top: 0
+        top: 60
     }
 
     var height = config.height - margin.top - margin.bottom, 
@@ -24,7 +24,7 @@ function ranking_chart(config){
 
 
     defaultWidth = 531
-    defaultHeight = 594
+    defaultHeight = 1000
     defaultX = defaultWidth - config.width
     defaultY = defaultHeight - config.height
 
@@ -35,11 +35,14 @@ function ranking_chart(config){
     var rankingData = []
     var yLabel
     
+    width = defaultWidth - margin.left - margin.right
+    height = defaultHeight  - margin.top - margin.bottom
+
     document.getElementById("outer1").setAttribute("style", "width:" + (width +margin.left + margin.right) + "px");
-    document.getElementById("outer1").setAttribute("style", "height:" + (height + margin.top + margin.bottom) + "px");
+    document.getElementById("outer1").setAttribute("style", "height:" + (defaultHeight + margin.top + margin.bottom) + "px");
 
     document.getElementById("ranking").setAttribute("style", "width:" + (width +margin.left + margin.right) + "px");
-    document.getElementById("ranking").setAttribute("style", "height:" + (height + margin.top) + "px");
+    document.getElementById("ranking").setAttribute("style", "height:" + (defaultHeight + margin.top) + "px");
     
     const outerSvg = d3.select("#outer1").append('svg')
         .attr("preserveAspectRatio", "xMidYMid meet")
@@ -51,16 +54,22 @@ function ranking_chart(config){
     //     .attr("class", "title")
     //     .text("Cases by County")
 
-    width = defaultWidth - margin.left - margin.right
-    height = defaultHeight  - margin.top - margin.bottom
 
-    var barHeight = height/25
-    var width1 = config.width* 0.4,
+
+    var barHeight = height/18
+    var width1 = width* 0.55,
         width2 = width - width1
 
+    //console.log(config.criteria)
     
 
+    var textArray = []
+
+    var textColumns = ['county', 'currentCases', 'currentCasesNormalized', 'currentDeaths', 'currentDeathsNormalized']
+    var textColumNames = ['County', 'Cases', 'Per 100,000', 'Deaths', 'Per 100,000']
+
     config.criteria.forEach(function(d){
+
         cases = d.data[d.data.length -1].cases
         deaths = d.data[d.data.length -1].deaths
         rankingData.push({
@@ -73,13 +82,26 @@ function ranking_chart(config){
         yLabels.push({
             cases: cases,
             deaths: deaths,
+            currentCases: d.currentCases,
+            currentDeaths: d.currentDeaths,
+            currentCasesNormalized: d.currentCasesNormalized,
+            currentDeathsNormalized: d.currentDeathsNormalized,
             caseAvg: d.caseAvg,
             deathAvg: d.deathAvg,
             county: d.county,
             idName: d.county.replace(/\s/g, '')
         })
 
+        for (var i=0; i<5; i++){
+            textArray.push({
+                x: textColumns[i],
+                y: d.county,
+                text: d[textColumns[i]],
+                id: d.county + "-" + textColumns[i]
+            })
+        }
     })
+
 
     h = 2050
 
@@ -92,28 +114,46 @@ function ranking_chart(config){
         .attr("transform", "translate(" + (margin.left) + "," + margin.top + ")")
 
     var barsGroup = svg.append("g")
-        .attr("transform", "translate(" + ( margin.left + width1 )  + "," + margin.top + ")")
+        .attr("transform", "translate(" + ( margin.left)  + "," + margin.top + ")")
 
+    var barChart = barsGroup.append("g")
     
+    var labels = chart.append('g')
+
     var axes = barsGroup.append("g")
 
+    var xOrdinal = d3.scaleOrdinal()
+        .domain(textColumns)
+        .range([0, width1 * 0.55, width1 * 0.7, width1 * 0.85, width1*0.95])
 
     var x = d3.scaleLinear()
         .range([0, width2])
     
     var y = d3.scaleBand()
         .range([0, barHeight*rankingData.length])
-        .padding(0.5)
+        .padding(0)
 
     var y2 = d3.scaleBand()
-        .domain(rankingData.map(d=> d.county ))
-        .range([barHeight*rankingData.length, 0])
+        .range(y.range())
         .padding(0)
 
     var x2 = d3.scaleBand()
         .domain(["name", "value"])
         .range([0, width1 - 15])
         .padding(0)
+
+
+    var colors = d3.scaleOrdinal()
+        .domain(['falling', 'flat', 'significant', 'moderate', 'extreme'])
+        .range(["#ababab", "#badee8", "#f2df91",  '#ffae43', '#ff6e0b', '#8c0804'])
+
+    var colorLinear = d3.scaleLinear()
+        .domain([0.05, 0.1, 0.5])
+        .range(['#ffae43', '#ff6e0b', '#8c0804'])
+    
+    var xTime = d3.scaleBand()
+        .range([width1+10, width])
+        .padding(0.0)
 
     var yAxisCall = axes.append("g")
         .attr("class", "axis axis--y axisWhite")
@@ -139,8 +179,16 @@ function ranking_chart(config){
 
     function rankChart(){
         updateScales();
-        draw_chart();
+        //draw_chart();
+        drawTexts();
+        drawBars();
+        drawDividers();
     }
+
+    rectTest = []
+
+
+    
 
     function updateScales(){
         if (rankingSort == "Ascending"){
@@ -158,15 +206,156 @@ function ranking_chart(config){
 
         x_axis.scale(x)
         y_axis.scale(y)
+        y2.domain(y.domain())
+        // yAxisCall.transition().duration(dur).call(y_axis)
 
-        yAxisCall.transition().duration(dur).call(y_axis)
+        rectTest = config.criteria.filter(d=> d.county=="Los Angeles")[0]
+        dates = rectTest.fullData.map(d=> d.date)
+        
+
+        xTime.domain(dates)
+
+        config.criteria.forEach(function(d){
+            // console.log(d)
+            countyDates = d.fullData.map(v=> v.date)
+            dates.forEach(function(v){
+                if (!countyDates.includes(v)){
+                    d.fullData.push({
+                        date: v,
+                        newCasesAvg: 0,
+                        prevCaseAvg: 0,
+                        county: d.county
+                    })
+                }
+            })
+        })
+
+
+        tmp = rectTest.fullData.map(d=> d.newCasesAvg.toFixed(2))
+
+        vals = rectTest.fullData.map(d=> (d.newCasesAvg - d.prevCaseAvg).toFixed(3))
+        //console.log(rectTest.fullData)
 
     }
 
-    function draw_chart(){
+    var threshold = {
+        flat: 0.025,
+        significant: 0.05,
+        moderate: 0.25,
+        extreme: 0.4
+    }
 
+    function getColor(cur, prev){
+        if (cur == 0) return "#c4c4c4"
+        else if (cur - prev <= -threshold.moderate) return "#badee8"
+        else if (Math.abs(cur - prev) <= threshold.significant) return "#f2df91"
+        else if (cur - prev <= threshold.moderate) return '#ffae43'
+        else if (cur - prev <= threshold.extreme) return '#ff6e0b'
+        else return '#8c0804'
+    }
+
+
+    function drawTexts(){
+        var texts = chart.selectAll("text")
+            .data(textArray, d=> d.id)
+
+        texts.enter()
+            .append('text')
+            .attr("class", d=> (d.x == 'county' || d.x == "currentCases" || d.x == "currentDeaths" ? "stat-td-major" : "stat-td-minor"))
+            .attr("x", d=> xOrdinal(d.x))
+            .attr("y", d=> y(d.y))
+            .attr("dominant-baseline", "middle")
+            .attr("text-anchor", d=> (d.x != "county" ? "end" : "start"))
+            .text(d=>d.text)
+
+        var columnLabels = labels.selectAll("text")
+            .data(textColumns)
+
+        columnLabels.enter()
+            .append('text')
+            .attr("fill", "#838383")
+            .text(function(d, i){ 
+                return (d == 'county' || d == "currentCases" || d == "currentDeaths" ? textColumNames[i] : "")
+            })
+            .attr("y", -y.bandwidth()/2 - 10)
+            .attr("x", function(d){ return xOrdinal(d) })
+            .attr("text-anchor", d=> (d != "county" ? "end" : "start"))
+            // .text(function(d, i){ return })
+            
+
+    }
+
+    function drawDividers(){
+        var lines = chart.selectAll("line")
+            .data(config.criteria,  d=> d.county)
+
+        lines.enter()
+            .append('line')
+            .attr("class", "ranking-gridlines")
+            .attr("x1", -margin.left/2)
+            .attr("x2", width + margin.right/2)
+            .attr("y1", d=> y2(d.county) - y2.bandwidth()/2)
+            .attr("y2", d=> y2(d.county) - y2.bandwidth()/2)
+
+        // chart.append("line")
+        //     .attr("class", "ranking-axis")
+        //     .attr("x1", width1)
+        //     .attr("x2", width1)
+        //     .attr("y1", -y.bandwidth()/2)
+        //     .attr("y2", y.range()[1] + y.bandwidth()/2)
+
+    }
+
+    function drawBars(){
+        // barsHeight = 25
+        // testRectangles = barChart.selectAll("rect")
+        //     .data(rectTest.fullData, d=> d.date)
+
+        // testRectangles.enter()
+        //     .append("rect")
+        //     .attr("y", y("Los Angeles") -y.bandwidth()/2)
+        //     .attr("x", d=> xTime(d.date))
+        //     .attr("height", y.bandwidth())
+        //     .attr("width", xTime.bandwidth()+1)
+        //     .attr("fill", d=> getColor(d.newCasesAvg, d.prevCaseAvg))
+
+        var bars = barChart.selectAll("g")
+            .data(config.criteria, d=> d.county)
+
+        g = bars.enter()
+            .append("g")
+            .attr('id', d=> 'group-' + d.county)
+            .attr('transform', d=> 'translate(0,' + (y(d.county)) + ")")
+
+        // g
+        //     .transition().duration(dur)
+        //     .attr('transform', d=> 'translate(0,' + y(d.county) + ")")
+
+    
+        barHeight = y.bandwidth()/3
+
+        rects = g
+            .each(function(d, i, f){ 
+                d3.select(f[i]).selectAll('rect')
+                    .data(d.fullData, function(v){
+                        return v.date
+                    })
+                    .enter()
+                    .append("rect")
+                        .attr("y", y("Los Angeles") - barHeight/2)
+                        .attr("x", function(v){
+                            return xTime(v.date)
+                        })
+                        .attr("height", barHeight)
+                        .attr("width", xTime.bandwidth()+1)
+                        .attr("fill", v=> getColor(v.newCasesAvg, v.prevCaseAvg))
+            })
+    }
+
+    function draw_chart(){
+        return;
         xCounty = width1 * 0.1
-        xValue = width1 * 0.7
+        xValue = width1 * 0.5
 
         var rects = barsGroup.selectAll("rect")
             .data(rankingData, d=> d.county)

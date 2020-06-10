@@ -48,12 +48,11 @@ function dropdownChange(){
     var id = d3.select(this).property("id");
     var sel = d3.select(this).property('value')
     if (id == "county-select"){
-        //roadmapVis.selection(sel)
-        //lolipopVis.selection(sel)
         casesSliderVis.selection(sel)
         casesChartVis.selection(sel)
         hospChartVis.selection(sel)
         hospSliderVis.selection(sel)
+        hospMaxSliderVis.selection(sel)
 
     } else if (id == "testing-select"){
         testingVis.selection(sel)
@@ -216,20 +215,44 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
     countyData.forEach(function(d, i){
         if (d.key == "Unknown") return 
         movingWindow = []
+        twoWeekWindow = []
+        barsData = []
+        previousCases = 0
+        prevCaseAvg = 0
         pop = population.filter(e => e.county == d.key)[0].population
         d.values.forEach(function(v, j){
             movingWindow.push(v)
             if (movingWindow.length > windowSize){
                 movingWindow.shift()
             }
+            
+            v.newCases = v.cases - previousCases
+            
+            twoWeekWindow.push(v)
+            if (twoWeekWindow.length > 14) twoWeekWindow.shift();
+
+            v.newCasesAvg = Math.ceil(d3.sum(twoWeekWindow, e=> e.newCases)/twoWeekWindow.length) * (100000/pop)
+            v.growthStatus = getIncreasingStatus(prevCaseAvg, v.newCasesAvg, previousCases)
+            v.prevCaseAvg = prevCaseAvg
             v.binnedCase = Math.ceil(d3.sum(movingWindow.map(v=> v.cases ))/movingWindow.length)
             t = Math.min(j, doublingWindow)
 
             prevInd = j - t
             prevCases = d.values[prevInd].binnedCase
+
             if (t == 0 || prevCases == v.binnedCase) v.doubleDays = doubleCap
-            else v.doubleDays = Math.min(doubleCap, t/(Math.log2(v.binnedCase) - Math.log2(prevCases))) 
+            else v.doubleDays = Math.min(doubleCap, t/(Math.log2(v.binnedCase) - Math.log2(prevCases)))
+            
+            prevCaseAvg = v.newCasesAvg
+            previousCases = v.cases
+
+            if (!(j % 1)) barsData.push(v)
+
+            
+
         })
+        barsData = barsData.filter(v => parseTime("2020-03-01") <= parseTime(v.date))
+
         var twoWeekPeriod = d.values.filter( v=> compTime <= parseTime(v.date) )
         if (d.key != "Unknown"){
             criteriaData.push({
@@ -237,14 +260,18 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
                 county: d.key,
                 fips: d.values[0].fips,
                 state: d.values[0].state,
-                population: +pop
+                population: +pop,
+                fullData: barsData
             })
         }
     })
 
+
+
     criteriaData.sort(function(a,b){
         return d3.ascending(a.county, b.county)
     })
+
     criteriaData.forEach(function(d){
         // caseThreshold = 25 * (d.population/100000)
         d.data.forEach(function(v, i){
@@ -266,7 +293,17 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
             v.normalizedCases = Math.max(0, v.caseIncrease * (100000/d.population))
             v.population = d.population
 
+            if (i == d.data.length -1){
+                d.currentCases = v.cases
+                d.currentDeaths = v.deaths
+                d.currentCasesNormalized = Math.round(v.cases * (100000/d.population))
+                d.currentDeathsNormalized = Math.round(v.deaths * (100000/d.population))
+            }
+
         })
+
+
+
         d.caseAvg = d3.sum(d.data, d=> d.caseIncrease)/14
         d.deathAvg = d3.sum(d.data, d=> d.deathIncrease)/14
         d.derivAvg = d3.sum(d.data, d=> d.deriv)/14
@@ -331,15 +368,15 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         'defaultColor' : default_color
     }
 
-    lolipopConfig = {
-        'selection': "#lolipop-chart",
-        'height': row2,
-        'width': parseInt(d3.select("#lolipop-chart").style("width"), 10),
-        'duration': 750,
-        'criteria': criteriaData,
-        'defaultColor' : default_color
+    // lolipopConfig = {
+    //     'selection': "#lolipop-chart",
+    //     'height': row2,
+    //     'width': parseInt(d3.select("#lolipop-chart").style("width"), 10),
+    //     'duration': 750,
+    //     'criteria': criteriaData,
+    //     'defaultColor' : default_color
 
-    }
+    // }
     casesThresholds = {
         max: 100,
         min: 0,
@@ -352,6 +389,15 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         thresh: 5
     }
 
+    hospMaxThresholds = {
+        max: 80,
+        min: 0,
+        thresh: 20
+    }
+
+    sliderRadius = 70
+
+    
 
     criteriaConfig = {
         'selection': "#criteria-chart",
@@ -363,6 +409,8 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         'type': 'cases'
     }
 
+    
+
     casesSliderConfig = {
         'selection': "#cases-slider",
         'height':  casesRow*0.6,
@@ -370,7 +418,9 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         'duration': 750,
         'criteria': criteriaData,
         'thresholds': casesThresholds,
-        'type': 'cases'
+        'radius': sliderRadius,
+        'type': 'cases',
+        'shifts': {left: 10}
     }
 
     hospSliderConfig = {
@@ -380,7 +430,21 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         'duration': 750,
         'hospitalData': hospByCounty,
         'thresholds': hospThresholds,
-        'type': 'hosp'
+        'radius': sliderRadius,
+        'type': 'hosp',
+        'shifts': {left: 10}
+    }
+
+    hospMaxSliderConfig = {
+        'selection': "#hosp-max-slider",
+        'height':  casesRow*0.6,
+        'width': parseInt(d3.select("#cases-slider").style("width"), 10),
+        'duration': 750,
+        'hospitalData': hospByCounty,
+        'thresholds': hospMaxThresholds,
+        'radius': sliderRadius,
+        'type': 'hospMax',
+        'shifts': {left: -15}
     }
 
     casesChartConfig = {
@@ -474,6 +538,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
     hospChartVis = hospital_line_chart(hospChartConfig)
     hospSliderVis = slider_chart(hospSliderConfig)
     criteriaVis = criteria_chart(criteriaConfig)
+    hospMaxSliderVis = slider_chart(hospMaxSliderConfig)
 
     criteriaVis();
     caliMapVis();
@@ -487,6 +552,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
     casesChartVis();
     hospChartVis();
     hospSliderVis();
+    hospMaxSliderVis();
 }
 
 function updateRanking(selection, value){
@@ -502,8 +568,29 @@ function updateRanking(selection, value){
 // var leastSquaresCoeff = leastSquares(xSeries, ySeries)
 
 
+var statusThresholds = {
+    
+    flat: 0.025,
+    rising1: 0.25,
+    rising2: 0.3,
+}
 
+function getIncreasingStatus(prev, cur, total){
+    // if (cur == 0 || total == 0 || cur - prev < 0) return "falling"
+    // else if (prev < 5) return "flat"
+    // else if (cur - prev < prev * statusThresholds.flat) status = "flat"
+    // else if (cur - prev < prev * statusThresholds.rising1) stats = "significant"
+    // else if (cur - prev < prev * statusThresholds.rising2) status = "moderate"
+    // else status = "extreme"
+    // return status
 
+    if (cur == 0 || total == 0) return "falling"
+    else if (Math.abs(cur - prev) <= 0.01) return "flat"
+    else if (cur - prev < statusThresholds.rising1) return "significant"
+    else if (cur - prev  < statusThresholds.rising2) return "moderate"
+    else return "extreme"
+
+}
 
 
 function leastSquares(xSeries, ySeries){

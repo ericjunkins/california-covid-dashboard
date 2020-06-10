@@ -7,20 +7,23 @@ function slider_chart(config){
 
 
     var margin = {
-        bottom: 32,
+        bottom:80,
         left: 28,
         right: 28,
-        top: 8
+        top: 0
     }
+
+    shifts = config.shifts
 
     var height = config.height - margin.top - margin.bottom, 
         width = config.width - margin.left - margin.right;
     
     var dur = config.duration
-
+    var fillOpacity = 0.6
 
     defaultWidth = 282
-    defaultHeight = 177
+    defaultHeight = 220
+
 
 
     // append the svg object to the body of the page
@@ -30,29 +33,31 @@ function slider_chart(config){
         .attr('viewBox', 0 + " " + 0 + " " + defaultWidth + ' ' + defaultHeight)
         .classed("svg-content", true)
             .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                .attr("transform", "translate(" + (margin.left + shifts.left) + "," + margin.top + ")");
     
 
     width = defaultWidth - margin.left - margin.right
     height = defaultHeight  - margin.top - margin.bottom
 
     sliderSelection = "Los Angeles"
-    thresholds = config.thresholds
+    var thresholds = config.thresholds
     curAngle = 0
     var maxCases = thresholds.max
     var minCases = thresholds.min
     var dialText
 
-    var colorRange = ['#f72c11', '#ab994f', '#2a9905']
 
-    if (config.type == "cases"){
+
+    var colorRange = ['#f72c11', '#aee053', '#2a9905']
+
+    if (config.type != "hosp"){
         var colors = d3.scaleLinear()
-        .domain([maxCases, maxCases/2, minCases])
+        .domain([maxCases, thresholds.thresh, minCases])
         .range(colorRange)
     } else {
         var colors = d3.scaleOrdinal()
-            .domain(['High', "Stable", "Declining"])
-            .range(['#f72c11', '#ab994f', '#2a9905'])
+            .domain(['Climbing', "Stable", "Declining"])
+            .range(['#f72c11', '#aee053', '#40db0d'])
     }
     
     
@@ -81,7 +86,8 @@ function slider_chart(config){
             .attr("class", "dial-arrow")
             .attr('d', d3.line()(arrowPoints))
             .attr("fill", "#fff")
-    } else {
+            .attr("fill-opacity", fillOpacity)
+    } else if (config.type=="hosp") {
         svg
         .append('defs')
         .append('marker')
@@ -97,19 +103,39 @@ function slider_chart(config){
             .attr("class", "dial-arrow")
             .attr('d', d3.line()(arrowPoints))
             .attr("fill", "#fff")
+            .attr("fill-opacity", fillOpacity)
+    } else if (config.type=="hospMax") {
+        svg
+        .append('defs')
+        .append('marker')
+        .attr('id', 'hospMax-arrow')
+        .attr('viewBox', [0, 0, markerBoxWidth/1.5, markerBoxHeight])
+        .attr('refX', refX)
+        .attr('refY', refY)
+        .attr('markerWidth', markerBoxWidth)
+        .attr('markerHeight', markerBoxHeight)
+        .attr('orient', 'auto-start-reverse')
+            .append('path')
+            .attr("id", "dial-arrow-" + config.type)
+            .attr("class", "dial-arrow")
+            .attr('d', d3.line()(arrowPoints))
+            .attr("fill", "#fff")
+            .attr("fill-opacity", fillOpacity)
     }
    
 
 
-    var radius = Math.min(width, height) * 0.6,
-        startAng = -105,
-        endAng = 105
+    var radius = Math.min(width, height) * 0.6
+    var radius = config.radius
+        startAng = -85,
+        endAng = 85
         startRad = ang2rad(startAng)
         endRad = ang2rad(endAng)
         textRadius = radius * 1.25
         innerTick = radius * 1.05
         outerTick = radius * 1.2,
         wiperRad = radius * 1.15
+
 
     var pos = d3.scaleLinear()
         .domain([maxCases, minCases])
@@ -134,25 +160,30 @@ function slider_chart(config){
         .endAngle(d=> d.end)
 
 
-    
+
     
     var dial = svg.append('g')
         .attr("transform", "translate(" + width/2 + "," + (height*0.75) + ")")
         .attr("opacity", 1)
 
     var spinner = dial.append("g")
-        .append('path')
+    var markerLine;
+
+    spinner.append('path')
         .lower()
         .attr("class", "marker")
         .attr("id", "marker-" + config.type)
         .attr('marker-end', function(){
-            return (config.type == "cases" ? 'url(#cases-arrow)' : 'url(#hosp-arrow')
+            if (config.type == "cases") return 'url(#cases-arrow)'
+            else if (config.type == "hosp" ) return 'url(#hosp-arrow)'
+            else if (config.type == "hospMax" ) return 'url(#hospMax-arrow)'
         })
         .attr("d", d3.line()([[0,0], [0,-radius * 0.63]]))
+        .attr('fill-opacity', fillOpacity)
 
     function drawDial(){
         colorDial = []
-        dialSegments = (config.type == "cases" ? 25 : 3)
+        dialSegments = (config.type != "hosp" ? 25 : 3)
         pieceSize = (endRad - startRad) / dialSegments
         segmentPieces = (maxCases - minCases)/dialSegments
 
@@ -175,8 +206,9 @@ function slider_chart(config){
             .attr("d", d=> colorArc(d))
             .attr("fill", d=> d.color)
             .attr("class", function(){
-                return (config.type == "cases" ? "dial-bg-cases" : "dial-bg-hosp")
+                return (config.type != "hosp" ? "dial-bg-cases" : "dial-bg-hosp")
             })
+            .attr("fill-opacity", fillOpacity)
 
         dial.append("text")
             .attr("x", -Math.sin(endRad)*textRadius)
@@ -185,35 +217,78 @@ function slider_chart(config){
             .attr("text-anchor", "end")
             .text("")
 
+        markerLine = spinner.append('line')
+            .lower()
+            .attr("x1", 0)
+            .attr("x2", 0)
+            .attr("y1", -radius * 0.15)
+            .attr("y2", -radius * 0.5)
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 2)
+
         dial.append("circle")
             .attr("cx", 0)
             .attr("cy", 0)
-            .attr("r", radius * 0.45)
+            .attr("r", radius * 0.15)
             .attr("id", "dial-circle-" + config.type)
             .attr("class", "dial-circle")
             .attr("fill", "#fff")
+            .attr("opacity", fillOpacity)
+            .attr("stroke", "#fff")
 
-        dialText = dial.append("text")
-            .attr("x", 0)
-            .attr("y", function(){ return (config.type=="cases" ? 0 : 0)})
-            .attr("class", "slider-text")
-            .attr("dominant-baseline", "middle")
+
+
+
+        // dialText = dial.append("text")
+        //     .attr("x", 0)
+        //     .attr("y", function(){ return (config.type=="cases" ? 0 : 0)})
+        //     .attr("class", "slider-text")
+        //     .attr("dominant-baseline", "middle")
         
-        dial.append("text")
-            .attr("x", 0)
-            .attr("y", 18)
-            .attr("dominant-baseline", "middle")
-            .attr("text-anchor", "middle")
-            .text((config.type == "cases" ? "" : ""))
-            .attr("font-size", "0.8em")
-            .attr("fill", "#fff")
+        // dial.append("text")
+        //     .attr("x", 0)
+        //     .attr("y", 18)
+        //     .attr("dominant-baseline", "middle")
+        //     .attr("text-anchor", "middle")
+        //     .text((config.type == "cases" ? "" : ""))
+        //     .attr("font-size", "0.8em")
+        //     .attr("fill", "#fff")
 
-        dial.append("text")
+        // dial.append("text")
+        //     .attr("x", 0)
+        //     .attr("y", radius * 0.75)
+        //     .attr("class", "small-labels")
+        //     .attr("text-anchor", "middle")
+        //     .text(config.type == "cases" ? "Cases Per 100,000 Residents" : "Hospital Occupation Trend")
+
+    }
+
+    var displayText;
+    var iconText;
+
+    function drawTexts(){
+        textGroup = dial.append("g")
+            .attr("transform", "translate(" + 0 + "," + (radius + 15) + ")")
+
+        displayText = textGroup.append('text')
             .attr("x", 0)
-            .attr("y", radius * 0.75)
-            .attr("class", "small-labels")
+            .attr("y", 0)
+            .attr("fill", "#fff")
+            .attr("font-size", "3.5em")
             .attr("text-anchor", "middle")
-            .text(config.type == "cases" ? "Cases Per 100,000 Residents" : "Hospital Occupation Trend")
+            .attr("dominant-baseline", "middle")
+            .text('test')
+
+        // iconText = textGroup.append('text')
+        //     .attr("x", 5)
+        //     .attr("y", 0)
+        //     .attr("fill", "#fff")
+        //     .attr('class', 'icons-text')
+        //     .attr('font-family', 'FontAwesome')
+        //     .attr("font-size", "3.5em")
+        //     .attr("text-anchor", "start")
+        //     .attr("dominant-baseline", "middle")
+        //     .text('\uf00d')
 
     }
 
@@ -223,6 +298,7 @@ function slider_chart(config){
 
     function rotateSpinner(val){
         targetAngle = rot(val)
+
         spinner
             .transition().duration(dur)
             .attr("transform", "rotate(" + targetAngle + ")")
@@ -234,25 +310,24 @@ function slider_chart(config){
             data = config.criteria.filter(d=> d.county == sliderSelection)[0]
             val = d3.sum(data.chartData, d=> d.normalizedCases)
             
-            dialText.text(Math.round(val))  
+            //dialText.text(Math.round(val)) 
+            valText = Math.round(val) 
             val = Math.min(val, maxCases)
             
             casesIconStatus = (val <= 25 ? 1 : 0)
 
-            updateCriteriaIcon('cases', casesIconStatus)
-
-
-
+            updateCriteriaIcon('0', casesIconStatus)
+            
             rotateSpinner(val)
 
-        } else {
+        } else if (config.type == "hosp") {
             data = config.hospitalData[sliderSelection]
             data = data.filter(function(d, i){
                 if (i >= data.length - 14) return d
             })
 
             percentMax = d3.max(data, d=> d.covidPercentChange)
-            val = (percentMax >= 5 ? "Increasing" : "Decreasing")
+            val = (percentMax >= 5 ? "Climbing" : "Decreasing")
             size = (thresholds.max - thresholds.min ) /3
 
             
@@ -266,7 +341,7 @@ function slider_chart(config){
     
 
             if (5 <= percentMax){
-                val = "High"
+                val = "Climbing"
                 ang = thresholds.max - size/2
             } else {
                 if (percentSlope < 0){
@@ -276,37 +351,46 @@ function slider_chart(config){
                     val = "Stable"
                     ang = 0
                 }
-
             }
 
 
-            maxHosp = Math.max(d3.max(data, d=> d.covidPatientsIncrease), 0)
-            if (maxHosp > 20) {
-                col = colors("High")
-                maxIconStatus = 0
-            }
-            else{
-                col = colors("Declining")
-                maxIconStatus = 1
-            } 
-            t = d3.select("#max-daily-hosp")
-                .text(maxHosp)
-                .style("color", col)  
-
-
-            if (val != "High") stabIconStatus = 1
+            if (val != "Climbing") stabIconStatus = 1
             else stabIconStatus = 0
+            valText = val
+            updateCriteriaIcon('2', stabIconStatus )
 
-
-
-            updateCriteriaIcon('stab', stabIconStatus )
-            updateCriteriaIcon('hosp-max', maxIconStatus )
-
-            dialText.text(val)
-
+            //dialText.text(val)
             rotateSpinner(ang)
 
+        } else if (config.type == "hospMax"){
+            data = config.hospitalData[sliderSelection]
+
+            val = d3.max(data, d=> d.covidPatientsIncrease)
+
+            t = d3.select("#max-daily-hosp")
+                .text(val)
+                .style("color", col)  
+
+            valText = val
+            val = Math.min(maxCases, val)
+
+            var col = colors(val)
+            var maxIconStatus = (val <= thresholds.thresh ? 1 : 0) 
+
+
+            updateCriteriaIcon('3', maxIconStatus )
+
+            rotateSpinner(val)
+
         }
+
+        displayText.text(valText)
+            .transition().duration(dur)
+            .attr("fill", colors(val))
+
+        markerLine
+            .transition().duration(dur)
+            .attr("stroke", colors(val))
 
         svg.select("#dial-circle-" + config.type)
             .transition().duration(dur)
@@ -320,6 +404,7 @@ function slider_chart(config){
 
     function slider(){     
         drawDial(); 
+        drawTexts();
         updateScales();
         draw_chart();
 

@@ -656,6 +656,11 @@ select.form-control{display:inline-block}
 	stroke: #fff
 } */
 
+.desc-texts{
+	font-size: 1.3em;
+	fill: #fff;
+}
+
 .center-box {
 	height:100%;
 	display: table;
@@ -673,7 +678,7 @@ select.form-control{display:inline-block}
 }
 
 #max-daily-hosp {
-	font-size: calc(100% + 1vw + 1vh);
+	font-size: calc(100% + 0.7vw + 0.7vh);
 	margin-bottom: 3px;
 }
 
@@ -689,7 +694,7 @@ select.form-control{display:inline-block}
 }
 
 #county-intro-row{
-	height: 12vh;
+	height: 8vh;
 }
 
 #county-select-row{
@@ -704,9 +709,9 @@ select.form-control{display:inline-block}
 	height: 20vh;
 }
 
-#criteria-row{
+/* #criteria-row{
 	height: 20vh;
-}
+} */
 
 .big-labels{
 	font-size: 1.5em;
@@ -742,4 +747,28 @@ select.form-control{display:inline-block}
 
 .selection-rects{
 	border-radius: 0 0 15px 15px;
+}
+
+.y-text-value, .y-text-county{
+	font-size: 0.8em;
+}
+
+.stat-td-major {
+	font-size: 0.8em;
+	fill: #fff
+}
+
+.stat-td-minor {
+	font-size: 0.8em;
+	fill: #838383
+}
+
+.ranking-gridlines {
+	stroke: #838383;
+	stroke-width: 1px;
+}
+
+.ranking-axis {
+	stroke: #bebebe;
+	stroke-width: 1.5px;
 }

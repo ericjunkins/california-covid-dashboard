@@ -7,12 +7,14 @@ function criteria_chart(config){
     
 
     var margin = {
-        bottom: 39.75,
+        bottom: 5,
         left: 0,
         right: 0,
         top: 39.75
     }
     
+
+    var result = [0,0,0,0]
 
     var dur= config.dur
 
@@ -21,9 +23,9 @@ function criteria_chart(config){
 
 
     defaultWidth = 1248
-    defaultHeight = 265
+    defaultHeight = 205
 
-
+    
 
     // append the svg object to the body of the page
     var svg = d3.select(config.selection)
@@ -43,56 +45,45 @@ function criteria_chart(config){
 
     svg.append('text')
         .attr("class", "criteria-title")
-        .attr("x", width*0.25)
+        .attr("x", width*0.2)
         .attr("y", 0)
         .attr("text-anchor", "middle")
-        .attr("font-size", "2.5em")
+        .attr("font-size", "3em")
         .attr("fill", "#fff")
         .text("Cases Criteria")
 
     svg.append('text')
         .attr("class", "criteria-title")
-        .attr("x", width*0.75)
+        .attr("x", width*0.7)
         .attr("y", 0)
         .attr("text-anchor", "middle")
-        .attr("font-size", "2.5em")
+        .attr("font-size", "3em")
         .attr("fill", "#fff")
         .text("Hospitals Criteria")
 
     svg.append("line")
         .attr("x1", width*0.05)
-        .attr("x2", width*0.45)
+        .attr("x2", width*0.48)
         .attr("y1", height*0.2)
         .attr("y2", height*0.2)
         .attr("stroke", "grey")
 
     svg.append("line")
-        .attr("x1", width*0.55)
+        .attr("x1", width*0.52)
         .attr("x2", width*0.95)
         .attr("y1", height*0.2)
         .attr("y2", height*0.2)
         .attr("stroke", "grey")
 
 
-    
-    
-
-    
-
-    x = d3.scaleBand()
-        .domain(['0', '1','2','3'])
-        .range([0, width])
-        .padding(0.15)
-
-
     x1 = d3.scaleBand()
         .domain(['0', '1'])
-        .range([0, width*0.45])
-        .padding(0.15)
+        .range([0, width*0.49])
+        .padding(0.1)
 
     x2 = d3.scaleBand()
         .domain(['2', '3'])
-        .range([width *0.55, width])
+        .range([width *0.51, width])
         .padding(0.1)
 
 
@@ -106,12 +97,14 @@ function criteria_chart(config){
 
     rectHeight = height * 0.5
     rectWidth = width/8
-    yrectStart = height * 0.55
+    yrectStart = height * 0.4
     yIcon = height * 0.4
+
+    columns = ['0', '1','2','3']
 
     var data = []
     var status = []
-    x.domain().forEach(function(d, i){
+    columns.forEach(function(d, i){
         if (i < 2) tmpX = x1(String(i))
         else tmpX = x2(String(i))
         data.push({
@@ -148,7 +141,6 @@ function criteria_chart(config){
         .attr('class', 'desc-texts')
         .attr('x', d=> d.x + x1.bandwidth()/2)
         .attr("y", d=> d.y)
-        .attr('fill', "#fff")
         .attr("text-anchor", "middle")
         .text(d=> d.text)
         .call(wrap, x1.bandwidth())
@@ -165,24 +157,53 @@ function criteria_chart(config){
 
 
     function draw_chart(){
-        var icons = svg.selectAll(".icon-text")
-            .data(status, d=> d.x)
 
-        icons.enter()
-            .append('text')
-            .attr('class', 'icons-text')
-            .attr("id", d=> "icon-" + d.id)
-            .attr('x', d=> d.x)
-            .attr('y', d=> d.y)
+        casesIcon = svg.append("text")
+            .attr("x", width * 0.35)
+            .attr("id", "cases-icon")
+            .attr("y", 0)
             .attr('font-family', 'FontAwesome')
-            .attr('font-size', '2rem')
-            .attr("dominant-baseline", "middle")
-            .attr("text-anchor", "middle")
-            .attr("opacity", 1)
+            .attr('font-size', '3.5rem')
+            .attr("fill", "#fff")
             .text('\uf00d')
-            .attr("fill", '#f72c11')
 
+        hospIcon = svg.append('text')
+            .attr("x", width * 0.87)
+            .attr("id", "hosp-icon")
+            .attr("y", 0)
+            .attr('font-family', 'FontAwesome')
+            .attr('font-size', '3.5rem')
+            .attr("fill", "#fff")
+            
+    }
 
+    var colors = ['#e51b1b', '#25e83b']
+    var icons = ['\uf00d', '\uf00c']
+
+    function updateResults(sel, val){
+        
+        result[sel] = val
+        d3.select("#cases-icon")
+            .transition().duration(dur)
+            .attr("fill", function(){
+                if (result[0] || result[1]) return colors[1]
+                else return colors[0]
+            })
+            .text(function(){
+                if (result[0] || result[1]) return icons[1]
+                else return icons[0]
+            })
+
+        d3.select("#hosp-icon")
+            .transition().duration(dur)
+            .attr("fill", function(){
+                if (result[2] || result[3]) return colors[1]
+                else return colors[0]
+            })
+            .text(function(){
+                if (result[2] || result[3]) return icons[1]
+                else return icons[0]
+            })
 
     }
 
@@ -200,14 +221,7 @@ function criteria_chart(config){
 
     criteria.update = function(sel, value){
         if (!arguments.length) return testSelection;
-        
-        
-        d3.select("#icon-" + sel)
-            .transition().duration(dur)
-                .attr("opacity", 1)
-                .text((!value ? '\uf00d' : '\uf00c'))
-                .attr("fill", (!value ? "#f72c11" : '#2a9905'))
-
+        updateResults(sel, value)
         return criteria;
     }
 
