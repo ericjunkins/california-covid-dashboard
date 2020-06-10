@@ -91,28 +91,23 @@
             <div class = "col-sm-12 col-md-12 col-lg-12 col-xl-4 outer-container"> 
                 <div class = "bounding rounded-10"> 
                     <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-
-                            <h2 class="section-title"> CDPH Guidelines for Reopening Counties  </h2>
-
+                        <h2 class="section-title"> CDPH Guidelines for Reopening Counties  </h2>
                     </div>
 
                     <div class="row rows">
                         <div class="col-sm-12 center-box" style="text-align: left; padding-left: 5%;">
                             <div class="center-cell">
-                                <div class="description"> In order for counties to move onto the next reopening stage they must meet at least one of the following criteria for the number of new cases, AND at least one of the following criteria for hospitalizations.
+                                <div class="description-minor"> In order for counties to move onto the next reopening stage they must meet at least one of the following criteria for the number of new cases, AND at least one of the following criteria for hospitalizations.
                                 </div>
                             </div>
-
                         </div>
-                        
-                        
                     </div>
 
                     <div class="row">
-                        <div class="col-sm-6">
+                        <div class="col-sm-8 offset-sm-1">
                             <div class="form-group">
-                                    <label class="small-labels" for="countySelect-select" style="padding-left: 10%">Select County:</label>
-                                    <select class="select-css select-xl" id="county-select" style="margin-left: 20px">
+                                <label class="small-labels" for="countySelect-select" style="padding-left: 10%">Select County:</label>
+                                <select class="select-css select-lg" id="county-select" style="margin-left: 20px">
                                 </select>
                             </div>
                         </div>
@@ -124,7 +119,7 @@
                         </div> 
                     </div>
 
-                    <div class="row" style="padding-left: 15px; margin-top: 0px;">
+                    <div class="row" style="padding-left: 15px; margin-top: 0px; margin-bottom: 15px;">
                         <div class="col-sm-3">
                             <div class="charts" id="cases-slider"> </div>
                         </div>
@@ -138,15 +133,17 @@
                         <div class="col-sm-3">
                             <div class="charts" id="hosp-max-slider"> </div>
                         </div>
-
-
-
                     </div>
 
+                    <hr>
 
                     <div class="row" style="margin-top: 30px;">
                         <div class="col-sm-12 chart-title">
                             <p class="title"> Covid Cases per Capita </p>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="description-minor"> This chart shows the number of new cases per 100,000 residents in the county over the last two weeks. In order to pass the reopen critera the values should on average be below the yellow dotted line
+                            </div>
                         </div>
                     </div>
 
@@ -160,7 +157,11 @@
 
                     <div class="row" style="margin-top: 30px;">
                         <div class="col-sm-12 chart-title">
-                            <p class="title"> Hospitlizations Rate</p>
+                            <p class="title"> COVID Patient Influx Rate </p>
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="description-minor"> This chart shows the 7-day average of percent change of COVID patients in hospitals in the county. Negative numbers mean decreasing. In order to pass reopen critera these values must ALWAYS be below the yellow line
+                            </div>
                         </div>
                     </div>
 
@@ -172,67 +173,95 @@
                 </div>
             </div>
 
-            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4 outer-container">
-                <div class = "bounding rounded-10"> 
-                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                        <h2 class="section-title"> Covid Statistics by County </h2>
-                    </div>
-                    <div class="row" style="margin-top: 20px;">
-                        <div class="col-sm-5 offset-sm-1">
-                            <label class="small-labels" for="ranking-select" style="padding-left: 5%">Select ranking criteria:</label>
-                            <div class="form-group" style="padding: 0">
-                                <select class="select-css select-xl" id="ranking-select">
-                                    <option value="cases"> Current Total Cases </option>
-                                    <option value="deaths"> Current Total Deaths </option>
-                                    <option value="caseAvg"> Recent Average Cases per Day </option>
-                                    <option value="deathAvg"> Recent Average Deaths per Day </option>
-                                </select>
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4" style="padding: 0px">
+                <div class="outer-container">
+                    <div class = "bounding rounded-10"> 
+                        <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                            <h2 class="section-title"> Covid Statistics by County </h2>
+                        </div>
+                        <!--
+                        <div class="row" style="margin-top: 20px;">
+                            <div class="col-sm-5 offset-sm-1">
+                                <label class="small-labels" for="ranking-select" style="padding-left: 5%">Select ranking criteria:</label>
+                                <div class="form-group" style="padding: 0">
+                                    <select class="select-css select-xl" id="ranking-select">
+                                        <option value="cases"> Current Total Cases </option>
+                                        <option value="deaths"> Current Total Deaths </option>
+                                        <option value="caseAvg"> Recent Average Cases per Day </option>
+                                        <option value="deathAvg"> Recent Average Deaths per Day </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-5">
+                                <label class="small-labels" for="sorting-select" style="padding-left: 5%">Select ranking sorting:</label>
+                                <div class="form-group" style="padding: 0">
+                                    <select class="select-css select-xl" id="sorting-select">
+                                        <option value="Descending"> Descending </option>
+                                        <option value="Ascending"> Ascending </option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-sm-5">
-                            <label class="small-labels" for="sorting-select" style="padding-left: 5%">Select ranking sorting:</label>
-                            <div class="form-group" style="padding: 0">
-                                <select class="select-css select-xl" id="sorting-select">
-                                    <option value="Descending"> Descending </option>
-                                    <option value="Ascending"> Ascending </option>
-                                </select>
+                        -->
+                        <div class="row rows">
+                            <div class="col-sm-12">
+                                <div class="description-minor"> This chart shows each county in California with it's Covid-19 cases and deaths, as well as normalized per 100,000 residents. The heatmap on the right shows the average number of newly reported cases over the previous 14 days. Areas with an increasing number of cases are shaded darker for larger increases when adjusted for population.
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="charts" id="outer1">
-                                <div id="ranking"> </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="charts" id="outer1">
+                                    <div id="ranking"> </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div id="ranking-legend"> </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                
+
+                <div class="outer-container">
+                    <div class = "bounding rounded-10">
+                        <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                            <h2 class="section-title"> California COVID-19 Testing </h2>
+                        </div>
+
+                        <div class="row rows">
+                            <div class="col-sm-12">
+                                <div class="description-minor"> This chart shows testing accross all of California. It is important to consider that although cases are increasing, testing is also increasing. If precent tests are increasing at the same rate as cases we aren't testing enough. Keep these in mind while looking at other charts 
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-10 offset-sm-1" style="padding-top: 10px;">
+                                <div class="form-group">
+                                    <label class="small-labels" for="testing-select" style="padding-left: 10%">Select test period:</label>
+                                    <select class="select-css select-lg" id="testing-select" style="margin-left: 20px">
+                                            <option value="Cumulative"> Cumulative </option>
+                                            <option value="Daily"> Daily </option>
+                                            <option value="Weekly"> Weekly </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div class="charts" id="testing-chart"> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-sm-12 chart-title">
-                <p class="title"> Testing </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4 offset-sm-1">
-                <label class="small-labels" for="testing-select" style="padding-left: 5%">Select testing sorting:</label>
-                <div class="form-group" style="padding: 0">
-                    <select class="select-css select-xl" id="testing-select">
-                        <option value="Cumulative"> Cumulative </option>
-                        <option value="Daily"> Daily </option>
-                        <option value="Weekly"> Weekly </option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="charts" id="testing-chart"> </div>
-            </div>
-        </div>
+        
 
     </div>
 
@@ -265,6 +294,7 @@
     <script src="js/slider.js"></script>
     <script src="js/cases.js"></script>
     <script src="js/hospitalization.js"></script>
+    <script src="js/rankingLegend.js"></script>
     <script src="js/criteria.js"></script>
     <script src="js/main.js"></script>
     

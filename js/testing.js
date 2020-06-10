@@ -7,9 +7,9 @@ function testing_chart(config){
 
 
     var margin = {
-        bottom: 46,
-        left: 120,
-        right: 40,
+        bottom: 60,
+        left: 140,
+        right: 60,
         top: 50
     }
 
@@ -25,8 +25,8 @@ function testing_chart(config){
     var formatTime = d3.timeFormat("%m/%d/%y")
 
 
-    defaultWidth = 1218
-    defaultHeight = 400
+    defaultWidth = 900
+    defaultHeight = 350
 
 
     // append the svg object to the body of the page
@@ -104,9 +104,9 @@ function testing_chart(config){
 
     
     var x_axis = d3.axisBottom()
-    var y_axis = d3.axisLeft().ticks(6).tickFormat(d3.format(".0s"))
-    var y2_axis = d3.axisRight(y2).ticks(5)
-    var y_axis_grid = d3.axisLeft().tickSize(-width).tickFormat('').ticks(6)
+    var y_axis = d3.axisLeft().ticks(4).tickFormat(d3.format(".0s"))
+    var y2_axis = d3.axisRight(y2).ticks(4)
+    var y_axis_grid = d3.axisLeft().tickSize(-width).tickFormat('').ticks(4)
 
     var testingLabels = svg.append('g')
 
@@ -136,7 +136,7 @@ function testing_chart(config){
     var yLabel = testingLabels.append("text")
         .attr("transform", "rotate(-90)")
         .attr("x", -height/2)
-        .attr("y", -margin.left/2)
+        .attr("y", -margin.left*0.6)
         .attr("class", "axis-label")
 
     // testingLabels.append("g")
@@ -152,11 +152,11 @@ function testing_chart(config){
 
     function drawLegend(){
         rectSize = 25
-        rect2Start = width*0.2
-        lineStart = width * 0.4
+        rect2Start = width*0.3
+        lineStart = width * 0.6
         spacing = 10
         legendGroup = svg.append("g")
-            .attr("transform", "translate(" + (width *0.22) + "," + (-margin.top * 0.25) + ")")
+            .attr("transform", "translate(" + (width *0.1) + "," + (-margin.top * 0.65) + ")")
 
         legendGroup.append("rect")
             .attr("x", 0)
@@ -220,8 +220,8 @@ function testing_chart(config){
 
 
     function updateLabels(){
-        if (testSelection == "Cumulative") t = "Total tests to date"
-        else if (testSelection == "Weekly") t = "Total tests each week"
+        if (testSelection == "Cumulative") t = "Total Tests"
+        else if (testSelection == "Weekly") t = "Tests each week"
         else if (testSelection == "Daily") t = "Tests each day"
         yLabel
             .transition().duration(dur/2)

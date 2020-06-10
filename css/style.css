@@ -28,6 +28,14 @@ h5 {
 	font-size: 0.8em;
 }
 
+hr {
+	border-top: 0.5px solid grey !important;
+	margin-bottom: 0;
+	opacity: 0.5;
+	width: 90%;
+
+}
+
 .navbar {
 	background-color: #16181b;
 	border-bottom: 1px solid #413b3b;
@@ -128,7 +136,7 @@ h5 {
 
 
 .axis-label{
-	font-size: 1.5em;
+	font-size: 2em;
 	fill: #fff;
 	text-anchor: middle;
 }
@@ -157,7 +165,7 @@ h5 {
   
 .axisWhite text{
 	fill: #fff;
-	font-size: 1em;
+	font-size: 1.5em;
 }
   
 .axisWhite line{
@@ -171,7 +179,7 @@ h5 {
 
 .axisYellow text{
 	fill: #f2c80f;
-	font-size: 1em;
+	font-size: 1.5em;
 }
   
 .axisYellow line{
@@ -212,15 +220,15 @@ h5 {
 }
 
 .chart-title {
-	text-align: left;
+	text-align: center;
 	margin-bottom: 15px;
-	padding-left: 10%;
+	margin-top: 15px;
 }
 
 
 .legend-text {
 	fill: #fff;
-	font-size: 1.1em;
+	font-size: 1.3em;
 }
 
 /* ---------------------------------------------------- */
@@ -418,7 +426,6 @@ select.form-control{display:inline-block}
 
 .form-group{
 	padding-left: 15px;
-	padding-top: 15px;
 }
 
 .inner {
@@ -627,6 +634,12 @@ select.form-control{display:inline-block}
 	font-size: 1.3em;
 }
 
+.description-minor {
+	color: #ababab;
+	font-size: 1.1em;
+	padding: 0 30px 10px 30px;
+}
+
 .item {
 	color: #fff;
 	font-size: 1.2em;
@@ -754,12 +767,12 @@ select.form-control{display:inline-block}
 }
 
 .stat-td-major {
-	font-size: 0.8em;
+	font-size: 0.7em;
 	fill: #fff
 }
 
 .stat-td-minor {
-	font-size: 0.8em;
+	font-size: 0.6em;
 	fill: #838383
 }
 

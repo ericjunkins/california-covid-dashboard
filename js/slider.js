@@ -19,10 +19,10 @@ function slider_chart(config){
         width = config.width - margin.left - margin.right;
     
     var dur = config.duration
-    var fillOpacity = 0.6
+    var fillOpacity = 0.9
 
     defaultWidth = 282
-    defaultHeight = 220
+    defaultHeight = 200
 
 
 
@@ -183,13 +183,13 @@ function slider_chart(config){
 
     function drawDial(){
         colorDial = []
-        dialSegments = (config.type != "hosp" ? 25 : 3)
+        dialSegments = (config.type != "hosp" ? 17 : 3)
         pieceSize = (endRad - startRad) / dialSegments
         segmentPieces = (maxCases - minCases)/dialSegments
 
-
+        var m = (config.type != "hosp" ? segmentPieces: minCases)
     
-        for (var i=maxCases; i > minCases; i-= segmentPieces){
+        for (var i=maxCases; i > m; i-= segmentPieces){
             colorDial.push({
                 start: pos(i),
                 end: pos(i) + pieceSize,

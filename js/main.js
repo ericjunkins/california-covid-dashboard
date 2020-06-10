@@ -368,15 +368,6 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         'defaultColor' : default_color
     }
 
-    // lolipopConfig = {
-    //     'selection': "#lolipop-chart",
-    //     'height': row2,
-    //     'width': parseInt(d3.select("#lolipop-chart").style("width"), 10),
-    //     'duration': 750,
-    //     'criteria': criteriaData,
-    //     'defaultColor' : default_color
-
-    // }
     casesThresholds = {
         max: 100,
         min: 0,
@@ -471,20 +462,6 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
 
 
 
-    // roadmapConfig = {
-    //     'selection': "#roadmap-chart",
-    //     'height': row1,
-    //     'width': parseInt(d3.select("#roadmap-chart").style("width"), 10),
-    //     'duration': 750,
-    //     'countyData': dateData[dateData.length -1].values,
-    //     'criteria': criteriaData,
-    //     'hospitalData': hospByCounty,
-    //     'defaultColor' : default_color
-    // }
-
-
-
-
     rankingConfig = {
         'selection': "#ranking",
         'height': windowHeight * 0.4,
@@ -498,16 +475,6 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
     }
 
 
-    // hospitalConfig = {
-    //     'selection': "#hospital-chart",
-    //     'height': row2,
-    //     'width': parseInt(d3.select("#hospital-chart").style("width"), 10),
-    //     'duration': 750,
-    //     'hospitalData': hospByCounty,
-    //     'bedData': beds,
-    //     'defaultColor' : default_color
-    // }
-
     testingConfig = {
         'selection': "#testing-chart",
         'height': windowHeight * 0.35,
@@ -517,42 +484,40 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         'defaultColor' : default_color
     }
 
+    rankingLegendConfig = {
+        'selection': "#ranking-legend",
+        'height': windowHeight * 0.35,
+        'width': parseInt(d3.select("#ranking-legend").style("width"), 10),
+        'duration': 750,
+        'testingData': testingData,
+        'defaultColor' : default_color
+    }
 
-    // titleConfig = {
-    //     'selection': "#title-chart",
-    //     'height': windowHeight * 0.1,
-    //     'width': parseInt(d3.select("#title-chart").style("width"), 10),
-    // }
-    
+
 
 
     caliMapVis = cali_map(mapConfig)
-    //lolipopVis = lolipop_chart(lolipopConfig)
     rankingVis = ranking_chart(rankingConfig)
-    // hospitalVis = hospital_chart(hospitalConfig)
     testingVis = testing_chart(testingConfig)
-    //titleVis = title_chart(titleConfig)
-    //roadmapVis = roadmap_chart(roadmapConfig)
     casesSliderVis = slider_chart(casesSliderConfig)
     casesChartVis = cases_line_chart(casesChartConfig)
     hospChartVis = hospital_line_chart(hospChartConfig)
     hospSliderVis = slider_chart(hospSliderConfig)
     criteriaVis = criteria_chart(criteriaConfig)
     hospMaxSliderVis = slider_chart(hospMaxSliderConfig)
+    rankingLegendVis = rankingLegend_chart(rankingLegendConfig)
 
     criteriaVis();
     caliMapVis();
-    //lolipopVis();
     rankingVis();
-    // hospitalVis();
     testingVis();
-    //roadmapVis();
 
     casesSliderVis();
     casesChartVis();
     hospChartVis();
     hospSliderVis();
     hospMaxSliderVis();
+    rankingLegendVis();
 }
 
 function updateRanking(selection, value){

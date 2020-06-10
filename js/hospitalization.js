@@ -6,10 +6,10 @@ function hospital_line_chart(config){
     //     bottom:config.height * 0.1 }
 
     var margin = {
-        bottom: 26.5,
-        left: 89.9,
-        right: 18,
-        top: 66.25
+        bottom: 25,
+        left: 110,
+        right: 60,
+        top: 66
     }
         
 
@@ -106,7 +106,7 @@ function hospital_line_chart(config){
             .attr("x", -height/2)
             .attr("y", -margin.left/2)
             .attr("class", "axis-label")
-            .text("Percent Change")
+            .text("Percent")
 
 
 
@@ -118,14 +118,14 @@ function hospital_line_chart(config){
         caseLegWidth = width * 0.8
 
         var legendGroup = svg.append('g')
-            .attr("transform", "translate(" + (width * 0.2) + "," + (-margin.top * 0.4) + ")")
+            .attr("transform", "translate(" + (width * 0.15) + "," + (-margin.top * 0.7) + ")")
 
 
         var leg1 = legendGroup.append("g")
             .attr("transform", "translate(" + (width * 0) + "," + (0) + ")")
 
         var leg2 = legendGroup.append("g")
-            .attr("transform", "translate(" + (width * 0.3) + "," + (0) + ")")
+            .attr("transform", "translate(" + (width * 0.4) + "," + (0) + ")")
 
         leg1.append('line')
             .attr('x1', 0)
@@ -139,7 +139,7 @@ function hospital_line_chart(config){
             .attr("y", 0)
             .attr("class", "legend-text")
             .attr("dominant-baseline", "middle")
-            .text("Reported")
+            .text("Daily Percent Change")
 
         leg2.append('line')
             .attr('x1', 0)

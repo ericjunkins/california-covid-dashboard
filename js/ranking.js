@@ -7,10 +7,10 @@ function ranking_chart(config){
 
 
     var margin = {
-        bottom: 25,
+        bottom: 20,
         left: 30,
         right: 30,
-        top: 60
+        top: 40
     }
 
     var height = config.height - margin.top - margin.bottom, 
@@ -24,7 +24,7 @@ function ranking_chart(config){
 
 
     defaultWidth = 531
-    defaultHeight = 1000
+    defaultHeight = 440
     defaultX = defaultWidth - config.width
     defaultY = defaultHeight - config.height
 
@@ -33,7 +33,9 @@ function ranking_chart(config){
     var rankingSort = "Descending"
     var yLabels = []
     var rankingData = []
-    var yLabel
+
+    var startDataText
+    var endDateText
     
     width = defaultWidth - margin.left - margin.right
     height = defaultHeight  - margin.top - margin.bottom
@@ -44,29 +46,29 @@ function ranking_chart(config){
     document.getElementById("ranking").setAttribute("style", "width:" + (width +margin.left + margin.right) + "px");
     document.getElementById("ranking").setAttribute("style", "height:" + (defaultHeight + margin.top) + "px");
     
+    h = 2050
+    const svg = d3.select(config.selection).append('svg')
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .attr('viewBox', 0 + " " + 0 + " " + defaultWidth + ' ' + h)
+        .classed("svg-content", true)
+
     const outerSvg = d3.select("#outer1").append('svg')
         .attr("preserveAspectRatio", "xMidYMid meet")
         .attr('viewBox', -defaultX/2 + " " + -defaultY/2 + " " + defaultWidth + ' ' + defaultHeight)
 
-    // outerSvg.append('text')
-    //     .attr("x", 0)
-    //     .attr("y", -100)
-    //     .attr("class", "title")
-    //     .text("Cases by County")
 
-
-
-    var barHeight = height/18
-    var width1 = width* 0.55,
+    var barHeight = height/10
+    var width1 = width* 0.5,
         width2 = width - width1
 
     //console.log(config.criteria)
-    
+
+
 
     var textArray = []
 
     var textColumns = ['county', 'currentCases', 'currentCasesNormalized', 'currentDeaths', 'currentDeathsNormalized']
-    var textColumNames = ['County', 'Cases', 'Per 100,000', 'Deaths', 'Per 100,000']
+    var textColumNames = ['County', 'Cases', 'Per 100k', 'Deaths', 'Per 100k']
 
     config.criteria.forEach(function(d){
 
@@ -103,13 +105,6 @@ function ranking_chart(config){
     })
 
 
-    h = 2050
-
-    const svg = d3.select(config.selection).append('svg')
-        .attr("preserveAspectRatio", "xMidYMid meet")
-        .attr('viewBox', 0 + " " + 0 + " " + defaultWidth + ' ' + h)
-        .classed("svg-content", true)
-        
     var chart = svg.append("g")
         .attr("transform", "translate(" + (margin.left) + "," + margin.top + ")")
 
@@ -119,12 +114,13 @@ function ranking_chart(config){
     var barChart = barsGroup.append("g")
     
     var labels = chart.append('g')
+    var columnData = labels.append('g')
 
     var axes = barsGroup.append("g")
 
     var xOrdinal = d3.scaleOrdinal()
         .domain(textColumns)
-        .range([0, width1 * 0.55, width1 * 0.7, width1 * 0.85, width1*0.95])
+        .range([0, width1 * 0.5, width1 * 0.64, width1 * 0.83, width1*0.95])
 
     var x = d3.scaleLinear()
         .range([0, width2])
@@ -179,7 +175,7 @@ function ranking_chart(config){
 
     function rankChart(){
         updateScales();
-        //draw_chart();
+        drawLabels();
         drawTexts();
         drawBars();
         drawDividers();
@@ -229,13 +225,6 @@ function ranking_chart(config){
                 }
             })
         })
-
-
-        tmp = rectTest.fullData.map(d=> d.newCasesAvg.toFixed(2))
-
-        vals = rectTest.fullData.map(d=> (d.newCasesAvg - d.prevCaseAvg).toFixed(3))
-        //console.log(rectTest.fullData)
-
     }
 
     var threshold = {
@@ -254,9 +243,48 @@ function ranking_chart(config){
         else return '#8c0804'
     }
 
+    function drawLabels(){
+        var columnLabels = labels.selectAll("text")
+            .data(textColumns)
+
+        columnLabels.enter()
+            .append('text')
+            .attr("fill", "#838383")
+            .text(function(d, i){ 
+                return textColumNames[i]
+            })
+            .attr("y", function(d, i){
+                offset =  (d == 'county' || d == "currentCases" || d == "currentDeaths" ?  15 : 23)
+                return -y.bandwidth()/2 - offset
+            })
+            // .attr("y", -y.bandwidth()/2 - 15)
+            .attr("font-size", "0.6em")
+            .attr("x", function(d){ return xOrdinal(d) })
+            .attr("text-anchor", d=> (d != "county" ? "end" : "start"))
+            .call(wrap, 30)
+            // .text(function(d, i){ return })
+            
+
+        startDataText = labels.append("text")
+            .attr("x", width1 + 10)
+            .attr("y", -y.bandwidth()/2 - 5 )
+            .attr("class", "stat-td-minor")
+
+        endDateText = labels.append('text')
+            .attr("x", width)
+            .attr("y", -y.bandwidth()/2 - 5 )
+            .attr("text-anchor", "end")
+            .attr("class", "stat-td-minor")
+    }
 
     function drawTexts(){
-        var texts = chart.selectAll("text")
+
+        minDate = d3.timeParse("%Y-%m-%d")(xTime.domain()[0])
+        maxDate = d3.timeParse("%Y-%m-%d")(xTime.domain()[xTime.domain().length -1])
+        startDataText.text(d3.timeFormat("%b %d")(minDate))
+        endDateText.text(d3.timeFormat("%b %d")(maxDate))
+
+        var texts = columnData.selectAll("text")
             .data(textArray, d=> d.id)
 
         texts.enter()
@@ -267,21 +295,6 @@ function ranking_chart(config){
             .attr("dominant-baseline", "middle")
             .attr("text-anchor", d=> (d.x != "county" ? "end" : "start"))
             .text(d=>d.text)
-
-        var columnLabels = labels.selectAll("text")
-            .data(textColumns)
-
-        columnLabels.enter()
-            .append('text')
-            .attr("fill", "#838383")
-            .text(function(d, i){ 
-                return (d == 'county' || d == "currentCases" || d == "currentDeaths" ? textColumNames[i] : "")
-            })
-            .attr("y", -y.bandwidth()/2 - 10)
-            .attr("x", function(d){ return xOrdinal(d) })
-            .attr("text-anchor", d=> (d != "county" ? "end" : "start"))
-            // .text(function(d, i){ return })
-            
 
     }
 
@@ -296,13 +309,6 @@ function ranking_chart(config){
             .attr("x2", width + margin.right/2)
             .attr("y1", d=> y2(d.county) - y2.bandwidth()/2)
             .attr("y2", d=> y2(d.county) - y2.bandwidth()/2)
-
-        // chart.append("line")
-        //     .attr("class", "ranking-axis")
-        //     .attr("x1", width1)
-        //     .attr("x2", width1)
-        //     .attr("y1", -y.bandwidth()/2)
-        //     .attr("y2", y.range()[1] + y.bandwidth()/2)
 
     }
 
