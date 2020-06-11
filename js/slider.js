@@ -49,15 +49,19 @@ function slider_chart(config){
 
 
     var colorRange = ['#f72c11', '#aee053', '#2a9905']
-
-    if (config.type != "hosp"){
+    var blankColor = "#ababab"
+    if (config.type == "hospMax" || config.type == "cases"){
         var colors = d3.scaleLinear()
         .domain([maxCases, thresholds.thresh, minCases])
         .range(colorRange)
-    } else {
+    } else if (config.type == "hosp") {
         var colors = d3.scaleOrdinal()
             .domain(['Climbing', "Stable", "Declining"])
             .range(['#f72c11', '#aee053', '#40db0d'])
+    } else if (config.type == "null"){
+        var colors = d3.scaleOrdinal()
+            .domain([maxCases, thresholds.thresh, minCases])
+            .range([blankColor,blankColor,blankColor])
     }
     
     
@@ -121,8 +125,24 @@ function slider_chart(config){
             .attr('d', d3.line()(arrowPoints))
             .attr("fill", "#fff")
             .attr("fill-opacity", fillOpacity)
+    } else if (config.type=="null") {
+        svg
+        .append('defs')
+        .append('marker')
+        .attr('id', 'null-arrow')
+        .attr('viewBox', [0, 0, markerBoxWidth/1.5, markerBoxHeight])
+        .attr('refX', refX)
+        .attr('refY', refY)
+        .attr('markerWidth', markerBoxWidth)
+        .attr('markerHeight', markerBoxHeight)
+        .attr('orient', 'auto-start-reverse')
+            .append('path')
+            .attr("id", "dial-arrow-" + config.type)
+            .attr("class", "dial-arrow")
+            .attr('d', d3.line()(arrowPoints))
+            .attr("fill", "#fff")
+            .attr("fill-opacity", fillOpacity)
     }
-   
 
 
     var radius = Math.min(width, height) * 0.6
@@ -177,6 +197,7 @@ function slider_chart(config){
             if (config.type == "cases") return 'url(#cases-arrow)'
             else if (config.type == "hosp" ) return 'url(#hosp-arrow)'
             else if (config.type == "hospMax" ) return 'url(#hospMax-arrow)'
+            else if (config.type == "null" ) return 'url(#null-arrow)'
         })
         .attr("d", d3.line()([[0,0], [0,-radius * 0.63]]))
         .attr('fill-opacity', fillOpacity)
@@ -265,19 +286,42 @@ function slider_chart(config){
 
     var displayText;
     var iconText;
+    var displayRect;
 
     function drawTexts(){
         textGroup = dial.append("g")
-            .attr("transform", "translate(" + 0 + "," + (radius + 15) + ")")
+            .attr("transform", "translate(" + 0 + "," + (radius + 10) + ")")
+
+        if (config.type == "null") barWidth = width *0.98
+        else if (config.type == "cases" || config.type == "hospMax") barWidth = 100
+        else if (config.type == "hosp") barWidth = 160 
+
+        barHeight = 60
+
+        displayRect = textGroup.append('rect')
+            .attr("fill", "#fff")
+            .attr("opacity", 0.5)
+            .attr("rx", 5)
+            .attr("x", -barWidth *0.5)
+            .attr("y", -barHeight * 0.5)
+            .attr("height", barHeight)
+            .attr("width", barWidth)
+            .attr("stroke", "#fff")
+
 
         displayText = textGroup.append('text')
             .attr("x", 0)
             .attr("y", 0)
             .attr("fill", "#fff")
-            .attr("font-size", "3.5em")
+            .attr("font-size", "1.75em")
             .attr("text-anchor", "middle")
             .attr("dominant-baseline", "middle")
             .text('test')
+
+
+
+            
+
 
         // iconText = textGroup.append('text')
         //     .attr("x", 5)
@@ -314,9 +358,9 @@ function slider_chart(config){
             valText = Math.round(val) 
             val = Math.min(val, maxCases)
             
-            casesIconStatus = (val <= 25 ? 1 : 0)
+            iconStatus = (val <= 25 ? 1 : 0)
 
-            updateCriteriaIcon('0', casesIconStatus)
+            updateCriteriaIcon('0', iconStatus)
             
             rotateSpinner(val)
 
@@ -354,10 +398,10 @@ function slider_chart(config){
             }
 
 
-            if (val != "Climbing") stabIconStatus = 1
-            else stabIconStatus = 0
+            if (val != "Climbing") iconStatus = 1
+            else iconStatus = 0
             valText = val
-            updateCriteriaIcon('2', stabIconStatus )
+            updateCriteriaIcon('2', iconStatus )
 
             //dialText.text(val)
             rotateSpinner(ang)
@@ -375,18 +419,22 @@ function slider_chart(config){
             val = Math.min(maxCases, val)
 
             var col = colors(val)
-            var maxIconStatus = (val <= thresholds.thresh ? 1 : 0) 
+            var iconStatus = (val <= thresholds.thresh ? 1 : 0) 
 
 
-            updateCriteriaIcon('3', maxIconStatus )
+            updateCriteriaIcon('3', iconStatus )
 
             rotateSpinner(val)
 
+        } else if (config.type == "null"){
+            val = colors.domain()[2]
+            valText = "Data Unavailable"
+            iconStatus = -1
         }
 
         displayText.text(valText)
             .transition().duration(dur)
-            .attr("fill", colors(val))
+            //.attr("fill", colors(val))
 
         markerLine
             .transition().duration(dur)
@@ -399,6 +447,16 @@ function slider_chart(config){
         svg.select("#dial-arrow-" + config.type)
             .transition().duration(dur)
             .attr("fill", colors(val))
+
+       
+        displayRect
+            .transition().duration(dur)
+            .attr("fill", function(){
+                if (iconStatus == -1 ) return "#ababab"
+                else if (iconStatus == 0) return colorRange[0]
+                else if (iconStatus == 1) return colorRange[2]
+            })
+
 
     }
 

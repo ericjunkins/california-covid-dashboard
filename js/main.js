@@ -414,6 +414,18 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         'shifts': {left: 10}
     }
 
+    testingSliderConfig = {
+        'selection': "#testing-slider",
+        'height':  casesRow*0.6,
+        'width': parseInt(d3.select("#testing-slider").style("width"), 10),
+        'duration': 750,
+        'criteria': criteriaData,
+        'thresholds': casesThresholds,
+        'radius': sliderRadius,
+        'type': 'null',
+        'shifts': {left: -5}
+    }
+
     hospSliderConfig = {
         'selection': "#hosp-slider",
         'height': hospRow*0.6,
@@ -501,6 +513,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
     testingVis = testing_chart(testingConfig)
     casesSliderVis = slider_chart(casesSliderConfig)
     casesChartVis = cases_line_chart(casesChartConfig)
+    testingSliderVis = slider_chart(testingSliderConfig)
     hospChartVis = hospital_line_chart(hospChartConfig)
     hospSliderVis = slider_chart(hospSliderConfig)
     criteriaVis = criteria_chart(criteriaConfig)
@@ -518,6 +531,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
     hospSliderVis();
     hospMaxSliderVis();
     rankingLegendVis();
+    testingSliderVis();
 }
 
 function updateRanking(selection, value){
