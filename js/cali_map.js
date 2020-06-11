@@ -427,7 +427,7 @@ function cali_map(config){
                 .on("mouseenter", mouseover)
                 .on("mouseout", mouseout)
                 .on("click", clicked)
-            .attr("id", d=> "county-" + d.properties.NAME.replace(/\s/g, ""))
+            .attr("id", d=> "county-" + d.properties.NAME.replace(/\s/g, "-"))
             .attr("stroke", "#1e2025")
             .attr("stroke-width", 1)
             .attr("fill", "#f2f2f2")
@@ -562,7 +562,11 @@ function cali_map(config){
             drawMap();
         } else {
             tmp = this.id.split("-")
-            county = tmp[1]
+            if (tmp.length == 3){
+                county = tmp[1] + " " + tmp[2]
+            } else {
+                county = tmp[1]
+            }
             countyClick(county)
         }
 
