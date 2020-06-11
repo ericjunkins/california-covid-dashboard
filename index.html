@@ -39,22 +39,6 @@
             </div>
         </div>
     </nav>
-    <div id="tooltip">
-        <table class="table" id="map-table">
-            <thead>
-                <tr>
-                <th scope="col" style="width: 130px;">County</th>
-                <th scope="col" style="width: 150px;">Cases Per 100,000 </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 
     <section>
     <div class="container-fluid" id="main-container">
@@ -90,7 +74,7 @@
                     <div class="row rows">
                         <div class="col-sm-12 center-box" style="text-align: left; padding-left: 5%;">
                             <div class="center-cell">
-                                <div class="description-minor"> In order for counties to move onto the next reopening stage they must meet at least one of the following criteria for the number of new cases, AND at least one of the following criteria for hospitalizations.
+                                <div class="description-minor"> County must meet one Cases Criteria and one Hospitals Criteria to move to the next reopening stage. Details at <a href=https://covid19.ca.gov/roadmap-counties/>https://covid19.ca.gov/roadmap-counties/</a>.
                                 </div>
                             </div>
                         </div>
@@ -137,13 +121,14 @@
                         </div>
                         
                         <div class="col-sm-12">
-                            <div class="description-minor"> This chart shows the number of new cases per 100,000 residents in the county over the last two weeks. In order to pass the reopen critera the values should on average be below the yellow dotted line
+                            <div class="description-minor"> New cases per 100,000 residents over 14 days. Criteria requires total of 25 over that period, which is 1.8 per day (yellow dotted line).
                             </div>
                         </div>
                     </div>
 
                     <div class="row" style="width: 100%; margin-left: 0px;">
                         <div class="col-sm-12">
+                            
                             <div class="chart" id="cases-chart"> </div>
                         </div>
 
@@ -155,7 +140,7 @@
                             <p class="title"> COVID Patient Influx Rate </p>
                         </div>
                         <div class="col-sm-12">
-                            <div class="description-minor"> This chart shows the 7-day average of percent change of COVID patients in hospitals in the county. Negative numbers mean decreasing. In order to pass reopen critera these values must ALWAYS be below the yellow line
+                            <div class="description-minor"> 7-day average of percent change of COVID patients in hospitals. Criteria requires less than 5% (yellow dotted line).
                             </div>
                         </div>
                     </div>
@@ -200,7 +185,7 @@
                         -->
                         <div class="row rows">
                             <div class="col-sm-12">
-                                <div class="description-minor"> This chart shows each county in California with it's Covid-19 cases and deaths, as well as normalized per 100,000 residents. The heatmap on the right shows the average number of newly reported cases over the previous 14 days. Areas with an increasing number of cases are shaded darker for larger increases when adjusted for population.
+                                <div class="description-minor"> The heatmap on the right shows the average number of newly reported cases over the previous 14 days. Areas with an increasing number of cases are shaded darker for larger increases
                                 </div>
                             </div>
                         </div>
@@ -228,7 +213,7 @@
 
                         <div class="row rows">
                             <div class="col-sm-12">
-                                <div class="description-minor"> This chart shows testing accross all of California. It is important to consider that although cases are increasing, testing is also increasing. If precent tests are increasing at the same rate as cases we aren't testing enough. Keep these in mind while looking at other charts 
+                                <div class="description-minor"> Testing accross all counties in California, seperated into Cumulative (total tests to date), Daily, and Weekly breakdowns of testing.  
                                 </div>
                             </div>
                         </div>
@@ -254,6 +239,100 @@
                 </div>
             </div>
         </div>
+
+        <div class="row">
+            <div class="col-sm-12 footer center-box">
+                <div class="disclaimer center-cell">
+                    <p> This dashboard is for data exploration only, and is not a valid source for stating that a county is ready to reopn. For more information on individual counties and where the local government is in the reopening plan please consult  <a href=https://covid19.ca.gov/roadmap-counties/>https://covid19.ca.gov/roadmap-counties/</a>.
+                </div>
+            </div>
+        <div>
+
+    </div>
+
+    <div id="map-tooltip">
+        <table style="width:100%" id="map-table">
+            <tr>
+                <th style="width: 200px;">County: </th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Cases Per 100,000: </th>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="cases-tooltip">
+        <table style="width:100%" id="cases-table">
+        <tr>
+            <th style="width: 200px;"> Date</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Cases Per 100,000: </th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Threshold difference: </th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Cases </th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Deaths </th>
+            <td></td>
+        </tr>
+        </table>
+    </div>
+
+    <div id="hosp-tooltip">
+        <table style="width:100%" id="hosp-table">
+        <tr>
+            <th style="width: 200px;"> Date</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th> Hospital Percent Change: </th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Total Hospitalized</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Occupance change today:  </th>
+            <td></td>
+        </tr>
+        </table>
+    </div>
+
+    <div id="testing-tooltip">
+        <table style="width:100%" id="testing-table">
+        <tr>
+            <th style="width: 200px;"> Date</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th> New Tests Performed:  </th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Total Tests: </th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Positive Results</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Percent Positive Results</th>
+            <td></td>
+        </tr>
+    
+        </table>
     </div>
 
     </section>

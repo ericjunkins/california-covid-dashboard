@@ -26,7 +26,7 @@ function testing_chart(config){
 
 
     defaultWidth = 900
-    defaultHeight = 350
+    defaultHeight = 320
 
 
     // append the svg object to the body of the page
@@ -38,50 +38,17 @@ function testing_chart(config){
             .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
+    var chart = svg.append("g")
+    var testingTooltip = d3.select("#testing-tooltip")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+
     width = defaultWidth - margin.left - margin.right
     height = defaultHeight  - margin.top - margin.bottom
     
-    // dropdownX = (margin.left + width * 0.1)
-    // dropdownY = (margin.top*0.65)
-
-
-
-    // svg.append('text')
-    //     .attr("transform", "translate(" + (-margin.left + dropdownX) + "," + (dropdownY-margin.top) + ")")
-    //     .attr('x', 3)
-    //     .attr("y", -8)
-    //     .attr("fill", "#fff")
-    //     .attr("font-size", "0.8em")
-    //     .text("Select Cumulative or Daily:")
-
-    // var dropdown = d3.select(config.selection)
-    //     .append("select")
-    //         .attr("class", "select-css")
-    //         .style("position", "absolute")
-    //         .style("top", dropdownY + "px")
-    //         .style("left", dropdownX + "px")
-    //         .style("width", (width/4 + "px"))
-    //             .on("change", dropdownChange)
-
-
-    
-
-
-    // function dropdownChange(d){
-    //     testSelection =this.value
-    //     updateLabels();
-    //     updateScales();
-    //     draw_chart();
-    // }
 
     var testingGroups = ['Tests', 'Positive', 'Percent Positive']
 
-    // dropdown.selectAll("option")
-    //     .data(["Cumulative","Daily", "Weekly"])
-    //     .enter()
-    //         .append("option")
-    //         .attr("value", d=> d)
-    //         .text(d=> d)
     
     var color = d3.scaleOrdinal()
         .domain(testingGroups)
@@ -105,7 +72,7 @@ function testing_chart(config){
     
     var x_axis = d3.axisBottom()
     var y_axis = d3.axisLeft().ticks(4).tickFormat(d3.format(".0s"))
-    var y2_axis = d3.axisRight(y2).ticks(4)
+    var y2_axis = d3.axisRight(y2).ticks(4).tickFormat(d3.format(".0%"))
     var y_axis_grid = d3.axisLeft().tickSize(-width).tickFormat('').ticks(4)
 
     var testingLabels = svg.append('g')
@@ -149,6 +116,8 @@ function testing_chart(config){
     //     .text("Percentage Positive")
 
     drawLegend();
+
+    var hoverLine;
 
     function drawLegend(){
         rectSize = 15
@@ -207,7 +176,10 @@ function testing_chart(config){
             .attr("dominant-baseline", "middle")
             .text("Percent Positive")
 
-
+        hoverLine = chart.append("line")
+            .attr("y2", height)
+            .attr("class", "hover-line")
+            .attr("opacity", 0)
     }
 
     
@@ -257,10 +229,11 @@ function testing_chart(config){
             //console.log(d.cases, d.tests)
             lineData.push({
                 date: d.formattedDate,
-                y: Math.min(100, +((d.cases/d.tests)*100).toFixed(2))
+                y: Math.min(1, +((d.cases/d.tests)*1).toFixed(2))
             })
 
         })
+
 
         y2.domain([0, Math.min(100, d3.max(lineData, d=> d.y) * 1.5)])
 
@@ -292,7 +265,7 @@ function testing_chart(config){
     function draw_chart(){
         dotRadius = (testSelection == "Weekly" ? 5 : 3)
 
-        var group = svg.selectAll("g.layer")
+        var group = chart.selectAll("g.layer")
             .data(stackedData, d=> d.key)
 
         group.exit().remove()
@@ -304,7 +277,7 @@ function testing_chart(config){
             //.attr("fill", d=> color(d.key))
 
 
-        var bars = svg.selectAll("g.layer").selectAll("rect")
+        var bars = chart.selectAll("g.layer").selectAll("rect")
             .data(d=> d, e=> e.data.date)
 
         bars.exit().remove()
@@ -325,7 +298,7 @@ function testing_chart(config){
                 .attr("y", function(d){ return y(d[1]) })
                 .attr("height", function(d){ return y(d[0]) - y(d[1]) })
 
-        var lines = svg.selectAll("#percent-line")
+        var lines = chart.selectAll("#percent-line")
             .data([lineData], d=> d.date )
 
         lines.exit().remove()
@@ -355,7 +328,7 @@ function testing_chart(config){
                     .curve(d3.curveMonotoneX))
 
 
-        circles = svg.selectAll(".percent-marker")
+        circles = chart.selectAll(".percent-marker")
             .data(lineData, d=> d.date)
 
         circles.exit()
@@ -379,7 +352,99 @@ function testing_chart(config){
                 .attr("r", dotRadius)
                 .attr("cy", d=> y2(d.y))
 
+        svg.append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', width)
+            .attr('height', height)
+            .attr('fill', "#fff")
+            .attr("fill-opacity", 0)
+                .on("mousemove", mousemove)
+                .on("mouseenter", mouseover)
+                .on("mouseout", mouseout)
+                .on("click", clicked)
+
     }
+
+    xBand.invert = function(){
+        var domain = xBand.domain()
+        var range = xBand.range()
+        var scale = d3.scaleQuantize().domain(range).range(domain)
+
+        return function(x){
+            return scale(x)
+        }
+    }
+
+    function mouseover(d){
+        testingTooltip
+            .transition().duration(250)
+            .style("opacity", 1)
+            
+    }
+
+
+
+    function mousemove(d){
+        var mouseX = d3.mouse(this)[0] - xBand.bandwidth()/2
+
+        i = Math.round(mouseX/width  * xBand.domain().length)
+        curDate = xBand.domain()[i]
+        curElement = config.testingData[testSelection].filter(function(d){
+            return d.formattedDate == curDate
+        })[0]
+
+  
+        percent = (curElement.cases/ curElement.tests)
+        tmpX = event.pageX - d3.mouse(this)[0] + xBand(curElement.formattedDate) + xBand.bandwidth()/2
+        tmpY = event.pageY - d3.mouse(this)[1] + y2(percent)
+        
+
+        hoverLine
+            .raise()
+            .attr("opacity", 1)
+            .attr("x1", xBand(curElement.formattedDate) + xBand.bandwidth()/2)
+            .attr("x2", xBand(curElement.formattedDate) + xBand.bandwidth()/2)
+            .attr("y1", y2(percent))
+
+        testingTooltip
+            .style("left", tmpX + -300 + "px")
+            .style("top", tmpY + "px")
+            
+
+        table = d3.select("#testing-table").selectAll("td")
+        vals = [
+                curElement.formattedDate, 
+                curElement.values[1].val, 
+                curElement.tests, 
+                curElement.values[0].val,
+                (percent).toFixed(2) + "%"
+            ]
+
+        table.each( function(d, i, f){
+            d3.select(this).text(vals[i])
+        })
+    }
+
+    function mouseout(d){
+        console.log(d)
+        hoverLine
+            .transition().duration(250)
+            .attr("opacity", 0)
+
+        testingTooltip
+            .transition().duration(250)
+            .style("opacity", 0)
+
+        // d3.selectAll(".hosp-dot")
+        //     .transition().duration(100)
+        //     .attr("r", 4)   
+    }
+
+    function clicked(d){
+        
+    }
+
 
     testing.width = function(value){
         if (!arguments.length) return width;

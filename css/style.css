@@ -610,6 +610,10 @@ select.form-control{display:inline-block}
 	fill: #4fb6d3;
 }
 
+.hosp-dot {
+	fill: #4fb6d3;
+}
+
 
 
 /* ---------------------------------------------------- */
@@ -794,4 +798,28 @@ select.form-control{display:inline-block}
 	font-size: 1rem;
 	pointer-events: none;
 	box-shadow: 3px 3px 3px 0 #4fb6d3
+}
+
+.hover-line {
+	/* stroke-dasharray: 2 2; */
+	stroke: #f114c2;
+	stroke-width: 2
+}
+
+.footer {
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background-color: #14161b;
+	color: white;
+	text-align: center;
+	height: 120px;
+	
+	border-top: 1px solid #413b3b;
+	border-bottom: 1px solid #413b3b;
+
+}
+
+.disclaimer {
+	font-size: 1.2em;
 }

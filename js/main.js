@@ -75,10 +75,8 @@ function updateSelectedCounty(d){
 function countyClick(d){
     updateSelectedCounty(d)
     $("#county-select").val(d)
+
 }
-
-
-
 
 function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, population]){
     bedKeys = d3.keys(beds[0])
@@ -140,7 +138,9 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
                 d.averagePercent = 0
                 d.covidPercentChange = 0
             }
+            d.covidPercentChange /= 100
         })
+        
     }
         
     coords.forEach(function(d){
@@ -543,6 +543,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
     hospMaxSliderVis();
     rankingLegendVis();
     testingSliderVis();
+
 }
 
 function updateRanking(selection, value){

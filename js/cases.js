@@ -18,8 +18,13 @@ function cases_line_chart(config){
     var height = config.height - margin.top - margin.bottom, 
         width = config.width - margin.left - margin.right;
     
+    bisectDate = d3.bisector(function(d) { 
+        
+        return parseTime(d.date); }).left
+
     var parseTime = d3.timeParse("%Y-%m-%d")
     var formatTime = d3.timeFormat("%m/%d/%y")
+    
 
     var lineChartSelection = "Los Angeles",
         cas = []
@@ -34,11 +39,18 @@ function cases_line_chart(config){
             .attr('viewBox', 0 + " " + 0 + " " + defaultWidth + ' ' + defaultHeight)
             .classed("svg-content", true)
             .append("g")
+
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
 
+    var casesTooltip = d3.select("#cases-tooltip")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+
     width = defaultWidth - margin.left - margin.right
     height = defaultHeight  - margin.top - margin.bottom
+
+    var hoverLine;
 
     var x1 = d3.scaleBand()
         .range([0, width])
@@ -148,6 +160,10 @@ function cases_line_chart(config){
             .attr("dominant-baseline", "middle")
             .text("Average Threshold for Reopen")
 
+        hoverLine = chart.append("line")
+            .attr("y2", height)
+            .attr("class", "hover-line")
+            .attr("opacity", 0)
     }
 
     function updateScales(){
@@ -189,7 +205,6 @@ function cases_line_chart(config){
     function draw_chart(){
         draw_cases();
     }
-
 
     function draw_cases(){
         var casesLine = chart.selectAll(".case-line")
@@ -239,11 +254,107 @@ function cases_line_chart(config){
         circles.enter()
             .append("circle")
             .attr("class", "dot-marker")
+            .attr("id", function(d,i){ return "dot-" + i; })
             .attr("cx", d=> x1(d.formattedDate) + x1.bandwidth()/2)
             .attr("r", 4)
             .attr("cy", y1(0))
             .transition().duration(dur)
             .attr("cy", d=> y1(d.normalizedCases))
+
+        chart.append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', width)
+            .attr('height', height)
+            .attr('fill', "#fff")
+            .attr("fill-opacity", 0)
+                .on("mousemove", mousemove)
+                .on("mouseenter", mouseover)
+                .on("mouseout", mouseout)
+                .on("click", clicked)
+    }
+
+    function mouseover(d){
+        casesTooltip
+            .transition().duration(250)
+            .style("opacity", 1)
+    }
+
+    x1.invert = function(){
+        var domain = x1.domain()
+        var range = x1.range()
+        var scale = d3.scaleQuantize().domain(range).range(domain)
+
+        return function(x){
+            return scale(x)
+        }
+    }
+
+
+    curElementSelection = -1
+
+    function mousemove(d){
+        var mouseX = d3.mouse(this)[0] - x1.bandwidth()/2
+
+        i = Math.round(mouseX/width  * x1.domain().length)
+        curDate = x1.domain()[i]
+        curElement = cas.chartData.filter(d => d.formattedDate == curDate)[0]
+
+        
+
+        d3.selectAll(".dot-marker")
+            .transition().duration(100)
+            .attr("r", function(d, index){
+                return (index == i ? 8: 4)
+            })          
+        
+
+        tmpX = event.pageX - d3.mouse(this)[0] + x1(curElement.formattedDate) + x1.bandwidth()/2
+        tmpY = event.pageY - d3.mouse(this)[1] + y1(curElement.normalizedCases)
+        
+        hoverLine
+            .attr("opacity", 1)
+            .attr("x1", x1(curElement.formattedDate) + x1.bandwidth()/2)
+            .attr("x2", x1(curElement.formattedDate) + x1.bandwidth()/2)
+            .attr("y1", y1(curElement.normalizedCases))
+
+        curElementSelection = i
+
+        casesTooltip
+            // .style("left", x1(curElement.formattedDate) + x1.bandwidth()/2 + 150 + "px")
+            // .style("top", y1(curElement.normalizedCases) - 50 + "px")
+            .style("left", tmpX + 15 + "px")
+            .style("top", tmpY + "px")
+            
+
+        table = d3.select("#cases-table").selectAll("td")
+        vals = [curElement.formattedDate, Math.round(curElement.normalizedCases), Math.round(curElement.normalizedCases) - 5, curElement.cases, curElement.deaths]
+
+        table.each( function(d, i, f){
+            d3.select(this).text(vals[i])
+        })
+        
+    }
+
+    function mouseout(d){
+        hoverLine
+            .transition().duration(250)
+            .attr("opacity", 0)
+        // d3.selectAll(".dot-marker")
+        //     .transition().duration(250)
+        //     .attr("r", 4)
+
+        casesTooltip
+            .transition().duration(250)
+            .style("opacity", 0)
+
+        d3.selectAll(".dot-marker")
+            .transition().duration(100)
+            .attr("r", 4)   
+    }
+
+    function clicked(d){
+
     }
 
 

@@ -38,6 +38,9 @@ function hospital_line_chart(config){
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     
 
+    var hospTooltip = d3.select("#hosp-tooltip")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
 
     // console.log(config.hospitalData)
     // console.log(config.criteria)
@@ -61,7 +64,7 @@ function hospital_line_chart(config){
         .attr("id", "hospital-chart")
 
     var x1_axis = d3.axisBottom()
-    var y1_axis = d3.axisLeft().ticks(6)
+    var y1_axis = d3.axisLeft().ticks(6).tickFormat(d3.format(".0%"))
 
 
     var x1AxisCall,
@@ -82,7 +85,7 @@ function hospital_line_chart(config){
 
     var hospLines = [
         {name: 'zero', val: 0, class: 'zero-line'},
-        {name: 'thresh', val: 5, class: 'threshold-line'}
+        {name: 'thresh', val: 5/100, class: 'threshold-line'}
     ]
 
     function lineChart(){
@@ -112,6 +115,8 @@ function hospital_line_chart(config){
 
     }
     
+    var hoverLine;
+
     function drawLegend(){
         rectSize = width * 0.025
         spacing = width*0.01
@@ -155,6 +160,12 @@ function hospital_line_chart(config){
             .attr("dominant-baseline", "middle")
             .text("Daily Threshold")
 
+        hoverLine = chartGraph.append("line")
+            .attr("y2", height)
+            .attr("class", "hover-line")
+            .attr("opacity", 0)
+
+
     }
 
     function updateScales(){
@@ -168,8 +179,8 @@ function hospital_line_chart(config){
         x1Dates = hos.map(d=> d.formattedDate)
 
         y1extent = d3.extent(hos, d=> d.covidPercentChange)
-        y1Min = Math.min(y1extent[0]*1.2, -5)
-        y1Max = Math.max(y1extent[1]*1.2, 7)
+        y1Min = Math.min(y1extent[0]*1.2, -5/100)
+        y1Max = Math.max(y1extent[1]*1.2, 7/100)
 
 
         if (!(y1extent[1] - y1extent[0])){
@@ -187,11 +198,6 @@ function hospital_line_chart(config){
             x1AxisCall.transition().duration(dur).call(x1_axis)
 
         }
-
-        
-
-       
-
     }
 
     function draw_chart(){
@@ -282,7 +288,8 @@ function hospital_line_chart(config){
 
         circles.enter()
             .append("circle")
-            .attr("class", "dot-marker")
+            .attr("class", "hosp-dot")
+            .attr("id", function(d, i){ return "hosp-dot-" + i; })
             .attr("cx", d=> x1(d.formattedDate) + x1.bandwidth()/2)
             .attr("r", 4)
             .attr("cy", y1(0))
@@ -316,8 +323,101 @@ function hospital_line_chart(config){
             .transition().duration(dur)
             .attr("opacity", 1)
 
+        chartGraph.append('rect')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr('width', width)
+            .attr('height', height)
+            .attr('fill', "#fff")
+            .attr("fill-opacity", 0)
+                .on("mousemove", mousemove)
+                .on("mouseenter", mouseover)
+                .on("mouseout", mouseout)
+                .on("click", clicked)
+
     }
 
+    x1.invert = function(){
+        var domain = x1.domain()
+        var range = x1.range()
+        var scale = d3.scaleQuantize().domain(range).range(domain)
+
+        return function(x){
+            return scale(x)
+        }
+    }
+
+    function mouseover(d){
+        hospTooltip
+            .transition().duration(250)
+            .style("opacity", 1)
+    }
+
+
+
+    function mousemove(d){
+
+        var mouseX = d3.mouse(this)[0] - x1.bandwidth()/2
+
+        i = Math.round(mouseX/width  * x1.domain().length)
+        curDate = x1.domain()[i]
+        curElement = config.hospitalData[lineChartSelection].filter(d => d.formattedDate == curDate)[0]
+
+        d3.selectAll(".hosp-dot")
+            .transition().duration(100)
+            .attr("r", function(d, index){
+                return (index == i ? 8: 4)
+            })        
+        
+
+        tmpX = event.pageX - d3.mouse(this)[0] + x1(curElement.formattedDate) + x1.bandwidth()/2
+        tmpY = event.pageY - d3.mouse(this)[1] + y1(curElement.covidPercentChange)
+        
+        hoverLine
+            .attr("opacity", 1)
+            .attr("x1", x1(curElement.formattedDate) + x1.bandwidth()/2)
+            .attr("x2", x1(curElement.formattedDate) + x1.bandwidth()/2)
+            .attr("y1", y1(curElement.covidPercentChange))
+
+        hospTooltip
+
+            .style("left", tmpX + 15 + "px")
+            .style("top", tmpY + "px")
+            
+
+        table = d3.select("#hosp-table").selectAll("td")
+        vals = [
+                curElement.formattedDate, 
+                (100 * curElement.covidPercentChange).toFixed(3) + "%", 
+                curElement.covidPatients, 
+                curElement.covidPatientsIncrease
+            ]
+
+        table.each( function(d, i, f){
+            d3.select(this).text(vals[i])
+        })
+        
+
+    }
+
+    function mouseout(d){
+        hoverLine
+            .transition().duration(250)
+            .attr("opacity", 0)
+
+
+        hospTooltip
+            .transition().duration(250)
+            .style("opacity", 0)
+
+        d3.selectAll(".hosp-dot")
+            .transition().duration(100)
+            .attr("r", 4)   
+    }
+
+    function clicked(d){
+        
+    }
 
     lineChart.width = function(value){
         if (!arguments.length) return width;

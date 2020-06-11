@@ -41,8 +41,9 @@ function cali_map(config){
     height = defaultHeight  - margin.top - margin.bottom
 
     var mapSelection = 'normalizedCases'
+    var countySelection = "Los Angeles"
 
-    var tooltip = d3.select("#tooltip")
+    var mapTooltip = d3.select("#map-tooltip")
         .style("opacity", 0)
         .attr("class", "tooltip")
 
@@ -426,7 +427,7 @@ function cali_map(config){
                 .on("mouseenter", mouseover)
                 .on("mouseout", mouseout)
                 .on("click", clicked)
-            .attr("id", d=> "county-" + d.properties.NAME)
+            .attr("id", d=> "county-" + d.properties.NAME.replace(/\s/g, ""))
             .attr("stroke", "#1e2025")
             .attr("stroke-width", 1)
             .attr("fill", "#f2f2f2")
@@ -502,9 +503,9 @@ function cali_map(config){
     }
 
     function mousemove(d){
-        tooltip
-        .style("left", (event.pageX) + (30) + "px")
-        .style("top", (event.pageY) + (0) + "px")
+        mapTooltip
+            .style("left", (event.pageX) + (30) + "px")
+            .style("top", (event.pageY) + (0) + "px")
     }
 
     function mouseover(d){
@@ -521,7 +522,7 @@ function cali_map(config){
                 .transition().duration(dur/2)
                 .attr("stroke-width", 2)
 
-            tooltip
+            mapTooltip
                 .transition().duration(250)
                 .style("opacity", 1)
 
@@ -547,7 +548,7 @@ function cali_map(config){
                 .attr("stroke", "#000")
                 .attr("stroke-width", 1)
 
-            tooltip
+            mapTooltip
                 .transition().duration(250)
                 .style("opacity", 0)
         }
@@ -567,6 +568,7 @@ function cali_map(config){
 
     }
     
+
 
     stateMap.width = function(value){
         if (!arguments.length) return width;
