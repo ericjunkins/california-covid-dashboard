@@ -48,11 +48,7 @@ function dropdownChange(){
     var id = d3.select(this).property("id");
     var sel = d3.select(this).property('value')
     if (id == "county-select"){
-        casesSliderVis.selection(sel)
-        casesChartVis.selection(sel)
-        hospChartVis.selection(sel)
-        hospSliderVis.selection(sel)
-        hospMaxSliderVis.selection(sel)
+        updateSelectedCounty(sel)
 
     } else if (id == "testing-select"){
         testingVis.selection(sel)
@@ -66,6 +62,21 @@ function dropdownChange(){
 function updateCriteriaIcon(sel, value){
     criteriaVis.update(sel, value)
 }
+
+
+function updateSelectedCounty(d){
+    casesSliderVis.selection(d)
+    casesChartVis.selection(d)
+    hospChartVis.selection(d)
+    hospSliderVis.selection(d)
+    hospMaxSliderVis.selection(d)
+}
+
+function countyClick(d){
+    updateSelectedCounty(d)
+    $("#county-select").val(d)
+}
+
 
 
 

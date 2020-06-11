@@ -786,3 +786,12 @@ select.form-control{display:inline-block}
 	stroke-width: 1.5px;
 }
 
+.tooltip {
+	background-color: #f3f3d0;
+	border: 1px solid #5e5e5e;
+	border-radius: 5px;
+	padding: 12px;
+	font-size: 1rem;
+	pointer-events: none;
+	box-shadow: 3px 3px 3px 0 #4fb6d3
+}

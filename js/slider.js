@@ -184,7 +184,9 @@ function slider_chart(config){
     
     var dial = svg.append('g')
         .attr("transform", "translate(" + width/2 + "," + (height*0.75) + ")")
-        .attr("opacity", 1)
+        .attr("opacity", function(){
+            return (config.type == "null" ? 0.4 : 1)
+        })
 
     var spinner = dial.append("g")
     var markerLine;
@@ -318,21 +320,19 @@ function slider_chart(config){
             .attr("dominant-baseline", "middle")
             .text('test')
 
-
-
-            
-
-
-        // iconText = textGroup.append('text')
-        //     .attr("x", 5)
-        //     .attr("y", 0)
-        //     .attr("fill", "#fff")
-        //     .attr('class', 'icons-text')
-        //     .attr('font-family', 'FontAwesome')
-        //     .attr("font-size", "3.5em")
-        //     .attr("text-anchor", "start")
-        //     .attr("dominant-baseline", "middle")
-        //     .text('\uf00d')
+        iconText = textGroup.append('text')
+            .attr("x", barWidth/2 + 15)
+            .attr("y", 0)
+            .attr("fill", "#fff")
+            .attr('class', 'icons-text')
+            .attr('font-family', 'FontAwesome')
+            .attr("font-size", "2em")
+            .attr("text-anchor", "start")
+            .attr("dominant-baseline", "middle")
+            .text('\uf00d')
+            .attr("opacity", function(){
+                return (config.type == "null" ? 0 : 1)
+            })
 
     }
 
@@ -457,7 +457,16 @@ function slider_chart(config){
                 else if (iconStatus == 1) return colorRange[2]
             })
 
-
+        iconText
+            .transition().duration(dur)
+            .attr("fill", function(){
+                if (iconStatus == 0) return colorRange[0]
+                else if (iconStatus == 1) return colorRange[2]
+            })
+            .text(function(){
+                if (iconStatus == 0) return '\uf00d'
+                else if (iconStatus == 1) return '\uf00c'
+            })
     }
 
     function slider(){     

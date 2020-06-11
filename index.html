@@ -39,13 +39,23 @@
             </div>
         </div>
     </nav>
-    <!--
-    <section id="title">
-        <div class="container-fluid">
-            <h1 style="margin-bottom: 15px; margin-top: 5px" class="title_text"> Covid-19 Dashboard</h1>
-        </div>
-    </section>
-    -->
+    <div id="tooltip">
+        <table class="table" id="map-table">
+            <thead>
+                <tr>
+                <th scope="col" style="width: 130px;">County</th>
+                <th scope="col" style="width: 150px;">Cases Per 100,000 </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
     <section>
     <div class="container-fluid" id="main-container">
         <div class="row">
@@ -68,23 +78,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row rows">
-                        <div class="col-sm-12">
-                            <!--
-                            <div class="row" style="width: 100%; margin-left: 0px;">
-                                <div class="col-sm-3 offset-sm-4 cn">
-                                    <div class="inner">
-                                        <select class="select-css" id="testing-select">
-                                            <option value="Cumulative">Cumulative</option>
-                                            <option value="Daily">Daily</option>
-                                            <option value="Weekly">Weekly</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            -->
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -95,7 +88,6 @@
                     </div>
 
                     <div class="row rows">
-                    
                         <div class="col-sm-12 center-box" style="text-align: left; padding-left: 5%;">
                             <div class="center-cell">
                                 <div class="description-minor"> In order for counties to move onto the next reopening stage they must meet at least one of the following criteria for the number of new cases, AND at least one of the following criteria for hospitalizations.
@@ -260,12 +252,8 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
-
-        
-
     </div>
 
     </section>

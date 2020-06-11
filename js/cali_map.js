@@ -40,6 +40,12 @@ function cali_map(config){
     width = defaultWidth - margin.left - margin.right
     height = defaultHeight  - margin.top - margin.bottom
 
+    var mapSelection = 'normalizedCases'
+
+    var tooltip = d3.select("#tooltip")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+
     var projection = d3.geoMercator()
         .center([ -120, 37 ])
         .translate([ width * 0.5, height*0.45 ])
@@ -173,7 +179,7 @@ function cali_map(config){
         .text("Select map display:")
         .attr("text-anchor", "middle")
     
-    drawLegend()
+
 
     function drawLegend(){
 
@@ -357,16 +363,9 @@ function cali_map(config){
 
 
     function stateMap(){
+        drawLegend()
         updateSelections();
-        updateScales();
-
         drawMap();
-    }
-
-
-    function updateScales(){
-        mapSelection = 'normalizedCases'
-
     }
 
     function updateSelections(){
@@ -409,6 +408,69 @@ function cali_map(config){
             
     }
 
+    function drawMap(){
+        var counties = paths.selectAll(".county-path")
+            .data(cal.features)
+
+        counties
+            .transition().duration(dur)
+            .attr("fill", function(d){
+                return (mode == "Bubbles" ? "#c5dbe0" : getColor(d.totalNormalizedCases) )
+            })
+
+        counties.enter()
+            .append("path")
+            .attr("d", path)
+            .attr("class", "county-path")
+                .on("mousemove", mousemove)
+                .on("mouseenter", mouseover)
+                .on("mouseout", mouseout)
+                .on("click", clicked)
+            .attr("id", d=> "county-" + d.properties.NAME)
+            .attr("stroke", "#1e2025")
+            .attr("stroke-width", 1)
+            .attr("fill", "#f2f2f2")
+            .transition().duration(dur)
+            .attr("fill", function(d){
+                return (mode == "Bubbles" ? "#c5dbe0" : getColor(d.totalNormalizedCases) )
+            })
+
+
+        circData = (mode == "Bubbles" ? cal.features : [])
+        var circles = circlesGroup.selectAll("circle")
+            .data(circData,  d=> d.properties.NAME)
+        
+        circles.exit()
+            .transition().duration(dur)
+            .attr("r", 0)
+            .remove()
+
+        circles.enter()
+            .append('circle')
+                .on("mousemove", mousemove)
+                .on("mouseenter", mouseover)
+                .on("mouseout", mouseout)
+                .on("click", clicked)
+            .attr("cx", function(d){
+                coord = config.coordinates[d.properties.GEOID].coords
+                return projection(coord)[0]
+            })
+            .attr("cy", function(d){
+                coord = config.coordinates[d.properties.GEOID].coords
+                return projection(coord)[1]
+            })
+
+            .attr("fill", "red")
+            .attr("fill-opacity", 0.3)
+            .attr("stroke", "black")
+            .attr("r", 0)
+            .transition().duration(dur)
+            .attr("r", function(d){
+                tmp = d.totalNormalizedCases
+                val = area2radius(tmp)
+                return a(val)
+            })
+    }
 
     function rightRoundedRect(x, y, width, height, radius){
         return "M" + x + "," + y
@@ -439,97 +501,72 @@ function cali_map(config){
         return res
     }
 
-
     function mousemove(d){
-
+        tooltip
+        .style("left", (event.pageX) + (30) + "px")
+        .style("top", (event.pageY) + (0) + "px")
     }
 
-    function mouseover(){
+    function mouseover(d){
         document.body.style.cursor = "pointer"
-        tmp = this.id.split('-')
-        id = "#selection-rects-" + tmp[tmp.length-1]
-        d3.select(id)
-            .attr("stroke", "#4fb6d3")
-        
+        if (d == undefined){
+            tmp = this.id.split('-')
+            id = "#selection-rects-" + tmp[tmp.length-1]
+            d3.select(id)
+                .attr("stroke", "#4fb6d3")
+        } else {
+            d3.select(this)
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 4)
+                .transition().duration(dur/2)
+                .attr("stroke-width", 2)
+
+            tooltip
+                .transition().duration(250)
+                .style("opacity", 1)
+
+            table = d3.select("#map-table").selectAll("td")
+            vals = [d.properties.NAME, d.totalNormalizedCases]
+            table.each( function(d, i, f){
+                d3.select(this).text(vals[i])
+            })
+        }
     }
 
     function mouseout(d){
         document.body.style.cursor = "default"
-        tmp = this.id.split('-')
-        id = "#selection-rects-" + tmp[tmp.length-1]
-        d3.select(id)
-            .attr("stroke", "#666666")
+        if (d == undefined){
+            tmp = this.id.split('-')
+            id = "#selection-rects-" + tmp[tmp.length-1]
+            d3.select(id)
+                .attr("stroke", "#666666")
+
+        } else {
+            d3.select(this)
+                .transition().duration(dur/2)
+                .attr("stroke", "#000")
+                .attr("stroke-width", 1)
+
+            tooltip
+                .transition().duration(250)
+                .style("opacity", 0)
+        }
     }
 
     function clicked(d){
-        tmp = this.id.split("-")
-        mode = tmp[tmp.length -1]
-        updateSelections();
-        drawMap();
-        
+        if (d == undefined){
+            tmp = this.id.split("-")
+            mode = tmp[tmp.length -1]
+            updateSelections();
+            drawMap();
+        } else {
+            tmp = this.id.split("-")
+            county = tmp[1]
+            countyClick(county)
+        }
+
     }
     
-    function drawMap(){
-        var counties = paths.selectAll(".county-path")
-            .data(cal.features)
-
-        counties
-            .transition().duration(dur)
-            .attr("fill", function(d){
-                return (mode == "Bubbles" ? "#c5dbe0" : getColor(d.totalNormalizedCases) )
-            })
-
-        counties.enter()
-            .append("path")
-            .attr("d", path)
-            .attr("class", "county-path")
-            .attr("id", d=> "county-" + d.properties.NAME)
-
-            .attr("stroke", "#1e2025")
-            .attr("stroke-width", 1)
-            .attr("fill", "#f2f2f2")
-            .transition().duration(dur)
-            .attr("fill", function(d){
-                return (mode == "Bubbles" ? "#c5dbe0" : getColor(d.totalNormalizedCases) )
-            })
-
-
-        circData = (mode == "Bubbles" ? cal.features : [])
-        var circles = circlesGroup.selectAll("circle")
-            .data(circData,  d=> d.properties.NAME)
-        
-        circles.exit()
-            .transition().duration(dur)
-            .attr("r", 0)
-            .remove()
-
-        circles.enter()
-            .append('circle')
-            .attr("cx", function(d){
-                coord = config.coordinates[d.properties.GEOID].coords
-                return projection(coord)[0]
-            })
-            .attr("cy", function(d){
-                coord = config.coordinates[d.properties.GEOID].coords
-                return projection(coord)[1]
-            })
-
-            .attr("fill", "red")
-            .attr("fill-opacity", 0.3)
-            .attr("stroke", "black")
-            .attr("r", 0)
-            .transition().duration(dur)
-            .attr("r", function(d){
-                tmp = d.totalNormalizedCases
-                val = area2radius(tmp)
-                return a(val)
-            })
-    }
-
-    function draw_chart(){
-
-    }
-
 
     stateMap.width = function(value){
         if (!arguments.length) return width;
