@@ -70,17 +70,21 @@ function ranking_chart(config){
     var textColumns = ['county', 'currentCases', 'currentCasesNormalized', 'currentDeaths', 'currentDeathsNormalized']
     var textColumNames = ['County', 'Cases', 'Per 100k', 'Deaths', 'Per 100k']
 
-    config.criteria.forEach(function(d){
 
-        cases = d.data[d.data.length -1].cases
-        deaths = d.data[d.data.length -1].deaths
-        rankingData.push({
-            county: d.county,
-            cases: cases,
-            deaths: deaths,
-            caseAvg: d.caseAvg,
-            deathAvg: d.deathAvg
-        })
+    console.log(config.criteria)
+
+    config.criteria.forEach(function(d){
+        if (d.data.length){
+            cases = d.data[d.data.length -1].cases
+            deaths = d.data[d.data.length -1].deaths
+            rankingData.push({
+                county: d.county,
+                cases: cases,
+                deaths: deaths,
+                caseAvg: d.caseAvg,
+                deathAvg: d.deathAvg
+            })
+        }
         yLabels.push({
             cases: cases,
             deaths: deaths,
@@ -102,6 +106,7 @@ function ranking_chart(config){
                 id: d.county + "-" + textColumns[i]
             })
         }
+        
     })
 
 
@@ -188,17 +193,17 @@ function ranking_chart(config){
 
     function updateScales(){
         if (rankingSort == "Ascending"){
-            rankingData = rankingData.sort((a,b) => d3.ascending(a[rankingSel], b[rankingSel]))
+            yLabels = yLabels.sort((a,b) => d3.ascending(a[rankingSel], b[rankingSel]))
         } else {
-            rankingData = rankingData.sort(function(a, b){
+            yLabels = yLabels.sort(function(a, b){
                 return d3.descending(a[rankingSel], b[rankingSel])
             })
         }
 
-        var maxX = d3.max(rankingData, d=> d[rankingSel])
-        var minX = d3.min(rankingData, d=> d[rankingSel])
+        var maxX = d3.max(yLabels, d=> d[rankingSel])
+        var minX = d3.min(yLabels, d=> d[rankingSel])
         x.domain([Math.min(0, minX), maxX])
-        y.domain(rankingData.map(d=> d.county ))
+        y.domain(yLabels.map(d=> d.county ))
 
         x_axis.scale(x)
         y_axis.scale(y)
