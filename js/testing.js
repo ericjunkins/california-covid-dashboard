@@ -205,7 +205,9 @@ function testing_chart(config){
     }
 
     function updateScales(){
-        barData = config.testingData[testSelection]
+        //barData = config.testingData[testSelection]
+        barData = config.tracking[testSelection]
+
         offsetDay = (testSelection == "Weekly" ? 1 : 7)
         barData = barData.filter(function(d,i){
             if (i >= offsetDay) return d
@@ -229,13 +231,12 @@ function testing_chart(config){
             //console.log(d.cases, d.tests)
             lineData.push({
                 date: d.formattedDate,
-                y: Math.min(1, +((d.cases/d.tests)*1).toFixed(2))
+                y: Math.min(1, +((d.cases/d.tests)*1).toFixed(4))
             })
-
         })
 
 
-        y2.domain([0, Math.min(100, d3.max(lineData, d=> d.y) * 1.5)])
+        y2.domain([0, Math.min(100, d3.max(lineData, d=> d.y) * 1)])
 
         var ticks = xBand.domain().filter(function(d, i){ return !( i % offsetDay ); });
         x_axis.scale(xBand).tickValues( ticks );
@@ -390,7 +391,7 @@ function testing_chart(config){
 
         i = Math.round(mouseX/width  * xBand.domain().length)
         curDate = xBand.domain()[i]
-        curElement = config.testingData[testSelection].filter(function(d){
+        curElement = config.tracking[testSelection].filter(function(d){
             return d.formattedDate == curDate
         })[0]
 
@@ -427,7 +428,6 @@ function testing_chart(config){
     }
 
     function mouseout(d){
-        console.log(d)
         hoverLine
             .transition().duration(250)
             .attr("opacity", 0)

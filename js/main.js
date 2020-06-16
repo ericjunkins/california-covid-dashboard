@@ -79,6 +79,8 @@ function countyClick(d){
 }
 
 function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, population]){
+
+    
     bedKeys = d3.keys(beds[0])
     beds.forEach(function(d){
         bedKeys.forEach(function(v){
@@ -357,193 +359,273 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         }
     })
 
-    var windowHeight = window.innerHeight;
-
-    twoWeekData = dateData.slice(dateData.length - 15, dateData.length -1)
-    //var row0 = windowHeight * 0.25
-    var casesRow = 2000
-    var hospRow = 2000
-    var row1 = windowHeight * 0.2
-    var row2 = windowHeight * 0.3
 
 
-    mapConfig = {
-        'selection': "#map-chart",
-        'height': windowHeight * 0.5,
-        'width': parseInt(d3.select("#map-chart").style("width"), 10),
-        'duration': 750,
-        'countyData': dateData[dateData.length -1].values,
-        'cal': caliCounty,
-        'criteria': criteriaData,
-        'coordinates' : calCoordinates,
-        'defaultColor' : default_color
-    }
+    var request = new XMLHttpRequest()
+    request.open("GET", "https://covidtracking.com/api/v1/states/ca/daily.json", true)
+    request.onload = function(){
+        trackingProject = JSON.parse(this.response)
 
-    casesThresholds = {
-        max: 100,
-        min: 0,
-        thresh: 25
-    }
+        weeklyWindow = []
 
-    hospThresholds = {
-        max: 10,
-        min: -10,
-        thresh: 5
-    }
+        trackingProject.sort(function(a,b){
+            return d3.ascending(a.date, b.date)
+        })
 
-    hospMaxThresholds = {
-        max: 80,
-        min: 0,
-        thresh: 20
-    }
+        trackingProject = trackingProject.filter(function(d){
+            return d.date >= 20200317
+        })
 
-    sliderRadius = 70
+        trackingProject["Cumulative"] = []
+        trackingProject["Daily"] = []
+        trackingProject["Weekly"] = []
 
+        trackingProject.forEach(function(d, i){
+            d.fullDate = d3.timeParse("%Y%m%d")(String(d.date))
+            trackingProject["Cumulative"].push({
+                date: d.fullDate,
+                formattedDate: d3.timeFormat("%m/%d")(d.fullDate),
+                tests: d.totalTestResults,
+                cases: d.positive,
+                percent: d.positive/d.totalTestResults
+            })
+
+            if ( !i ){
+                d.newTests = d.totalTestResults
+                d.newCases = d.positive
+                
+            } else {
+                d.newTests = d.totalTestResults - trackingProject[i-1].totalTestResults
+                d.newCases = d.positive - trackingProject[i-1].positive
+                
+            }
+            
+
+            trackingProject["Daily"].push({
+                date: d.fullDate,
+                formattedDate: d3.timeFormat("%m/%d")(d.fullDate),
+                tests: d.newTests,
+                cases: d.newCases,
+                percent: d.newCases/d.newTests
+            })
+
+            weeklyWindow.push(d)
+            if (weeklyWindow.length > 7) weeklyWindow.slice()
+
+            
+            if (!(i % 7)) {
+                d.weekTests = d3.sum(weeklyWindow, d=> d.newTests)
+                d.weekCases = d3.sum(weeklyWindow, d=> d.newCases)
+                d.weekPercent = d.weekCases/d.weekTests
+                trackingProject["Weekly"].push({
+                    date: d.fullDate,
+                    formattedDate: d3.timeFormat("%m/%d")(d.fullDate),
+                    tests: d.weekTests,
+                    cases: d.weekCases,
+                    percent: d.weekPercent
+                })
+            }
+        })
+    
+        console.log(trackingProject)
+
+
+        
+        var windowHeight = window.innerHeight;
+        twoWeekData = dateData.slice(dateData.length - 15, dateData.length -1)
+        //var row0 = windowHeight * 0.25
+        var casesRow = 2000
+        var hospRow = 2000
+        var row1 = windowHeight * 0.2
+        var row2 = windowHeight * 0.3
+    
+    
+        mapConfig = {
+            'selection': "#map-chart",
+            'height': windowHeight * 0.5,
+            'width': parseInt(d3.select("#map-chart").style("width"), 10),
+            'duration': 750,
+            'countyData': dateData[dateData.length -1].values,
+            'cal': caliCounty,
+            'criteria': criteriaData,
+            'coordinates' : calCoordinates,
+            'defaultColor' : default_color
+        }
+    
+        casesThresholds = {
+            max: 100,
+            min: 0,
+            thresh: 25
+        }
+    
+        hospThresholds = {
+            max: 10,
+            min: -10,
+            thresh: 5
+        }
+    
+        hospMaxThresholds = {
+            max: 80,
+            min: 0,
+            thresh: 20
+        }
+    
+        sliderRadius = 70
+    
+        
+    
+        criteriaConfig = {
+            'selection': "#criteria-chart",
+            'height': parseInt(d3.select("#criteria-row").style("height"), 10),
+            'width': parseInt(d3.select("#criteria-chart").style("width"), 10),
+            'duration': 750,
+            'criteria': criteriaData,
+            'thresholds': casesThresholds,
+            'type': 'cases'
+        }
+    
+        
+    
+        casesSliderConfig = {
+            'selection': "#cases-slider",
+            'height':  casesRow*0.6,
+            'width': parseInt(d3.select("#cases-slider").style("width"), 10),
+            'duration': 750,
+            'criteria': criteriaData,
+            'thresholds': casesThresholds,
+            'radius': sliderRadius,
+            'type': 'cases',
+            'shifts': {left: 10}
+        }
+    
+        testingSliderConfig = {
+            'selection': "#testing-slider",
+            'height':  casesRow*0.6,
+            'width': parseInt(d3.select("#testing-slider").style("width"), 10),
+            'duration': 750,
+            'criteria': criteriaData,
+            'thresholds': casesThresholds,
+            'radius': sliderRadius,
+            'type': 'null',
+            'shifts': {left: -5}
+        }
+    
+        hospSliderConfig = {
+            'selection': "#hosp-slider",
+            'height': hospRow*0.6,
+            'width': parseInt(d3.select("#cases-slider").style("width"), 10),
+            'duration': 750,
+            'hospitalData': hospByCounty,
+            'thresholds': hospThresholds,
+            'radius': sliderRadius,
+            'type': 'hosp',
+            'shifts': {left: 10}
+        }
+    
+        hospMaxSliderConfig = {
+            'selection': "#hosp-max-slider",
+            'height':  casesRow*0.6,
+            'width': parseInt(d3.select("#cases-slider").style("width"), 10),
+            'duration': 750,
+            'hospitalData': hospByCounty,
+            'thresholds': hospMaxThresholds,
+            'radius': sliderRadius,
+            'type': 'hospMax',
+            'shifts': {left: -15}
+        }
+    
+        casesChartConfig = {
+            'selection': "#cases-chart",
+            'height': casesRow,
+            'width': parseInt(d3.select("#cases-chart").style("width"), 10),
+            'duration': 750,
+            'countyData': dateData[dateData.length -1].values,
+            'criteria': criteriaData,
+            'hospitalData': hospByCounty,
+            'defaultColor' : default_color
+        }
+    
+        hospChartConfig = {
+            'selection': "#hosp-chart",
+            'height': hospRow,
+            'width': parseInt(d3.select("#hosp-chart").style("width"), 10),
+            'duration': 750,
+            'countyData': dateData[dateData.length -1].values,
+            'criteria': criteriaData,
+            'hospitalData': hospByCounty,
+            'defaultColor' : default_color
+        }
+    
+    
+    
+        rankingConfig = {
+            'selection': "#ranking",
+            'height': windowHeight * 0.4,
+            'width': parseInt(d3.select("#ranking").style("width"), 10),
+            'duration': 750,
+            'countyData': dateData[dateData.length -1].values,
+            'cal': caliCounty,
+            'criteria': criteriaData,
+            'coordinates' : calCoordinates,
+            'defaultColor' : default_color
+        }
+    
+    
+        testingConfig = {
+            'selection': "#testing-chart",
+            'height': windowHeight * 0.35,
+            'width': parseInt(d3.select("#testing-chart").style("width"), 10),
+            'duration': 750,
+            'testingData': testingData,
+            'defaultColor' : default_color,
+            'tracking': trackingProject
+        }
+    
+        rankingLegendConfig = {
+            'selection': "#ranking-legend",
+            'height': windowHeight * 0.35,
+            'width': parseInt(d3.select("#ranking-legend").style("width"), 10),
+            'duration': 750,
+            'testingData': testingData,
+            'defaultColor' : default_color
+        }
+    
+    
+    
+    
+        caliMapVis = cali_map(mapConfig)
+        rankingVis = ranking_chart(rankingConfig)
+        testingVis = testing_chart(testingConfig)
+        casesSliderVis = slider_chart(casesSliderConfig)
+        casesChartVis = cases_line_chart(casesChartConfig)
+        testingSliderVis = slider_chart(testingSliderConfig)
+        hospChartVis = hospital_line_chart(hospChartConfig)
+        hospSliderVis = slider_chart(hospSliderConfig)
+        criteriaVis = criteria_chart(criteriaConfig)
+        hospMaxSliderVis = slider_chart(hospMaxSliderConfig)
+        rankingLegendVis = rankingLegend_chart(rankingLegendConfig)
+    
+        criteriaVis();
+        caliMapVis();
+        rankingVis();
+        testingVis();
+    
+        casesSliderVis();
+        casesChartVis();
+        hospChartVis();
+        hospSliderVis();
+        hospMaxSliderVis();
+        rankingLegendVis();
+        testingSliderVis();
     
 
-    criteriaConfig = {
-        'selection': "#criteria-chart",
-        'height': parseInt(d3.select("#criteria-row").style("height"), 10),
-        'width': parseInt(d3.select("#criteria-chart").style("width"), 10),
-        'duration': 750,
-        'criteria': criteriaData,
-        'thresholds': casesThresholds,
-        'type': 'cases'
     }
+
+    request.send()
+
+
 
     
-
-    casesSliderConfig = {
-        'selection': "#cases-slider",
-        'height':  casesRow*0.6,
-        'width': parseInt(d3.select("#cases-slider").style("width"), 10),
-        'duration': 750,
-        'criteria': criteriaData,
-        'thresholds': casesThresholds,
-        'radius': sliderRadius,
-        'type': 'cases',
-        'shifts': {left: 10}
-    }
-
-    testingSliderConfig = {
-        'selection': "#testing-slider",
-        'height':  casesRow*0.6,
-        'width': parseInt(d3.select("#testing-slider").style("width"), 10),
-        'duration': 750,
-        'criteria': criteriaData,
-        'thresholds': casesThresholds,
-        'radius': sliderRadius,
-        'type': 'null',
-        'shifts': {left: -5}
-    }
-
-    hospSliderConfig = {
-        'selection': "#hosp-slider",
-        'height': hospRow*0.6,
-        'width': parseInt(d3.select("#cases-slider").style("width"), 10),
-        'duration': 750,
-        'hospitalData': hospByCounty,
-        'thresholds': hospThresholds,
-        'radius': sliderRadius,
-        'type': 'hosp',
-        'shifts': {left: 10}
-    }
-
-    hospMaxSliderConfig = {
-        'selection': "#hosp-max-slider",
-        'height':  casesRow*0.6,
-        'width': parseInt(d3.select("#cases-slider").style("width"), 10),
-        'duration': 750,
-        'hospitalData': hospByCounty,
-        'thresholds': hospMaxThresholds,
-        'radius': sliderRadius,
-        'type': 'hospMax',
-        'shifts': {left: -15}
-    }
-
-    casesChartConfig = {
-        'selection': "#cases-chart",
-        'height': casesRow,
-        'width': parseInt(d3.select("#cases-chart").style("width"), 10),
-        'duration': 750,
-        'countyData': dateData[dateData.length -1].values,
-        'criteria': criteriaData,
-        'hospitalData': hospByCounty,
-        'defaultColor' : default_color
-    }
-
-    hospChartConfig = {
-        'selection': "#hosp-chart",
-        'height': hospRow,
-        'width': parseInt(d3.select("#hosp-chart").style("width"), 10),
-        'duration': 750,
-        'countyData': dateData[dateData.length -1].values,
-        'criteria': criteriaData,
-        'hospitalData': hospByCounty,
-        'defaultColor' : default_color
-    }
-
-
-
-    rankingConfig = {
-        'selection': "#ranking",
-        'height': windowHeight * 0.4,
-        'width': parseInt(d3.select("#ranking").style("width"), 10),
-        'duration': 750,
-        'countyData': dateData[dateData.length -1].values,
-        'cal': caliCounty,
-        'criteria': criteriaData,
-        'coordinates' : calCoordinates,
-        'defaultColor' : default_color
-    }
-
-
-    testingConfig = {
-        'selection': "#testing-chart",
-        'height': windowHeight * 0.35,
-        'width': parseInt(d3.select("#testing-chart").style("width"), 10),
-        'duration': 750,
-        'testingData': testingData,
-        'defaultColor' : default_color
-    }
-
-    rankingLegendConfig = {
-        'selection': "#ranking-legend",
-        'height': windowHeight * 0.35,
-        'width': parseInt(d3.select("#ranking-legend").style("width"), 10),
-        'duration': 750,
-        'testingData': testingData,
-        'defaultColor' : default_color
-    }
-
-
-
-
-    caliMapVis = cali_map(mapConfig)
-    rankingVis = ranking_chart(rankingConfig)
-    testingVis = testing_chart(testingConfig)
-    casesSliderVis = slider_chart(casesSliderConfig)
-    casesChartVis = cases_line_chart(casesChartConfig)
-    testingSliderVis = slider_chart(testingSliderConfig)
-    hospChartVis = hospital_line_chart(hospChartConfig)
-    hospSliderVis = slider_chart(hospSliderConfig)
-    criteriaVis = criteria_chart(criteriaConfig)
-    hospMaxSliderVis = slider_chart(hospMaxSliderConfig)
-    rankingLegendVis = rankingLegend_chart(rankingLegendConfig)
-
-    criteriaVis();
-    caliMapVis();
-    rankingVis();
-    testingVis();
-
-    casesSliderVis();
-    casesChartVis();
-    hospChartVis();
-    hospSliderVis();
-    hospMaxSliderVis();
-    rankingLegendVis();
-    testingSliderVis();
-
 }
 
 function updateRanking(selection, value){

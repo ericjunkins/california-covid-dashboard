@@ -71,8 +71,6 @@ function ranking_chart(config){
     var textColumNames = ['County', 'Cases', 'Per 100k', 'Deaths', 'Per 100k']
 
 
-    console.log(config.criteria)
-
     config.criteria.forEach(function(d){
         if (d.data.length){
             cases = d.data[d.data.length -1].cases
