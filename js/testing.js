@@ -71,7 +71,8 @@ function testing_chart(config){
 
     
     var x_axis = d3.axisBottom()
-    var y_axis = d3.axisLeft().ticks(4).tickFormat(d3.format(".0s"))
+    // var y_axis = d3.axisLeft().ticks(4).tickFormat(d3.format(".0s"))
+    var y_axis = d3.axisLeft().ticks(4)
     var y2_axis = d3.axisRight(y2).ticks(4).tickFormat(d3.format(".0%"))
     var y_axis_grid = d3.axisLeft().tickSize(-width).tickFormat('').ticks(4)
 
@@ -214,7 +215,7 @@ function testing_chart(config){
         })
 
         xBand.domain(barData.map(d=> d.formattedDate))
-        y.domain([0, Math.round(d3.max(barData, d=> d.tests))*1.2])
+        y.domain([0, Math.round(d3.max(barData, d=> d.tests))*1.5])
         lineData = []
 
         barData.forEach(function(d){
@@ -237,6 +238,8 @@ function testing_chart(config){
 
 
         y2.domain([0, Math.min(100, d3.max(lineData, d=> d.y) * 1)])
+
+        console.log(y.domain())
 
         var ticks = xBand.domain().filter(function(d, i){ return !( i % offsetDay ); });
         x_axis.scale(xBand).tickValues( ticks );

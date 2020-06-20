@@ -1,0 +1,40 @@
+body {
+	background-color: #1b1b1b !important;
+	
+}
+
+h1 {
+	color: #f3f3c1;
+	text-align: center;
+    margin: 0 auto;
+    font-size: 3rem !important;
+}
+
+
+li{
+    margin: 10px 0;
+  }
+
+.navbar {
+	background-color: #16181b;
+	border-bottom: 1px solid #413b3b;
+}
+
+.navbar>a {
+	color: #f5f5dc;
+}
+
+.navbar-nav>a{
+	
+	color: #f3f3c1;
+}
+
+
+
+
+
+.description {
+	color: #ababab;
+	font-size: 1.4em;
+	padding: 0 30px 10px 30px;
+}

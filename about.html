@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <title>Coronavirus</title>
+
+        <!--
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        
+        <!-- jQuery UI CSS -->
+        <link rel="stylesheet" href="css/jquery-ui.min.css">
+        <link rel="stylesheet" href="css/jquery-ui.structure.min.css">
+        <link rel="stylesheet" href="css/jquery-ui.theme.min.css">
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="css/about.css">   
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+
+</head>
+
+<body>
+
+    <!-- Bootstrap grid setup -->
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand" href="index.html">Navbar</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-item nav-link active" href="index.html">Dashboard <span class="sr-only">(current)</span></a>
+                <a class="nav-item nav-link" href="about.html">About</a>
+                <a class="nav-item nav-link" href="about.html">Resources</a>
+            </div>
+        </div>
+    </nav>
+
+    <section>
+
+    <div class="container-fluid" style="text-align: left">
+        <div class="row" style="padding: 50px 0 50px 0;">
+            <div class="col-sm 10 col-lg-6 offset-sm-1 offset-lg-3">
+                <h1> About This Dashboard </h1>
+                <p class="description">
+                    This dashboard is meant to be an exploratory tool to look at the spread of COVID-19 in the state of California. It specifically is it assess each county and how it is doing in relation to the guidelines set out by the California Department of Public Health <a href=https://covid19.ca.gov/roadmap-counties/>https://covid19.ca.gov/roadmap-counties</a>. Any descisions made about reopening each individual county are still up to the discretion of each countie's local government, regardless of where they are on this roadmap. 
+                </p>
+
+                <p class="description">
+                    Authored, created, and maintained by Eric Junkins. Any bug notifications, suggestions for improvements, or comments can be sent to <a href="mailto:eric.junkins@jpl.nasa.gov">eric.junkins@jpl.nasa.gov</a>
+                </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm 10 col-lg-6 offset-sm-1 offset-lg-3" style="text-align: left">
+                <h1> Resources </h1>
+                <ul>
+                    <li class="description"> COVID-19 Cases/Deaths Data: COVID Data is pulled from two different sources, and then cross checked against each other to verify accuracy. 
+                        <ul>
+                            <li> <a href=https://covidtracking.com/>https://covidtracking.com</a> </li>
+                            <li> <a href=https://github.com/nytimes/covid-19-data/>https://github.com/nytimes/covid-19-data</a> </li> </li>
+                        </ul>
+                        California's current data quality grade is "B" as assigned by the Covid Tracking Project. To learn more about how this data grade is assigned you may visit <a href=https://covidtracking.com/state-grades/>https://covidtracking.com/state-grades</a>
+                    </li>
+
+                    <li class="description">
+                        COVID Testing data for the state of California is supplied by <a href=https://covidtracking.com/>https://covidtracking.com</a>. More granular testing data at the county level is eventually desired instead however.
+                    </li>
+                    <li class="description">
+                        California population pulled from <a href=https://www.california-demographics.com/counties_by_population/>https://www.california-demographics.com/counties_by_population</a>
+                    </li>
+                </ul>
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+    </section>
+
+    <!-- External JS libraries -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+
+
+
+
+    <!-- Custom JS -->
+
+    
+</body>
+</html>
