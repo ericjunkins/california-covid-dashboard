@@ -214,9 +214,14 @@ hr {
 .title {
 	text-anchor: middle;
 	font-size: 2em;
-	fill: #fff;
-	color: #fff;
+	fill: #f3f3d0;
+	color: #ececb8;
 
+}
+
+.criteria-title {
+	fill: #f3f3d0;
+	color: #ececb8;
 }
 
 .chart-title {
