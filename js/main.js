@@ -229,6 +229,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         if (d.key == "Unknown") return 
         movingWindow = []
         twoWeekWindow = []
+        smallWindow = []
         barsData = []
         previousCases = 0
         prevCaseAvg = 0
@@ -238,8 +239,12 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
             if (movingWindow.length > windowSize){
                 movingWindow.shift()
             }
-            
+
             v.newCases = v.cases - previousCases
+            smallWindow.push(v)
+            if (smallWindow.length > 5) smallWindow.shift()
+
+            
             
             twoWeekWindow.push(v)
             if (twoWeekWindow.length > 14) twoWeekWindow.shift();
@@ -249,6 +254,8 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
             v.prevCaseAvg = prevCaseAvg
             v.binnedCase = Math.ceil(d3.sum(movingWindow.map(v=> v.cases ))/movingWindow.length)
             t = Math.min(j, doublingWindow)
+            
+            v.binnedNewCase = Math.ceil(d3.sum(smallWindow.map(v=> v.newCases ))/smallWindow.length)
 
             prevInd = j - t
             prevCases = d.values[prevInd].binnedCase
@@ -427,8 +434,6 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
             }
         })
     
-        console.log(trackingProject)
-
 
         
         var windowHeight = window.innerHeight;

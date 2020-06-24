@@ -1,11 +1,4 @@
 function criteria_chart(config){
-    // var margin = { 
-    //     left:config.width * 0,
-    //     right:config.width * 0, 
-    //     top: config.height * 0.15, 
-    //     bottom:config.height * 0.15 }
-    
-
     var margin = {
         bottom: 5,
         left: 0,

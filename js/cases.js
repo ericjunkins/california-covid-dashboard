@@ -60,14 +60,17 @@ function cases_line_chart(config){
     var y1 = d3.scaleLinear()
         .range([height, 0])
 
-
+    var y2 = d3.scaleLinear()
+        .range([height, 0])
 
     var x1_axis = d3.axisBottom()
-    var y1_axis = d3.axisLeft().ticks(6)
+    var y1_axis = d3.axisLeft().ticks(5)
+    var y2_axis = d3.axisRight().ticks(5)
 
 
     var x1AxisCall,
-        y1AxisCall
+        y1AxisCall,
+        y2AxisCall
 
     var chart = svg.append("g")
     
@@ -81,6 +84,10 @@ function cases_line_chart(config){
 
 
         y1AxisCall = chart.append("g")
+            .attr("class", "axisWhite axis--y")
+
+        y2AxisCall = chart.append("g")
+            .attr("transform", "translate(" + width + "," + 0 + ")")
             .attr("class", "axisWhite axis--y")
 
     }
@@ -169,6 +176,7 @@ function cases_line_chart(config){
     function updateScales(){
         cas = config.criteria.filter(d=> d.county == lineChartSelection)[0]
 
+        console.log(cas)
         x1Dates = cas.chartData.map(d=> d.formattedDate)
 
         caseThreshold = 25 * (cas.population/100000)
@@ -179,20 +187,23 @@ function cases_line_chart(config){
 
         cas.roadmapCase = d3.sum(cas.chartData, d=> d.normalizedCases)
         y1Max = d3.max(cas.chartData, d=> d.normalizedCases)
-
+        y2Max = d3.max(cas.chartData, d=>d.binnedNewCase)
 
 
         x1.domain(x1Dates)
         y1.domain([0, y1Max])
+        y2.domain([0, y2Max])
 
         var x1ticks = x1.domain().filter(function(d, i){ return !( i % 2 ); });
 
         x1_axis.scale(x1).tickValues( x1ticks );
         y1_axis.scale(y1)
+        y2_axis.scale(y2)
         
 
         x1AxisCall.transition().duration(dur).call(x1_axis)
         y1AxisCall.transition().duration(dur).call(y1_axis)
+        y2AxisCall.transition().duration(dur).call(y2_axis)
 
         caseAverageLine
             .transition().duration(dur)
@@ -272,6 +283,35 @@ function cases_line_chart(config){
                 .on("mouseenter", mouseover)
                 .on("mouseout", mouseout)
                 .on("click", clicked)
+
+        // var dailyCase = chart.selectAll(".daily-case-line")
+        //     .data([cas.chartData], d=> d.formattedDate)
+
+        // dailyCase.exit().remove()
+
+        // dailyCase
+        //     .transition().duration(dur)
+        //         .attr("d", d3.line()
+        //             .x(d=> x1(d.formattedDate) + x1.bandwidth()/2)
+        //             .y(d=> y2(d.binnedNewCase))
+        //             .curve(d3.curveMonotoneX)
+        //         )
+
+        // dailyCase.enter()
+        //     .append('path')
+        //     .attr("class", "daily-case-line")
+        //     .attr("d", d3.line()
+        //         .x(function(d){
+        //             return x1(d.formattedDate)  + x1.bandwidth()/2})
+        //         .y(y2(0))
+        //         .curve(d3.curveMonotoneX)
+        //     )
+        //     .transition().duration(dur)
+        //         .attr("d", d3.line()
+        //             .x(d=> x1(d.formattedDate) + x1.bandwidth()/2)
+        //             .y(d=> y2(d.binnedNewCase))
+        //             .curve(d3.curveMonotoneX)
+        //         )
     }
 
     function mouseover(d){

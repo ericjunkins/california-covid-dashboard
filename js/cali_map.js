@@ -545,7 +545,7 @@ function cali_map(config){
         } else {
             d3.select(this)
                 .transition().duration(dur/2)
-                .attr("stroke", "#000")
+                .attr("stroke", "#1e2025")
                 .attr("stroke-width", 1)
 
             mapTooltip

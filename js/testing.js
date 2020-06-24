@@ -239,8 +239,6 @@ function testing_chart(config){
 
         y2.domain([0, Math.min(100, d3.max(lineData, d=> d.y) * 1)])
 
-        console.log(y.domain())
-
         var ticks = xBand.domain().filter(function(d, i){ return !( i % offsetDay ); });
         x_axis.scale(xBand).tickValues( ticks );
         y_axis.scale(y)

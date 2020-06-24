@@ -575,6 +575,12 @@ select.form-control{display:inline-block}
 	fill: none;
 }
 
+.daily-case-line{
+	stroke: #ababab;
+	stroke-width: 1.5;
+	fill: none;
+}
+
 .line-yellow {
 	stroke: #f2df91;
 	stroke-width: 2;
