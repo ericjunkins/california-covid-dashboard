@@ -25,8 +25,8 @@ function ranking_chart(config){
 
     defaultWidth = 900
     defaultHeight = 320
-    defaultX = defaultWidth - config.width
-    defaultY = defaultHeight - config.height
+    defaultX = defaultWidth 
+    defaultY = defaultHeight
 
 
     var rankingSel = "cases"
@@ -47,6 +47,7 @@ function ranking_chart(config){
     document.getElementById("ranking").setAttribute("style", "height:" + (defaultHeight + margin.top) + "px");
     
     h = 2050
+
     const svg = d3.select(config.selection).append('svg')
         .attr("preserveAspectRatio", "xMidYMid meet")
         .attr('viewBox', 0 + " " + 0 + " " + defaultWidth + ' ' + h)

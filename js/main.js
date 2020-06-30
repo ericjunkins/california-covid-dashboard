@@ -372,6 +372,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, population, cityD
         }
     })
 
+    
 
 
     var request = new XMLHttpRequest()
@@ -610,6 +611,15 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, population, cityD
             'boundaries' : laBoundaries,
             'defaultColor' : default_color
         }
+
+        laCasesConfig = {
+            'selection': '#la-cases',
+            duration: 750,
+            countyData: criteriaData
+        }
+
+
+
     
     
         caliMapVis = cali_map(mapConfig)
@@ -626,6 +636,9 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, population, cityD
     
         laMapVis = map(laMapConfig)
         laMapVis();
+
+        laCasesVis = laCases_chart(laCasesConfig)
+        laCasesVis();
 
 
         criteriaVis();

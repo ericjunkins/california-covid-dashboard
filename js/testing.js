@@ -258,10 +258,6 @@ function testing_chart(config){
             d.key = testingGroups[i]
             d.index = i
         })
-
-
-
-
     }
 
     function draw_chart(){
