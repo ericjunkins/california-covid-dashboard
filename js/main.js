@@ -22,7 +22,6 @@ var promises = [
     d3.json("data/us-county-boundaries.json"),
     d3.csv("data/covid19data.csv"),
     d3.csv("data/ca_county_beds.csv"),
-    d3.csv("data/la_testing.csv"),
     d3.tsv("data/population.tsv"),
     d3.csv("https://raw.githubusercontent.com/datadesk/california-coronavirus-data/master/latimes-place-totals.csv"),
     d3.json("data/la_city_boundaries.json")
@@ -84,7 +83,7 @@ function countyClick(d){
 
 }
 
-function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, population, cityData, laBoundaries]){
+function ready([covidData, us, caliCounty, coords, hosp, beds, population, cityData, laBoundaries]){
     var cities = d3.nest()
         .key(function(d){ return d.county})
         .object(cityData)
@@ -203,47 +202,6 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
             coords: [d.fields.geo_point_2d[1], d.fields.geo_point_2d[0]]
         }
     })
-
-    laTesting.sort(function(a,b){
-        return d3.descending(+a[""], +b[""])
-    })
-
-    var testingData = { 'Cumulative': [], 'Daily': [], 'Weekly': []}
-    laTesting.forEach(function(d, i){
-        //console.log(d['total_cases'])
-        
-        if (!(i % testingWindow)) {
-            tmpArr = []
-            tmpDate = d3.timeParse("%Y-%m-%d")(d['date_dt'])
-            tmpArr.push(d)
-        } else if ((i % testingWindow) == testingWindow - 1) {
-            tmpArr.push(d)
-            testingData.Weekly.push({
-                date: tmpDate,
-                formattedDate: d3.timeFormat("%m/%d")(tmpDate),
-                cases: d3.sum(tmpArr, d=> d['new_case']),
-                deaths: d3.sum(tmpArr, d=> d['new_deaths']),
-                tests: d3.sum(tmpArr, d=> d['new_persons_tested'])
-            })
-        } else  tmpArr.push(d)
-        var date = d3.timeParse("%Y-%m-%d")(d['date_dt'])
-
-        testingData.Cumulative.push({
-            date: date,
-            formattedDate: d3.timeFormat("%m/%d")(date),
-            cases: +d['total_cases'],
-            deaths: +d['total_deaths'], 
-            tests: +d['total_persons_tested']
-        })
-
-        testingData.Daily.push({
-            date: date,
-            formattedDate: d3.timeFormat("%m/%d")(date),
-            cases: +d['new_case'],
-            deaths: +d['new_deaths'], 
-            tests: +d['new_persons_tested']
-        })
-    }) 
 
     caliData = covidData.filter(d=> d.state == "California")
 
@@ -629,7 +587,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
             'height': windowHeight * 0.35,
             'width': parseInt(d3.select("#testing-chart").style("width"), 10),
             'duration': 750,
-            'testingData': testingData,
+            'testingData': "",
             'defaultColor' : default_color,
             'tracking': trackingProject
         }
@@ -639,7 +597,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
             'height': windowHeight * 0.35,
             'width': parseInt(d3.select("#ranking-legend").style("width"), 10),
             'duration': 750,
-            'testingData': testingData,
+            'testingData': "",
             'defaultColor' : default_color
         }
     
