@@ -6,7 +6,7 @@ function hospital_line_chart(config){
     //     bottom:config.height * 0.1 }
 
     var margin = {
-        bottom: 25,
+        bottom: 50,
         left: 110,
         right: 60,
         top: 66
@@ -16,7 +16,7 @@ function hospital_line_chart(config){
     var dur = config.duration
 
     defaultWidth = 899  
-    defaultHeight = 265 
+    defaultHeight = 365 
 
     var height = config.height - margin.top - margin.bottom, 
         width = config.width - margin.left - margin.right;

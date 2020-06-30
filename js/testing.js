@@ -26,7 +26,7 @@ function testing_chart(config){
 
 
     defaultWidth = 900
-    defaultHeight = 320
+    defaultHeight = 380
 
 
     // append the svg object to the body of the page

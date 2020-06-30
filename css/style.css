@@ -125,6 +125,33 @@ hr {
 	padding: 0
 }
 
+.tab{
+	background: #1b1b1b !important;
+	border-left: none !important;
+	border-right: none !important;
+	border-bottom: none !important;
+	padding: 10px 0px 10px 0px!important;
+}
+
+.tab-item {
+	width: 500px;
+}
+
+.active {
+	background: #1b1b1b !important;
+	color: #fff !important;
+}
+
+.ui.tabular.menu .item {
+	background: #333333;
+	color: rgb(206, 206, 206);
+}
+
+.criteria{
+	padding: 0 30px 0 30px;
+}
+
+
 
 /* ---------------------------------------------------- */
 

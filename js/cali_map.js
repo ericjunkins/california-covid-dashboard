@@ -25,7 +25,7 @@ function cali_map(config){
     defaultWidth = 564
     defaultHeight = 805
 
-    
+
     var mode = "Choropleth"
     // var mode = "Bubbles"
     // append the svg object to the body of the page

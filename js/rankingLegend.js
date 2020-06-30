@@ -8,7 +8,7 @@ function rankingLegend_chart(config){
     }
 
 
-    defaultWidth = 820
+    defaultWidth = 1120
     defaultHeight = 50
     var dur = config.duration
 

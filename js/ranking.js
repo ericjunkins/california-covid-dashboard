@@ -23,8 +23,8 @@ function ranking_chart(config){
 
 
 
-    defaultWidth = 531
-    defaultHeight = 460
+    defaultWidth = 900
+    defaultHeight = 320
     defaultX = defaultWidth - config.width
     defaultY = defaultHeight - config.height
 

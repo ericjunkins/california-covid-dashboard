@@ -1,9 +1,9 @@
 function criteria_chart(config){
     var margin = {
         bottom: 5,
-        left: 0,
-        right: 0,
-        top: 39.75
+        left: 20,
+        right: 20,
+        top: 70
     }
     
 
@@ -16,7 +16,7 @@ function criteria_chart(config){
 
 
     defaultWidth = 1248
-    defaultHeight = 205
+    defaultHeight = 120
 
     
 
@@ -36,6 +36,8 @@ function criteria_chart(config){
         .attr("transform", "translate(" + 0 + "," + 0 + ")");
     
 
+
+        
     svg.append('text')
         .attr("class", "criteria-title")
         .attr("x", width*0.2)
@@ -126,22 +128,17 @@ function criteria_chart(config){
         //.attr("stroke", "#fff")
         .attr("fill", "none")
 
-    texts = svg.selectAll('.desc-texts')
-        .data(data, d=> d.x)
+    // texts = svg.selectAll('.desc-texts')
+    //     .data(data, d=> d.x)
 
-    texts.enter()
-        .append('text')
-        .attr('class', 'desc-texts')
-        .attr('x', d=> d.x + x1.bandwidth()/2)
-        .attr("y", d=> d.y)
-        .attr("text-anchor", "middle")
-        .text(d=> d.text)
-        .call(wrap, x1.bandwidth())
-
-
-
-
-
+    // texts.enter()
+    //     .append('text')
+    //     .attr('class', 'desc-texts')
+    //     .attr('x', d=> d.x + x1.bandwidth()/2)
+    //     .attr("y", d=> d.y)
+    //     .attr("text-anchor", "middle")
+    //     .text(d=> d.text)
+    //     .call(wrap, 40)
 
     function criteria(){        
         draw_chart();

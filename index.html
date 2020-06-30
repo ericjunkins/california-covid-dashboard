@@ -14,11 +14,12 @@
         <link rel="stylesheet" href="css/jquery-ui.min.css">
         <link rel="stylesheet" href="css/jquery-ui.structure.min.css">
         <link rel="stylesheet" href="css/jquery-ui.theme.min.css">
+        <link rel="stylesheet" href="https://d19vzq90twjlae.cloudfront.net/leaflet-0.7/leaflet.css" />
         <!-- Custom CSS -->
-        <link rel="stylesheet" href="css/style.css">   
+         
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-
+        <link rel="stylesheet" href="css/style.css">  
 
 </head>
 
@@ -41,197 +42,361 @@
 
     <section>
     <div class="container-fluid" id="main-container">
-        <div class="row">
-            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4 outer-container">
-                <div class = "bounding rounded-10"> 
-                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                        <h2 class="section-title"> California County Map </h2>
-                    </div>
-
-                    <div class="row rows">
-                        <div class="col-sm-12">
-                            <div class="row">
-                                <div class="col-sm-12" style="text-align: center; margin-bottom: 15px;">
-                                    <p class="title"> California County Map</p>
-                                </div>
+        <div class="row" style="padding: 20px;">
+            <div class="ui top attached tabular menu" style="padding-left: 30px;">
+                <a class="item tab-item active" data-tab="first">California Overview</a>
+                <a class="item tab-item" data-tab="second">CDPH Guidelines</a>
+                <a class="item tab-item " data-tab="third">Los Angeles </a>
+              </div>
+              <!-- California Overview Tab -->
+              <div class="ui bottom attached tab segment" data-tab="third">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4 outer-container">
+                        <div class = "bounding rounded-10"> 
+                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                <h2 class="section-title"> California County Map </h2>
                             </div>
-
-                            <div class="col-sm-12">
-                                <div class="charts" id="map-chart"> </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class = "col-sm-12 col-md-12 col-lg-12 col-xl-4 outer-container"> 
-                <div class = "bounding rounded-10"> 
-                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                        <h2 class="section-title"> CDPH Guidelines for Reopening Counties  </h2>
-                    </div>
-
-                    <div class="row rows">
-                        <div class="col-sm-12 center-box" style="text-align: left; padding-left: 5%;">
-                            <div class="center-cell">
-                                <div class="description-minor"> County must meet one Cases Criteria and one Hospitals Criteria to move to the next reopening stage. Details at <a href=https://covid19.ca.gov/roadmap-counties/>https://covid19.ca.gov/roadmap-counties/</a>.
+        
+                            <div class="row rows">
+                                <div class="col-sm-12">
+                                    <div class="col-sm-12">
+                                        <div class="charts" id="map-chart"> </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-sm-8 offset-sm-1">
-                            <div class="form-group">
-                                <label class="small-labels" for="countySelect-select" style="padding-left: 10%">Select County:</label>
-                                <select class="select-css select-lg" id="county-select" style="margin-left: 20px">
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" id="criteria-row">
-                        <div class="col-sm-12">
-                            <div class="charts" id="criteria-chart"> </div>
-                        </div> 
-                    </div>
-
-                    <div class="row" style="padding-left: 15px; margin-top: 0px; margin-bottom: 15px;">
-                        <div class="col-sm-3">
-                            <div class="charts" id="cases-slider"> </div>
-                        </div>
-                        <div class="col-sm-3">
-                            <div class="charts" id="testing-slider"> </div>
-                        </div>
-
-                        <div class="col-sm-3">
-                            <div class="charts" id="hosp-slider"> </div>
-                        </div>
-
-                        <div class="col-sm-3">
-                            <div class="charts" id="hosp-max-slider"> </div>
-                        </div>
-                    </div>
-
-                    <hr>
-
-                    <div class="row" style="margin-top: 30px;">
-                        <div class="col-sm-12 chart-title">
-                            <p class="title"> Covid Cases per Capita </p>
-                        </div>
-                        
-                        <div class="col-sm-12">
-                            <div class="description-minor"> New cases per 100,000 residents over 14 days. Criteria requires total of 25 over that period, which is 1.8 per day (yellow dotted line).
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" style="width: 100%; margin-left: 0px;">
-                        <div class="col-sm-12">
-                            
-                            <div class="chart" id="cases-chart"> </div>
-                        </div>
-
-
-                    </div>
-
-                    <div class="row" style="margin-top: 30px;">
-                        <div class="col-sm-12 chart-title">
-                            <p class="title"> COVID Patient Influx Rate </p>
-                        </div>
-                        <div class="col-sm-12">
-                            <div class="description-minor"> 7-day average of percent change of COVID patients in hospitals. Criteria requires less than 5% (yellow dotted line).
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row" style="width: 100%; margin-left: 0px;">
-                        <div class="col-sm-12">
-                            <div class="charts" id="hosp-chart"> </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4" style="padding: 0px">
-                <div class="outer-container">
-                    <div class = "bounding rounded-10"> 
-                        <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                            <h2 class="section-title"> Covid Statistics by County </h2>
-                        </div>
-                        <!--
-                        <div class="row" style="margin-top: 20px;">
-                            <div class="col-sm-5 offset-sm-1">
-                                <label class="small-labels" for="ranking-select" style="padding-left: 5%">Select ranking criteria:</label>
-                                <div class="form-group" style="padding: 0">
-                                    <select class="select-css select-xl" id="ranking-select">
-                                        <option value="cases"> Current Total Cases </option>
-                                        <option value="deaths"> Current Total Deaths </option>
-                                        <option value="caseAvg"> Recent Average Cases per Day </option>
-                                        <option value="deathAvg"> Recent Average Deaths per Day </option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-sm-5">
-                                <label class="small-labels" for="sorting-select" style="padding-left: 5%">Select ranking sorting:</label>
-                                <div class="form-group" style="padding: 0">
-                                    <select class="select-css select-xl" id="sorting-select">
-                                        <option value="Descending"> Descending </option>
-                                        <option value="Ascending"> Ascending </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        -->
-                        <div class="row rows">
-                            <div class="col-sm-12">
-                                <div class="description-minor"> The heatmap on the right shows the average number of newly reported cases over the previous 14 days. Areas with an increasing number of cases are shaded darker for larger increases
-                                </div>
-                            </div>
-                        </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-8 outer-container">
                         <div class="row">
                             <div class="col-sm-12">
-                                <div class="charts" id="outer1">
-                                    <div id="ranking"> </div>
+                                <div class = "bounding rounded-10"> 
+                                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                        <h2 class="section-title"> Covid Statistics by County </h2>
+                                    </div>
+                                    <div class="row rows">
+                                        <div class="col-sm-12">
+                                            <div class="description-minor"> The heatmap on the right shows the average number of newly reported cases over the previous 14 days. Areas with an increasing number of cases are shaded darker for larger increases
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="charts" id="outer1">
+                                                <div id="ranking"> </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div id="ranking-legend"> </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="row">
-                            <div class="col-sm-12">
-                                <div id="ranking-legend"> </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            <div class="col-sm-6 outer-container">
+                                <div class = "bounding rounded-10"> 
+                                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                        <h2 class="section-title"> California COVID-19 Testing </h2>
+                                    </div>
                 
+                                    <div class="row rows">
+                                        <div class="col-sm-12">
+                                            <div class="description-minor"> Testing accross all counties in California, seperated into Cumulative (total tests to date), Daily, and Weekly breakdowns of testing.  
+                                            </div>
+                                        </div>
+                                    </div>
+                
+                                    <div class="row">
+                                        <div class="col-sm-10 offset-sm-1" style="padding-top: 10px;">
+                                            <div class="form-group">
+                                                <label class="small-labels" for="testing-select" style="padding-left: 10%">Select test period:</label>
+                                                <select class="select-css select-lg" id="testing-select" style="margin-left: 20px">
+                                                        <option value="Cumulative"> Cumulative </option>
+                                                        <option value="Daily"> Daily </option>
+                                                        <option value="Weekly"> Weekly </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="charts" id="testing-chart"> </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                <div class="outer-container">
-                    <div class = "bounding rounded-10">
-                        <div class="row row-headers" style="width: 100%; margin-left: 0px;">
-                            <h2 class="section-title"> California COVID-19 Testing </h2>
+                            <div class="col-sm-6 outer-container">
+                                <div class = "bounding rounded-10"> 
+                                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                        <h2 class="section-title"> California Hospitalizations </h2>
+                                    </div>
+                
+                                    <div class="row rows">
+                                        <div class="col-sm-12">
+                                            <div class="description-minor"> Hospitalizations accross all of California, with respect to capacity.  
+                                            </div>
+                                        </div>
+                                    </div>
+                
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="charts" id="ca-hospital-chart"> </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CDPH Guidelines Tab -->
+            <div class="ui bottom attached tab segment" data-tab="second">
+                <div class="row" style="height: 1000px;">
+
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4 outer-container">
+                        <div class = "bounding rounded-10"> 
+                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                <h2 class="section-title"> CDPH Guidelines for Reopening Counties  </h2>
+                            </div>
+                
+                            <div class="row rows">
+                                <div class="col-sm-12 center-box" style="text-align: left; padding-left: 5%;">
+                                    <div class="center-cell">
+                                        <div class="description-minor"> County must meet one Cases Criteria and one Hospitals Criteria to move to the next reopening stage. Details at <a href=https://covid19.ca.gov/roadmap-counties/>https://covid19.ca.gov/roadmap-counties/</a>.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-8 offset-sm-1">
+                                    <div class="form-group">
+                                        <label class="small-labels" for="countySelect-select" style="padding-left: 10%">Select County:</label>
+                                        <select class="select-css select-lg" id="county-select" style="margin-left: 20px">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" id="criteria-row">
+                                <div class="col-sm-12">
+                                    <div class="charts" id="criteria-chart"> </div>
+                                </div> 
+                            </div>
+
+                            <div class="row rows">
+                                <div class="col-sm-3 criteria">
+                                    <p>
+                                        Less than 25 new cases per 100,000 residents in the past 14 days
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 criteria">
+                                    <p>
+                                        Less than 8% testing positive in the past 7 days
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 criteria">
+                                    <p>
+                                        Stable hospitalizations of COVID individuals on a 7-day average of daily percent changing of less than 5%
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 criteria">
+                                    <p>
+                                        No more than 20 COVID hospitalizations on any single day in the past 14 days
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="row" style="padding-left: 15px; margin-top: 0px; margin-bottom: 15px;">
+                                <div class="col-sm-3">
+                                    <div class="charts" id="cases-slider"> </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <div class="charts" id="testing-slider"> </div>
+                                </div>
+                
+                                <div class="col-sm-3">
+                                    <div class="charts" id="hosp-slider"> </div>
+                                </div>
+                
+                                <div class="col-sm-3">
+                                    <div class="charts" id="hosp-max-slider"> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-8 outer-container">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class = "bounding rounded-10"> 
+                                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                        <h2 class="section-title"> Recent Cases </h2>
+                                    </div>
+                                        
+                                    <div class="row rows">
+                                        <div class="col-sm-12">
+                                            <div class="description-minor"> New cases per 100,000 residents over 14 days. Criteria requires total of 25 over that period, which is 1.8 per day (yellow dotted line).
+                                            </div>
+                                        </div>
+                                    </div>
+                        
+                                    <div class="row" style="width: 100%; margin-left: 0px;">
+                                        <div class="col-sm-12">
+                                            <div class="chart" id="cases-chart"> </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class = "bounding rounded-10"> 
+                                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                        <h2 class="section-title"> Testing </h2>
+                                    </div>
+                
+                                    <div class="row rows">
+                                        <div class="col-sm-12">
+                                            <div class="description-minor"> Percent Positive test results. Criteria requires less than 8% (yellow dotted line)  
+                                            </div>
+                                        </div>
+                                    </div>
+                
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="charts" id="county-testing"> </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-6 outer-container">
+                                <div class = "bounding rounded-10"> 
+                                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                        <h2 class="section-title"> Hospitalization Stability </h2>
+                                    </div>
+                
+                                    <div class="row rows">
+                                        <div class="col-sm-12">
+                                            <div class="description-minor"> 7-day average of percent change of COVID patients in hospitals. Criteria requires less than 5% (yellow dotted line).
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row" style="width: 100%; margin-left: 0px;">
+                                        <div class="col-sm-12">
+                                            <div class="charts" id="hosp-chart"> </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6 outer-container">
+                                <div class = "bounding rounded-10"> 
+                                    <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                        <h2 class="section-title"> California Hospitalizations </h2>
+                                    </div>
+                
+                                    <div class="row rows">
+                                        <div class="col-sm-12">
+                                            <div class="description-minor"> Hospitalizations accross all of California, with respect to capacity.  
+                                            </div>
+                                        </div>
+                                    </div>
+                
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="charts" id="ca-hospital-chart"> </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+              <!-- Los Angeles City Tab -->
+            <div class="ui bottom attached tab segment active" data-tab="first">
+                <div class="row" style="height: 1000px;">
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4">
+                        <div class="row rows">
+                            <div class = "bounding rounded-10"> 
+                                <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                    <h2 class="section-title"> Cases </h2>
+                                </div>
+
+                                <div class="row" style="height: 500px;">
+                                    <div class="col-sm-12">
+                                        <div class="charts" id=""> </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="row rows">
-                            <div class="col-sm-12">
-                                <div class="description-minor"> Testing accross all counties in California, seperated into Cumulative (total tests to date), Daily, and Weekly breakdowns of testing.  
+                            <div class = "bounding rounded-10"> 
+                                <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                    <h2 class="section-title"> Placeholder  </h2>
+                                </div>
+                                
+                                <div class="row" style="height: 500px;">
+                                    <div class="col-sm-12">
+                                        <div class="charts" id=""> </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4 outer-container">
+                        <div class = "bounding rounded-10"> 
+                            <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                <h2 class="section-title"> Los Angeles Map  </h2>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="charts" id="la-map" style="height: 1100px;"> </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4">
+                        <div class="row rows">
+                            <div class = "bounding rounded-10"> 
+                                <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                    <h2 class="section-title"> Testing </h2>
+                                </div>
+
+                                <div class="row" style="height: 500px;">
+                                    <div class="col-sm-12">
+                                        <div class="charts" id=""> </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="row">
-                            <div class="col-sm-10 offset-sm-1" style="padding-top: 10px;">
-                                <div class="form-group">
-                                    <label class="small-labels" for="testing-select" style="padding-left: 10%">Select test period:</label>
-                                    <select class="select-css select-lg" id="testing-select" style="margin-left: 20px">
-                                            <option value="Cumulative"> Cumulative </option>
-                                            <option value="Daily"> Daily </option>
-                                            <option value="Weekly"> Weekly </option>
-                                    </select>
+                        <div class="row rows">
+                            <div class = "bounding rounded-10"> 
+                                <div class="row row-headers" style="width: 100%; margin-left: 0px;">
+                                    <h2 class="section-title"> Hospitalization  </h2>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-12">
-                                <div class="charts" id="testing-chart"> </div>
+                                
+                                <div class="row" style="height: 500px;">
+                                    <div class="col-sm-12">
+                                        <div class="charts" id=""> </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -239,6 +404,7 @@
             </div>
         </div>
 
+        <!--
         <div class="row">
             <div class="col-sm-12 footer center-box">
                 <div class="disclaimer center-cell">
@@ -246,92 +412,95 @@
                 </div>
             </div>
         <div>
-
+        -->
     </div>
-
-    <div id="map-tooltip">
-        <table style="width:100%" id="map-table">
+    
+    <!-- Tooltips -->
+    <div>
+        <div id="map-tooltip">
+            <table style="width:100%" id="map-table">
+                <tr>
+                    <th style="width: 200px;">County: </th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Cases Per 100,000: </th>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+    
+        <div id="cases-tooltip">
+            <table style="width:100%" id="cases-table">
             <tr>
-                <th style="width: 200px;">County: </th>
+                <th style="width: 200px;"> Date</th>
                 <td></td>
             </tr>
             <tr>
                 <th>Cases Per 100,000: </th>
                 <td></td>
             </tr>
-        </table>
-    </div>
-
-    <div id="cases-tooltip">
-        <table style="width:100%" id="cases-table">
-        <tr>
-            <th style="width: 200px;"> Date</th>
-            <td></td>
-        </tr>
-        <tr>
-            <th>Cases Per 100,000: </th>
-            <td></td>
-        </tr>
-        <tr>
-            <th>Threshold difference: </th>
-            <td></td>
-        </tr>
-        <tr>
-            <th>Cases </th>
-            <td></td>
-        </tr>
-        <tr>
-            <th>Deaths </th>
-            <td></td>
-        </tr>
-        </table>
-    </div>
-
-    <div id="hosp-tooltip">
-        <table style="width:100%" id="hosp-table">
-        <tr>
-            <th style="width: 200px;"> Date</th>
-            <td></td>
-        </tr>
-        <tr>
-            <th> Hospital Percent Change: </th>
-            <td></td>
-        </tr>
-        <tr>
-            <th>Total Hospitalized</th>
-            <td></td>
-        </tr>
-        <tr>
-            <th>Occupance change today:  </th>
-            <td></td>
-        </tr>
-        </table>
-    </div>
-
-    <div id="testing-tooltip">
-        <table style="width:100%" id="testing-table">
-        <tr>
-            <th style="width: 200px;"> Date</th>
-            <td></td>
-        </tr>
-        <tr>
-            <th> New Tests Performed:  </th>
-            <td></td>
-        </tr>
-        <tr>
-            <th>Total Tests: </th>
-            <td></td>
-        </tr>
-        <tr>
-            <th>Positive Results</th>
-            <td></td>
-        </tr>
-        <tr>
-            <th>Percent Positive Results</th>
-            <td></td>
-        </tr>
+            <tr>
+                <th>Threshold difference: </th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Cases </th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Deaths </th>
+                <td></td>
+            </tr>
+            </table>
+        </div>
     
-        </table>
+        <div id="hosp-tooltip">
+            <table style="width:100%" id="hosp-table">
+            <tr>
+                <th style="width: 200px;"> Date</th>
+                <td></td>
+            </tr>
+            <tr>
+                <th> Hospital Percent Change: </th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Total Hospitalized</th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Occupance change today:  </th>
+                <td></td>
+            </tr>
+            </table>
+        </div>
+    
+        <div id="testing-tooltip">
+            <table style="width:100%" id="testing-table">
+            <tr>
+                <th style="width: 200px;"> Date</th>
+                <td></td>
+            </tr>
+            <tr>
+                <th> New Tests Performed:  </th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Total Tests: </th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Positive Results</th>
+                <td></td>
+            </tr>
+            <tr>
+                <th>Percent Positive Results</th>
+                <td></td>
+            </tr>
+        
+            </table>
+        </div>
     </div>
 
     </section>
@@ -344,14 +513,17 @@
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
     <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
     <script src="https://d3js.org/d3-voronoi.v1.min.js"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
     <script src="https://d3js.org/topojson.v2.min.js"></script>
+    <script src="https://d19vzq90twjlae.cloudfront.net/leaflet-0.7/leaflet.js"></script>
 
 
     <!-- Custom JS -->
 
 
     <script src="https://unpkg.com/d3fc"></script>
+    
+    <script src="js/la_map.js"></script>
     <script src="js/cali_map.js"></script>
     <script src="js/ranking.js"></script>
     <script src="js/hospital.js"></script>
@@ -361,6 +533,7 @@
     <script src="js/hospitalization.js"></script>
     <script src="js/rankingLegend.js"></script>
     <script src="js/criteria.js"></script>
+    <script src="js/leafletMap.js"></script>
     <script src="js/main.js"></script>
     
 </body>

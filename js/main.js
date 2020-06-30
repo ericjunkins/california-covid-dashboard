@@ -23,13 +23,17 @@ var promises = [
     d3.csv("data/covid19data.csv"),
     d3.csv("data/ca_county_beds.csv"),
     d3.csv("data/la_testing.csv"),
-    d3.tsv("data/population.tsv")
+    d3.tsv("data/population.tsv"),
+    d3.csv("https://raw.githubusercontent.com/datadesk/california-coronavirus-data/master/latimes-place-totals.csv"),
+    d3.json("data/la_city_boundaries.json")
 ]
 
 
 Promise.all(promises).then(ready)
 
-
+$('.menu .item')
+  .tab()
+;
 
 d3.select("#county-select")
     .on("change", dropdownChange)
@@ -42,6 +46,8 @@ d3.select("#sorting-select")
 
 d3.select("#ranking-select")
     .on("change", dropdownChange)
+
+
 
 
 function dropdownChange(){
@@ -78,9 +84,51 @@ function countyClick(d){
 
 }
 
-function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, population]){
+function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, population, cityData, laBoundaries]){
+    var cities = d3.nest()
+        .key(function(d){ return d.county})
+        .object(cityData)
 
-    
+    for (var [key, value] of Object.entries(cities)){
+        v = d3.nest()
+            .key(function(d){
+                return d.place })
+            .entries(value)
+        // console.log(key, value)
+        v.forEach(function(d){
+
+            var prevCases = 0
+            var slidingWindow = []
+
+
+            for (var i=d.values.length-1; i>= 0; i--){
+                d.values[i].cases = +d.values[i]['confirmed_cases']
+                d.values[i].newCases = d.values[i].cases - prevCases
+
+                delete d.values[i]['confirmed_cases']
+
+                // if (d.values[0].county == "Riverside"){
+                //     console.log(d.values[i])
+                // }
+
+                slidingWindow.push(d.values[i])
+                if (slidingWindow.length >= 7){
+
+                    slidingWindow.shift()
+                }
+
+
+                d.values[i].avgCases = d3.sum(slidingWindow, e=> e.newCases)/slidingWindow.length
+                prevCases = d.values[i].cases
+
+                
+            }
+
+        })
+        cities[key].data = v
+    }
+
+
     bedKeys = d3.keys(beds[0])
     beds.forEach(function(d){
         bedKeys.forEach(function(v){
@@ -595,7 +643,15 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
             'defaultColor' : default_color
         }
     
-    
+        laMapConfig = {
+            'selection': "#la-map",
+            'height': windowHeight * 0.5,
+            'width': parseInt(d3.select("#la-map").style("width"), 10),
+            'duration': 750,
+            'cityData': cities,
+            'boundaries' : laBoundaries,
+            'defaultColor' : default_color
+        }
     
     
         caliMapVis = cali_map(mapConfig)
@@ -610,6 +666,10 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         hospMaxSliderVis = slider_chart(hospMaxSliderConfig)
         rankingLegendVis = rankingLegend_chart(rankingLegendConfig)
     
+        laMapVis = map(laMapConfig)
+        laMapVis();
+
+
         criteriaVis();
         caliMapVis();
         rankingVis();
@@ -623,6 +683,7 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         rankingLegendVis();
         testingSliderVis();
     
+        
 
     }
 

@@ -6,7 +6,7 @@ function cases_line_chart(config){
     //     bottom:config.height * 0.1 }
 
     var margin = {
-        bottom: 25,
+        bottom: 50,
         left: 110,
         right: 60,
         top: 66
@@ -30,7 +30,7 @@ function cases_line_chart(config){
         cas = []
 
     defaultWidth = 899  
-    defaultHeight = 265 
+    defaultHeight = 365 
     
     // append the svg object to the body of the page
     var svg = d3.select(config.selection)
@@ -175,8 +175,6 @@ function cases_line_chart(config){
 
     function updateScales(){
         cas = config.criteria.filter(d=> d.county == lineChartSelection)[0]
-
-        console.log(cas)
         x1Dates = cas.chartData.map(d=> d.formattedDate)
 
         caseThreshold = 25 * (cas.population/100000)
