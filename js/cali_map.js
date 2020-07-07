@@ -86,7 +86,7 @@ function cali_map(config){
         
     }
 
-    normalizedMax = 125
+    normalizedMax = 250
     normalizedMin = 25
     normalizedMid = (normalizedMax + normalizedMin)/2
     var colorRange = ["#badee8", "#f2df91",  '#ffae43', '#ff6e0b', '#8c0804']
