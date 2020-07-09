@@ -56,12 +56,11 @@ function cali_map(config){
     var path = d3.geoPath()
         .projection(projection);
 
-    
 
     cal.features.forEach(function(d){
         vals = config.criteria.filter(v=> v.county == d.properties.NAME)[0]
-        d.totalNormalizedCases = vals.totalNormalizedCases
-
+        if (vals) d.totalNormalizedCases = vals.totalNormalizedCases
+        else d.totalNormalizedCases = 0
     })
 
     cal.features = cal.features.sort(function(a,b){
