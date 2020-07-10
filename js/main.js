@@ -22,7 +22,7 @@ var promises = [
     d3.json("data/us-county-boundaries.json"),
     d3.csv("data/covid19data.csv"),
     d3.csv("data/ca_county_beds.csv"),
-    d3.csv("data/la_testing.csv"),
+    d3.csv("data/LA_County_Covid19_tests_date_table.csv"),
     d3.tsv("data/population.tsv")
 ]
 
@@ -163,19 +163,17 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
     var testingData = { 'Cumulative': [], 'Daily': [], 'Weekly': []}
     laTesting.forEach(function(d, i){
         //console.log(d['total_cases'])
-        
         if (!(i % testingWindow)) {
             tmpArr = []
-            tmpDate = d3.timeParse("%Y-%m-%d")(d['date_dt'])
+            tmpDate = d3.timeParse("%Y-%m-%d")(d['date_use'])
             tmpArr.push(d)
         } else if ((i % testingWindow) == testingWindow - 1) {
             tmpArr.push(d)
             testingData.Weekly.push({
                 date: tmpDate,
                 formattedDate: d3.timeFormat("%m/%d")(tmpDate),
-                cases: d3.sum(tmpArr, d=> d['new_case']),
-                deaths: d3.sum(tmpArr, d=> d['new_deaths']),
-                tests: d3.sum(tmpArr, d=> d['new_persons_tested'])
+                cases: d3.sum(tmpArr, d=> d['cumulative_tests_pos']),
+                tests: d3.sum(tmpArr, d=> d['cumulative_tests'])
             })
         } else  tmpArr.push(d)
         var date = d3.timeParse("%Y-%m-%d")(d['date_dt'])
@@ -183,19 +181,18 @@ function ready([covidData, us, caliCounty, coords, hosp, beds, laTesting, popula
         testingData.Cumulative.push({
             date: date,
             formattedDate: d3.timeFormat("%m/%d")(date),
-            cases: +d['total_cases'],
-            deaths: +d['total_deaths'], 
-            tests: +d['total_persons_tested']
+            cases: +d['cumulative_tests_pos'],
+            tests: +d['cumulative_tests']
         })
 
         testingData.Daily.push({
             date: date,
             formattedDate: d3.timeFormat("%m/%d")(date),
-            cases: +d['new_case'],
-            deaths: +d['new_deaths'], 
-            tests: +d['new_persons_tested']
+            cases: +d['cumulative_tests_pos'],
+            tests: +d['cumulative_tests']
         })
     }) 
+    console.log(laTesting)
 
     caliData = covidData.filter(d=> d.state == "California")
 
